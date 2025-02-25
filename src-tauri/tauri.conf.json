@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "soupass",
+  "productName": "SouPass",
   "version": "0.1.0",
   "identifier": "com.soupass.app",
   "build": {
@@ -12,9 +12,10 @@
   "app": {
     "windows": [
       {
-        "title": "soupass",
-        "width": 800,
-        "height": 600
+        "title": "SouPass",
+        "width": 1280,
+        "height": 720,
+        "center": true
       }
     ],
     "security": {
