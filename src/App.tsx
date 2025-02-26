@@ -14,7 +14,8 @@ export default function App() {
     useEffect(() => {
         const result: React.JSX.Element[] = [];
         dataload().then(data => {
-            data.forEach((v, i) => {
+            data.sort((a, b) => a.title.localeCompare(b.title)) // A-Zでソート
+            .forEach((v, i) => {
                 if (search != "" && !v.title.toLowerCase().startsWith(search.toLowerCase())) return;
                 result.push(
                     <details className={[css.title, css.hover].join(" ")} key={i} tabIndex={-1}>
