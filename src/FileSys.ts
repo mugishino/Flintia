@@ -18,7 +18,7 @@ async function getSaveFile() {
     if (await notExists(dir)) {
         await mkdir(dir);
     }
-    return dir+"\\save.json";
+    return dir+"\\password.json";
 }
 
 export async function dataload() {
