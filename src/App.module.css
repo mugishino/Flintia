@@ -37,6 +37,10 @@
     background-color: #fff1;
 }
 
+.click:active {
+    background-color: #8f82;
+}
+
 .title {
     width: 100%;
     box-sizing: border-box;
