@@ -1,0 +1,56 @@
+.search {
+    background-color: #fff1;
+    border: none;
+    font-size: 0.75lh;
+    outline: none;
+    color: white;
+
+    &:focus {
+        background-color: #fff2;
+    }
+}
+
+.main {
+    height: 100%;
+    width: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+    &::-webkit-scrollbar {
+        background-color: #fff1;
+        width: 8px;
+    }
+}
+
+.hover:hover {
+    cursor: pointer;
+    background-color: #fff1;
+}
+
+.title {
+    width: 100%;
+    box-sizing: border-box;
+
+    summary {
+        list-style: none;
+    }
+
+    &[open] {
+        summary {
+            background-color: #fff1;
+            text-align: center;
+        }
+        &:not(:first-child) {
+            border-top: thin solid gray;
+        }
+        border-bottom: thin solid gray;
+    }
+}
+
+.note {
+    color: gray;
+    width: 100%;
+    display: block;
+    resize: none;
+    field-sizing: content;
+}

@@ -21,18 +21,16 @@ async function getSaveFile() {
     return dir+"\\save.json";
 }
 
-export default class FileSys {
-    public static async load() {
-        const path = await getSaveFile();
-        if (await notExists(path)) {
-            // ファイル作成
-            await writeTextFile(path, JSON.stringify([new SaveData()]));
-            return [];
-        }
-
-        const raw = await readTextFile(path);
-        const json: Object[] = JSON.parse(raw);
-        const result: SaveData[] = json.map(v => Object.assign(new SaveData(), v));
-        return result;
+export async function dataload() {
+    const path = await getSaveFile();
+    if (await notExists(path)) {
+        // ファイル作成
+        await writeTextFile(path, JSON.stringify([new SaveData()]));
+        return [];
     }
+
+    const raw = await readTextFile(path);
+    const json: Object[] = JSON.parse(raw);
+    const result: SaveData[] = json.map(v => Object.assign(new SaveData(), v));
+    return result;
 }
