@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { dataload } from "./FileSys";
 import css from "./App.module.css";
+import { WInvoke } from "./InvokeWrapper";
 
 export default function App() {
     const [view, setView] = useState<React.JSX.Element[]>([]);
@@ -12,7 +13,7 @@ export default function App() {
             data.forEach((v, i) => {
                 if (search != "" && !v.title.toLowerCase().startsWith(search.toLowerCase())) return;
                 result.push(
-                    <details className={[css.title, css.hover].join(" ")} key={i}>
+                    <details className={[css.title, css.hover].join(" ")} key={i} tabIndex={-1}>
                         <summary>{v.title}</summary>
                         <div className={css.hover}>{v.username}</div>
                         <div className={css.hover}>{v.mail}</div>
@@ -27,7 +28,7 @@ export default function App() {
 
     return (
         <>
-            <div className={css.close}>CLOSE</div>
+            <div className={css.close} onClick={() => WInvoke.hide()}>CLOSE</div>
             <input className={css.search} onChange={e=>setSearch(e.currentTarget.value)} type="text" placeholder="search"/>
             <div className={css.main}>{view}</div>
         </>
