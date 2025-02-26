@@ -25,6 +25,7 @@ export default function App() {
 
     return (
         <>
+            <div className={css.close}>CLOSE</div>
             <input className={css.search} type="text" placeholder="search"/>
             <div className={css.main}>{view}</div>
         </>
