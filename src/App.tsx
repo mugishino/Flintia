@@ -32,7 +32,7 @@ export default function App() {
 
     return (
         <>
-            <input className={css.search} onChange={e=>setSearch(e.currentTarget.value)} type="text" placeholder="search"/>
+            <input autoFocus className={css.search} onChange={e=>setSearch(e.currentTarget.value)} type="text" placeholder="search"/>
             <div className={css.main}>{view}</div>
         </>
     );
