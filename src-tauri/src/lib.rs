@@ -3,7 +3,7 @@ use tauri::{
     tray::TrayIconBuilder,
     Manager,
 };
-use tauri_plugin_autostart::MacosLauncher;
+use tauri_plugin_autostart::{MacosLauncher, ManagerExt};
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -23,17 +23,23 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, None))
         .setup(|app| {
+            let _ = app.autolaunch().enable();
+
             let _ = TrayIconBuilder::new()
                 .menu(&Menu::with_items(
                     app,
                     &[
                         &MenuItem::with_id(app, "show", "Show", true, None::<&str>)?,
+                        &MenuItem::with_id(app, "dald", "Debug-AutoLaunchDisable", true, None::<&str>)?,
                         &MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?,
                     ],
                 )?)
                 .on_menu_event(|app, event| match event.id.as_ref() {
                     "quit" => {
                         app.exit(0);
+                    }
+                    "dald" => {
+                        let _ = app.autolaunch().disable();
                     }
                     "show" => {
                         show(app.get_webview_window("main").expect("no main window"));
