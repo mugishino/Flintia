@@ -9,10 +9,16 @@ export class SaveData {
     note        = "";
 }
 
+async function notExists(path: string) {
+    return !(await exists(path));
+}
+
 async function getSaveFile() {
     const dir = await appDataDir();
-    if (!(await exists(dir))) mkdir(dir);
-    return dir;
+    if (await notExists(dir)) {
+        await mkdir(dir);
+    }
+    return dir+"\\save.json";
 }
 
 export default class FileSys {
@@ -23,11 +29,11 @@ export default class FileSys {
 
     public static async load() {
         const path = await getSaveFile();
-        if (!(await exists(path))) {
+        if (await notExists(path)) {
             return [];
         }
 
-        const raw = await readTextFile(await getSaveFile());
+        const raw = await readTextFile(path);
         const json: Object[] = JSON.parse(raw);
         const result: SaveData[] = json.map(v => Object.assign(new SaveData(), v));
         return result;
