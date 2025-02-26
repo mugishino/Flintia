@@ -4,10 +4,14 @@ import App from "./App";
 import "./main.css";
 import { register, unregisterAll } from "@tauri-apps/plugin-global-shortcut";
 import { WInvoke } from "./InvokeWrapper";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
 unregisterAll().then(() => {
-    register("Shift+Ctrl+Alt+Q", () => {
-        WInvoke.Show();
+    register("Shift+Ctrl+Alt+Q", e => {
+        if (e.state != "Pressed") return;
+        getCurrentWindow().isVisible().then(visible => {
+            visible ? WInvoke.hide() : WInvoke.show();
+        });
     });
 });
 
