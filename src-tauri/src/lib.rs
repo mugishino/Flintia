@@ -21,7 +21,13 @@ fn hide(win: tauri::WebviewWindow) {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, None))
+        .plugin(tauri_plugin_single_instance::init(|app, _, _| {
+            let _ = app.get_webview_window("main").expect("no main window").set_focus();
+        }))
+        .plugin(tauri_plugin_autostart::init(
+            MacosLauncher::LaunchAgent,
+            None,
+        ))
         .setup(|app| {
             let _ = app.autolaunch().enable();
 
@@ -30,7 +36,13 @@ pub fn run() {
                     app,
                     &[
                         &MenuItem::with_id(app, "show", "Show", true, None::<&str>)?,
-                        &MenuItem::with_id(app, "dald", "Debug-AutoLaunchDisable", true, None::<&str>)?,
+                        &MenuItem::with_id(
+                            app,
+                            "dald",
+                            "Debug-AutoLaunchDisable",
+                            true,
+                            None::<&str>,
+                        )?,
                         &MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?,
                     ],
                 )?)
