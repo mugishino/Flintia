@@ -8,7 +8,7 @@
     "opener:default",
     "core:window:allow-start-dragging",
 
-    "global-shortcut:deny-unregister-all",
+    "global-shortcut:allow-unregister-all",
     "global-shortcut:allow-register",
 
     "fs:allow-mkdir",
