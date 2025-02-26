@@ -6,13 +6,18 @@ import { register, unregisterAll } from "@tauri-apps/plugin-global-shortcut";
 import { WInvoke } from "./InvokeWrapper";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
+const tauriWin = getCurrentWindow();
 unregisterAll().then(() => {
     register("Shift+Ctrl+Alt+Q", e => {
         if (e.state != "Pressed") return;
-        getCurrentWindow().isVisible().then(visible => {
+        tauriWin.isVisible().then(visible => {
             visible ? WInvoke.hide() : WInvoke.show();
         });
     });
+});
+
+tauriWin.onFocusChanged(({payload}) => {
+    if (!payload) WInvoke.hide();
 });
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
