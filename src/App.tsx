@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { dataload } from "./FileSys";
 import css from "./App.module.css";
-import { WInvoke } from "./InvokeWrapper";
 
 function copy(text: string) {
     navigator.clipboard.writeText(text);
@@ -33,7 +32,6 @@ export default function App() {
 
     return (
         <>
-            <div className={css.close} onClick={() => WInvoke.hide()}>CLOSE</div>
             <input className={css.search} onChange={e=>setSearch(e.currentTarget.value)} type="text" placeholder="search"/>
             <div className={css.main}>{view}</div>
         </>
