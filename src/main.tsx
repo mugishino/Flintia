@@ -16,6 +16,12 @@ unregisterAll().then(() => {
     });
 });
 
+document.addEventListener("keydown", e => {
+    if (e.code == "Escape") {
+        WInvoke.hide();
+    }
+});
+
 tauriWin.onFocusChanged(({payload}) => {
     if (!payload) WInvoke.hide();
 });
