@@ -21,6 +21,9 @@
         background-color: #fff1;
         width: 8px;
     }
+    &::-webkit-scrollbar-thumb {
+        background-color: #fff1;
+    }
 }
 
 .hover:hover {
