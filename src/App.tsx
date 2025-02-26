@@ -3,6 +3,10 @@ import { dataload } from "./FileSys";
 import css from "./App.module.css";
 import { WInvoke } from "./InvokeWrapper";
 
+function copy(text: string) {
+    navigator.clipboard.writeText(text);
+}
+
 export default function App() {
     const [view, setView] = useState<React.JSX.Element[]>([]);
     const [search, setSearch] = useState("");
@@ -15,9 +19,9 @@ export default function App() {
                 result.push(
                     <details className={[css.title, css.hover].join(" ")} key={i} tabIndex={-1}>
                         <summary>{v.title}</summary>
-                        <div className={css.hover}>{v.username}</div>
-                        <div className={css.hover}>{v.mail}</div>
-                        <div className={css.hover}>{v.password}</div>
+                        <div className={css.hover} title="Click To Copy" onClick={() => copy(v.username)}>UserName</div>
+                        <div className={css.hover} title="Click To Copy" onClick={() => copy(v.mail)}>Mail Address</div>
+                        <div className={css.hover} title="Click To Copy" onClick={() => copy(v.password)}>Password</div>
                         <div className={css.note}>{v.note}</div>
                     </details>
                 );
