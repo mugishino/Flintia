@@ -1,6 +1,7 @@
 .search {
     background-color: #fff1;
     border: none;
+    border-bottom: thin solid #fff1;
     font-size: 0.75lh;
     outline: none;
     color: white;
