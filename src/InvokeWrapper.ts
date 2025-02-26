@@ -7,5 +7,6 @@ export class WInvoke {
 
     public static async hide() {
         await invoke("hide");
+        location.reload();
     }
 }
