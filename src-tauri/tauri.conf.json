@@ -15,7 +15,13 @@
         "title": "SouPass",
         "width": 320,
         "height": 720,
-        "center": true
+        "center": true,
+        "alwaysOnTop": true,
+        "decorations": false,
+        "skipTaskbar": true,
+        "resizable": false,
+        "shadow": false,
+        "visible": false
       }
     ],
     "security": {
