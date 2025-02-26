@@ -22,14 +22,11 @@ async function getSaveFile() {
 }
 
 export default class FileSys {
-    public static async save(data: SaveData[]) {
-        const json = JSON.stringify(data);
-        await writeTextFile(await getSaveFile(), json);
-    }
-
     public static async load() {
         const path = await getSaveFile();
         if (await notExists(path)) {
+            // ファイル作成
+            await writeTextFile(path, JSON.stringify([new SaveData()]));
             return [];
         }
 
