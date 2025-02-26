@@ -37,8 +37,13 @@
     background-color: #fff1;
 }
 
-.click:active {
-    background-color: #8f82;
+.click {
+    &:hover {
+        transition: 100ms;
+    }
+    &:active {
+        background-color: #8f84;
+    }
 }
 
 .title {
