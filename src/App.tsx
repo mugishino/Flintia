@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { dataload } from "./FileSys";
+import { dataload } from "./SaveFs";
 import css from "./App.module.css";
 
 function copy(text: string) {
