@@ -1,3 +1,39 @@
+.hover:hover {
+    cursor: pointer;
+    background-color: #fff1;
+}
+
+.click {
+    &:hover {
+        transition: 100ms;
+    }
+    &:active {
+        background-color: #8f84;
+    }
+}
+
+/*---------------------*/
+
+.setting {
+    border-top: thin solid gray;
+    display: flex;
+    flex-direction: row;
+
+    button {
+        border: none;
+        color: #f44;
+        background-color: #fff1;
+
+        &:hover {
+            background-color: #fff2;
+        }
+
+        &.enable {
+            color: #4bf;
+        }
+    }
+}
+
 .search {
     background-color: #fff1;
     border: none;
@@ -26,23 +62,13 @@
     }
 }
 
-.hover:hover {
-    cursor: pointer;
-    background-color: #fff1;
-}
-
-.click {
-    &:hover {
-        transition: 100ms;
-    }
-    &:active {
-        background-color: #8f84;
-    }
-}
-
 .title {
     width: 100%;
     box-sizing: border-box;
+
+    .showHide {
+        color: gray;
+    }
 
     summary {
         list-style: none;
