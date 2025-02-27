@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { dataload } from "./SaveFs";
 import css from "./App.module.css";
+import { WInvoke } from "./InvokeWrapper";
 
 function copy(text: string) {
     navigator.clipboard.writeText(text);
+    WInvoke.hide();
 }
 
 export default function App() {
@@ -15,6 +17,7 @@ export default function App() {
         dataload().then(data => {
             data.sort((a, b) => a.title.localeCompare(b.title)) // A-Zでソート
             .forEach((v, i) => {
+                if (v.hide) return;
                 if (search != "" && !v.title.toLowerCase().startsWith(search.toLowerCase())) return;
                 result.push(
                     <details className={[css.title, css.hover].join(" ")} key={i} tabIndex={-1}>

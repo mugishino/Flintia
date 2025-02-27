@@ -7,6 +7,7 @@ export class SaveData {
     mail        = "";
     password    = "";
     note        = "";
+    hide        = false;
 }
 
 async function notExists(path: string) {
