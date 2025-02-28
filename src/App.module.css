@@ -20,6 +20,7 @@
     flex-direction: row;
 
     button {
+        flex-grow: 1;
         border: none;
         color: #f44;
         background-color: #fff1;
