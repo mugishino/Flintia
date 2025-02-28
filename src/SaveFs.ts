@@ -1,5 +1,6 @@
 import { appDataDir } from "@tauri-apps/api/path";
-import { exists, mkdir, readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
+import { mkdir, readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
+import { notExists } from "./util";
 
 export class SaveData {
     title       = "";
@@ -8,10 +9,6 @@ export class SaveData {
     password    = "";
     note        = "";
     hide        = false;
-}
-
-async function notExists(path: string) {
-    return !(await exists(path));
 }
 
 async function getSaveFile() {
