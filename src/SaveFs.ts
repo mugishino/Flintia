@@ -1,5 +1,6 @@
-import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
-import { getAppdataDirFile, notExists } from "./util";
+import { readTextFile } from "@tauri-apps/plugin-fs";
+import { notExists } from "./util";
+import { loadConfig } from "./Config";
 
 export class SaveData {
     title       = "";
@@ -11,14 +12,13 @@ export class SaveData {
 }
 
 async function getSaveFile() {
-    return await getAppdataDirFile("password.json");
+    const conf = await loadConfig();
+    return conf.passfile;
 }
 
 export async function dataload() {
     const path = await getSaveFile();
-    if (await notExists(path)) {
-        // ファイル作成
-        await writeTextFile(path, JSON.stringify([new SaveData()]));
+    if (path == "" || await notExists(path)) {
         return [];
     }
 

@@ -5,6 +5,7 @@ import "./main.css";
 import { register, unregisterAll } from "@tauri-apps/plugin-global-shortcut";
 import { WInvoke } from "./InvokeWrapper";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { initConfig } from "./Config";
 
 const tauriWin = getCurrentWindow();
 unregisterAll().then(() => {
@@ -25,6 +26,8 @@ document.addEventListener("keydown", e => {
 tauriWin.onFocusChanged(({payload}) => {
     if (!payload) WInvoke.hide();
 });
+
+await initConfig();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
