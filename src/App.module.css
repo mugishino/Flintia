@@ -76,7 +76,7 @@
     }
 
     &[open] {
-        summary {
+        & > summary {
             background-color: #fff1;
             text-align: center;
         }
@@ -85,12 +85,4 @@
         }
         border-bottom: thin solid gray;
     }
-}
-
-.note {
-    color: gray;
-    width: 100%;
-    display: block;
-    resize: none;
-    field-sizing: content;
 }

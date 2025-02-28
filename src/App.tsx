@@ -29,7 +29,10 @@ export default function App() {
                         {!v.username || <div className={[css.hover, css.click].join(" ")} title="Click To Copy" onClick={() => copy(v.username)}>UserName</div>}
                         {!v.mail     || <div className={[css.hover, css.click].join(" ")} title="Click To Copy" onClick={() => copy(v.mail)}>Mail Address</div>}
                         {!v.password || <div className={[css.hover, css.click].join(" ")} title="Click To Copy" onClick={() => copy(v.password)}>Password</div>}
-                        <div className={css.note}>{v.note}</div>
+                        {v.note == "" || <details className={[css.title, css.hover].join(" ")}>
+                            <summary>[Note]</summary>
+                            {v.note}
+                        </details>}
                     </details>
                 );
             });
