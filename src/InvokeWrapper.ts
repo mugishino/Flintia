@@ -9,4 +9,8 @@ export class WInvoke {
         await invoke("hide");
         location.reload();
     }
+
+    public static async paste() {
+        await invoke("paste");
+    }
 }

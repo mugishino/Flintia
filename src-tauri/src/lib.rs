@@ -1,3 +1,4 @@
+use enigo::{Enigo, Key, Keyboard, Settings};
 use tauri::{
     menu::{Menu, MenuItem},
     tray::TrayIconBuilder,
@@ -16,6 +17,18 @@ fn show(win: tauri::WebviewWindow) {
 #[tauri::command]
 fn hide(win: tauri::WebviewWindow) {
     let _ = win.hide();
+}
+
+#[tauri::command]
+fn paste() {
+    let mut enigo = Enigo::new(&Settings::default()).unwrap();
+
+    // press Ctrl+V
+    enigo.key(Key::Control, enigo::Direction::Press).unwrap();
+    enigo.key(Key::V, enigo::Direction::Click).unwrap();
+
+    // release Ctrl
+    enigo.key(Key::Control, enigo::Direction::Release).unwrap();
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -73,7 +86,7 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![show, hide])
+        .invoke_handler(tauri::generate_handler![show, hide, paste])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

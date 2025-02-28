@@ -6,6 +6,7 @@ import { WInvoke } from "./InvokeWrapper";
 function copy(text: string) {
     navigator.clipboard.writeText(text);
     WInvoke.hide();
+    WInvoke.paste();
 }
 
 export default function App() {
