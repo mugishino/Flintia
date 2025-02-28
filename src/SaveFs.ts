@@ -1,6 +1,5 @@
-import { appDataDir } from "@tauri-apps/api/path";
-import { mkdir, readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
-import { notExists } from "./util";
+import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
+import { getAppdataDirFile, notExists } from "./util";
 
 export class SaveData {
     title       = "";
@@ -12,11 +11,7 @@ export class SaveData {
 }
 
 async function getSaveFile() {
-    const dir = await appDataDir();
-    if (await notExists(dir)) {
-        await mkdir(dir);
-    }
-    return dir+"\\password.json";
+    return await getAppdataDirFile("password.json");
 }
 
 export async function dataload() {
