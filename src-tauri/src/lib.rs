@@ -82,7 +82,7 @@ pub fn run() {
                 })
                 .show_menu_on_left_click(true)
                 .icon(app.default_window_icon().unwrap().clone())
-                .tooltip("SouPass")
+                .tooltip("SouTools")
                 .build(app);
             Ok(())
         })

@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "SouPass",
+  "productName": "SouTools",
   "version": "1.1.1",
-  "identifier": "com.soupass.app",
+  "identifier": "com.soutools.app",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "SouPass",
+        "title": "SouTools",
         "width": 320,
         "height": 720,
         "center": true,
