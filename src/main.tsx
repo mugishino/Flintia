@@ -1,11 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+import Password from "./Password/Password";
 import "./main.css";
 import { register, unregisterAll } from "@tauri-apps/plugin-global-shortcut";
 import { WInvoke } from "./InvokeWrapper";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { initConfig } from "./Config";
+import { BrowserRouter, Route, Routes } from "react-router";
 
 const tauriWin = getCurrentWindow();
 unregisterAll().then(() => {
@@ -31,6 +32,10 @@ await initConfig();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
-        <App />
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Password/>}/>
+            </Routes>
+        </BrowserRouter>
     </React.StrictMode>,
 );

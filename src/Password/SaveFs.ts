@@ -1,6 +1,6 @@
 import { readTextFile } from "@tauri-apps/plugin-fs";
-import { notExists } from "./util";
-import { loadConfig } from "./Config";
+import { notExists } from "../util";
+import { loadConfig } from "../Config";
 
 export class SaveData {
     title       = "";

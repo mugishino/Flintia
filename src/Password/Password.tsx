@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { dataload } from "./SaveFs";
-import css from "./App.module.css";
-import { WInvoke } from "./InvokeWrapper";
+import css from "./Password.module.css";
+import { WInvoke } from "../InvokeWrapper";
 
 function copy(text: string) {
     navigator.clipboard.writeText(text);
