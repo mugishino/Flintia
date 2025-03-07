@@ -7,6 +7,7 @@ import { WInvoke } from "./InvokeWrapper";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { initConfig } from "./Config";
 import { BrowserRouter, Route, Routes } from "react-router";
+import Sidebar from "./Sidebar";
 
 const tauriWin = getCurrentWindow();
 unregisterAll().then(() => {
@@ -33,9 +34,12 @@ await initConfig();
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
         <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<Password/>}/>
-            </Routes>
+            <Sidebar/>
+            <main>
+                <Routes>
+                    <Route path="/" element={<Password/>}/>
+                </Routes>
+            </main>
         </BrowserRouter>
     </React.StrictMode>,
 );

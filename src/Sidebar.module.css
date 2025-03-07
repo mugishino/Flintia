@@ -1,0 +1,22 @@
+.sidebar {
+    background-color: #fff1;
+    writing-mode: vertical-lr;
+    font-size: 0;
+
+    button {
+        font-size: 1rem;
+        color: white;
+        border: none;
+        padding: 1vh 0;
+        background-color: #fff1;
+        border-bottom: thin solid black;
+
+        &.inpage {
+            background-color: #fff2;
+        }
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+}
