@@ -20,4 +20,14 @@ main {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+
+}
+
+::-webkit-scrollbar {
+    background-color: #fff1;
+    width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #fff1;
 }

@@ -2,16 +2,18 @@
     background-color: #fff1;
     writing-mode: vertical-lr;
     font-size: 0;
+    border-right: thin solid #fff2;
 
     button {
         font-size: 1rem;
-        color: white;
+        color: gray;
         border: none;
         padding: 1vh 0;
         background-color: #fff1;
         border-bottom: thin solid black;
 
         &.inpage {
+            color: white;
             background-color: #fff2;
         }
 
