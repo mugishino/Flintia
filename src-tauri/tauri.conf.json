@@ -13,7 +13,7 @@
     "windows": [
       {
         "title": "SouTools",
-        "width": 320,
+        "width": 400,
         "height": 720,
         "center": true,
         "alwaysOnTop": true,
