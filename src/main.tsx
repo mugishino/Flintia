@@ -8,6 +8,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { initConfig } from "./Config";
 import { BrowserRouter, Route, Routes } from "react-router";
 import Sidebar from "./Sidebar";
+import Tools from "./Tools/Tools";
 
 const tauriWin = getCurrentWindow();
 unregisterAll().then(() => {
@@ -38,6 +39,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             <main>
                 <Routes>
                     <Route path="/" element={<Password/>}/>
+                    <Route path="/Tools" element={<Tools/>}/>
                 </Routes>
             </main>
         </BrowserRouter>

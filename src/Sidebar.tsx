@@ -15,6 +15,7 @@ export default function Sidebar() {
     return (
         <div className={css.sidebar}>
             <PageButton title="Pass" navi="/"/>
+            <PageButton title="Tools" navi="/Tools"/>
         </div>
     );
 }

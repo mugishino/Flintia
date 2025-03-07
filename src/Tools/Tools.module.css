@@ -1,0 +1,9 @@
+.tool {
+    padding-left: 2vw;
+}
+
+.uuid {
+    display: inline-block;
+    background-color: #fff2;
+    user-select: text;
+}
