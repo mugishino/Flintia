@@ -7,9 +7,15 @@ export default function Tools() {
     return (
         <>
             <div className={css.tool}>
-                UUID Generator
-                <button onClick={() => setUUID(crypto.randomUUID())}>Refresh</button>
-                <div className={css.uuid}>{uuidView}</div>
+                <div className={css.title}>
+                    <span>UUID Generator</span>
+                    <button className={css.button} onClick={() => setUUID(crypto.randomUUID())}>Refresh</button>
+                </div>
+                <div onClick={() => navigator.clipboard.writeText(uuidView)} className={css.button}>{uuidView}</div>
+                {(() => {
+                    const str = uuidView.replace(/-/g, "");
+                    return <div onClick={() => navigator.clipboard.writeText(str)} className={css.button}>{str}</div>;
+                })()}
             </div>
         </>
     );
