@@ -53,12 +53,23 @@ pub fn run() {
                     &[
                         &MenuItem::with_id(app, "show", "Show", true, None::<&str>)?,
                         &MenuItem::with_id(app, "al", "AutoLaunch", true, None::<&str>)?,
+                        &MenuItem::with_id(app, "info", "Info", true, None::<&str>)?,
                         &MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?,
                     ],
                 )?)
                 .on_menu_event(|app, event| match event.id.as_ref() {
                     "quit" => {
                         app.exit(0);
+                    }
+                    "info" => {
+                        app.dialog()
+                        .message(format!(
+                            "SouTools {}\n(C) 2025 sou",
+                            app.package_info().version.to_string()
+                        ))
+                        .kind(tauri_plugin_dialog::MessageDialogKind::Info)
+                        .title("Infomation")
+                        .blocking_show();
                     }
                     "al" => {
                         let ans = app.dialog()
