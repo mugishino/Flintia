@@ -22,3 +22,11 @@
     flex-direction: row;
     justify-content: center;
 }
+
+.notifis {
+    width: 100%;
+    position: fixed;
+    padding-left: 1vw;
+    border-bottom: thin solid #333;
+    background-color: #060;
+}
