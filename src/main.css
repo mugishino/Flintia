@@ -1,3 +1,7 @@
+*:focus {
+    outline: none;
+}
+
 body {
     box-sizing: border-box;
     border: thin solid #248;
