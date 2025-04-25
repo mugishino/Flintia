@@ -24,9 +24,8 @@
 }
 
 .notifis {
-    width: 100%;
-    position: fixed;
-    padding-left: 1vw;
+    height: 1lh;
+    font-size: 0.75rem;
+    text-align: center;
     border-bottom: thin solid #333;
-    background-color: #060;
 }
