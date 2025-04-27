@@ -1,0 +1,31 @@
+.setting {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0 1vw;
+}
+
+.button, .selector {
+    background-color: #fff2;
+    border: thin solid black;
+    color: white;
+
+    &[disabled] {
+        color: gray;
+    }
+
+    &:hover {
+        background-color: #fff3;
+    }
+}
+
+.selector {
+    padding: 1vw;
+    width: 30%;
+    display: inline-block;
+
+    option {
+        display: inline-block;
+        background-color: #111;
+    }
+}
