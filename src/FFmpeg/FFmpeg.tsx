@@ -87,10 +87,6 @@ function EnumToOptions<T extends object>(arg: T) {
     return elems;
 }
 
-// TODO: Extensionを直す mp4, mkv, mov, webm
-// TODO: QualityValueを作る
-// TODO: セレクタのコンポーネント化
-
 export default function FFmpeg() {
     const [inputFile, setInputFile] = useState<string|null>(null);
     const [videoCodec, setVideoCodec] = useState(VideoCodec.hevc);
@@ -99,6 +95,22 @@ export default function FFmpeg() {
     const [qualityMode, setQualityMode] = useState(QualityMode.CQP);
     const [qualityValue, setQualityValue] = useState(0);
     const [outputFile, setOutputFile] = useState<string|null>(null);
+
+    function Selector<Enum extends object>(props: {
+        title: string,
+        defaultValue: string | number | readonly string[] | undefined,
+        onChange: (v: string) => void,
+        options: Enum,
+    }) {
+        return (
+            <div className={css.setting}>
+                <span>{props.title}</span>
+                <select className={css.selector} defaultValue={props.defaultValue} onChange={v => props.onChange(v.target.value)}>
+                    {EnumToOptions(props.options)}
+                </select>
+            </div>
+        );
+    }
 
     return (
         <>
@@ -122,30 +134,10 @@ export default function FFmpeg() {
                     }}>{inputFile?.split("\\").slice(-1)[0] ?? "Browse..."}
                 </button>
             </div>
-            <div className={css.setting}>
-                <span>VideoCodec</span>
-                <select className={css.selector} defaultValue={videoCodec} onChange={v => setVideoCodec(v.target.value as VideoCodec)}>
-                    {EnumToOptions(VideoCodec)}
-                </select>
-            </div>
-            <div className={css.setting}>
-                <span>Preset</span>
-                <select className={css.selector} defaultValue={preset} onChange={v => setPreset(v.target.value as Preset)}>
-                    {EnumToOptions(Preset)}
-                </select>
-            </div>
-            <div className={css.setting}>
-                <span>AudioCodec</span>
-                <select className={css.selector} defaultValue={audioCodec} onChange={v => setAudioCodec(v.target.value as AudioCodec)}>
-                    {EnumToOptions(AudioCodec)}
-                </select>
-            </div>
-            <div className={css.setting}>
-                <span>QualityMode</span>
-                <select className={css.selector} defaultValue={qualityValue} onChange={v => setQualityMode(v.target.value as QualityMode)}>
-                    {EnumToOptions(QualityMode)}
-                </select>
-            </div>
+            <Selector title="VideoCodec" defaultValue={videoCodec} onChange={v => setVideoCodec(v as VideoCodec)} options={VideoCodec}/>
+            <Selector title="Preset" defaultValue={preset} onChange={v => setPreset(v as Preset)} options={Preset}/>
+            <Selector title="AudioCodec" defaultValue={audioCodec} onChange={v => setAudioCodec(v as AudioCodec)} options={AudioCodec}/>
+            <Selector title="QualityMode" defaultValue={qualityMode} onChange={v => setQualityMode(v as QualityMode)} options={QualityMode}/>
             {(() => {
                 // コンポーネント化により、設定を変えると毎回デフォルト値が変わるように <- もっといい方法あったような気もする
                 function CreateElem(props: {v: number}) {
@@ -186,7 +178,7 @@ export default function FFmpeg() {
                 return false;
             })()} onClick={() => {
                 // @ts-ignore
-                const cmd = BuildCommand(inputFile, videoCodec, preset, audioCodec, qualityMode, 0, outputFile);
+                const cmd = BuildCommand(inputFile, videoCodec, preset, audioCodec, qualityMode, qualityValue, outputFile);
                 navigator.clipboard.writeText(cmd);
             }}>Copy FFmpeg command</button>
         </>
