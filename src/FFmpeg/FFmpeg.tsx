@@ -146,15 +146,22 @@ export default function FFmpeg() {
                     {EnumToOptions(QualityMode)}
                 </select>
             </div>
-            <div className={css.setting}>
-                <span>{qualityMode == QualityMode.CBR ? "Bitrate" : "QualityLevel"}</span>
-                <input className={css.button} type="number"
-                    defaultValue={qualityMode == QualityMode.CBR ? 4096 : 20}
-                    step={qualityMode == QualityMode.CBR ? 1024 : 1}
-                    min={qualityMode == QualityMode.CBR ? 1024 : 15}
-                    max={qualityMode == QualityMode.CBR ? 65536 : 28}
-                    onChange={v => setQualityValue(v.target.valueAsNumber)}/>
-            </div>
+            {(() => {
+                // コンポーネント化により、設定を変えると毎回デフォルト値が変わるように <- もっといい方法あったような気もする
+                function CreateElem(props: {v: number}) {
+                    return (
+                    <div className={css.setting}>
+                        <span>{qualityMode == QualityMode.CBR ? "Bitrate" : "QualityLevel"}</span>
+                        <input className={css.button} type="number"
+                            defaultValue={props.v}
+                            step={qualityMode == QualityMode.CBR ? 1024 : 1}
+                            min={qualityMode == QualityMode.CBR ? 1024 : 15}
+                            max={qualityMode == QualityMode.CBR ? 65536 : 28}
+                            onChange={v => setQualityValue(v.target.valueAsNumber)}/>
+                    </div>);
+                }
+                return <CreateElem v={qualityMode == QualityMode.CBR ? 4096 : 20}/>;
+            })()}
             <div className={css.setting}>
                 <span>OutputFile</span>
                 <button className={css.button} onClick={() => {
