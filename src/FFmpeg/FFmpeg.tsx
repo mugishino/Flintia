@@ -88,13 +88,13 @@ function EnumToOptions<T extends object>(arg: T) {
 }
 
 export default function FFmpeg() {
-    const [inputFile, setInputFile] = useState<string|null>(null);
-    const [videoCodec, setVideoCodec] = useState(VideoCodec.hevc);
-    const [preset, setPreset] = useState(Preset.medium);
-    const [audioCodec, setAudioCodec] = useState(AudioCodec.aac);
-    const [qualityMode, setQualityMode] = useState(QualityMode.CQP);
-    const [qualityValue, setQualityValue] = useState(0);
-    const [outputFile, setOutputFile] = useState<string|null>(null);
+    const [sInputFile, setInputFile] = useState<string|null>(null);
+    const [sVideoCodec, setVideoCodec] = useState(VideoCodec.hevc);
+    const [sPreset, setPreset] = useState(Preset.medium);
+    const [sAudioCodec, setAudioCodec] = useState(AudioCodec.aac);
+    const [sQualityMode, setQualityMode] = useState(QualityMode.CQP);
+    const [sQualityValue, setQualityValue] = useState(0);
+    const [sOutputFile, setOutputFile] = useState<string|null>(null);
 
     function Selector<Enum extends object>(props: {
         title: string,
@@ -131,28 +131,28 @@ export default function FFmpeg() {
                             if (f != null) setInputFile(f);
                             WInvoke.show();
                         });
-                    }}>{inputFile?.split("\\").slice(-1)[0] ?? "Browse..."}
+                    }}>{sInputFile?.split("\\").slice(-1)[0] ?? "Browse..."}
                 </button>
             </div>
-            <Selector title="VideoCodec" defaultValue={videoCodec} onChange={v => setVideoCodec(v as VideoCodec)} options={VideoCodec}/>
-            <Selector title="Preset" defaultValue={preset} onChange={v => setPreset(v as Preset)} options={Preset}/>
-            <Selector title="AudioCodec" defaultValue={audioCodec} onChange={v => setAudioCodec(v as AudioCodec)} options={AudioCodec}/>
-            <Selector title="QualityMode" defaultValue={qualityMode} onChange={v => setQualityMode(v as QualityMode)} options={QualityMode}/>
+            <Selector title="VideoCodec" defaultValue={sVideoCodec} onChange={v => setVideoCodec(v as VideoCodec)} options={VideoCodec}/>
+            <Selector title="Preset" defaultValue={sPreset} onChange={v => setPreset(v as Preset)} options={Preset}/>
+            <Selector title="AudioCodec" defaultValue={sAudioCodec} onChange={v => setAudioCodec(v as AudioCodec)} options={AudioCodec}/>
+            <Selector title="QualityMode" defaultValue={sQualityMode} onChange={v => setQualityMode(v as QualityMode)} options={QualityMode}/>
             {(() => {
                 // コンポーネント化により、設定を変えると毎回デフォルト値が変わるように <- もっといい方法あったような気もする
                 function CreateElem(props: {v: number}) {
                     return (
                     <div className={css.setting}>
-                        <span>{qualityMode == QualityMode.CBR ? "Bitrate" : "QualityLevel"}</span>
+                        <span>{sQualityMode == QualityMode.CBR ? "Bitrate" : "QualityLevel"}</span>
                         <input className={css.button} type="number"
                             defaultValue={props.v}
-                            step={qualityMode == QualityMode.CBR ? 1024 : 1}
-                            min={qualityMode == QualityMode.CBR ? 1024 : 15}
-                            max={qualityMode == QualityMode.CBR ? 65536 : 28}
+                            step={sQualityMode == QualityMode.CBR ? 1024 : 1}
+                            min={sQualityMode == QualityMode.CBR ? 1024 : 15}
+                            max={sQualityMode == QualityMode.CBR ? 65536 : 28}
                             onChange={v => setQualityValue(v.target.valueAsNumber)}/>
                     </div>);
                 }
-                return <CreateElem v={qualityMode == QualityMode.CBR ? 4096 : 20}/>;
+                return <CreateElem v={sQualityMode == QualityMode.CBR ? 4096 : 20}/>;
             })()}
             <div className={css.setting}>
                 <span>OutputFile</span>
@@ -169,18 +169,18 @@ export default function FFmpeg() {
                         if (f != null) setOutputFile(f);
                         WInvoke.show();
                     });
-                }}>{outputFile?.split("\\").slice(-1)[0] ?? "Browse..."}</button>
+                }}>{sOutputFile?.split("\\").slice(-1)[0] ?? "Browse..."}</button>
             </div>
             {(() => {
                 let [copied, setCopied] = useState(false);
                 return <button style={{fontSize: "1.2rem"}} className={css.button} disabled={(() => {
                     // ボタン無効化条件
-                    if (inputFile == null) return true;
-                    if (outputFile == null) return true;
+                    if (sInputFile == null) return true;
+                    if (sOutputFile == null) return true;
                     return false;
                 })()} onClick={() => {
                     // @ts-ignore
-                    const cmd = BuildCommand(inputFile, videoCodec, preset, audioCodec, qualityMode, qualityValue, outputFile);
+                    const cmd = BuildCommand(sInputFile, sVideoCodec, sPreset, sAudioCodec, sQualityMode, sQualityValue, sOutputFile);
                     navigator.clipboard.writeText(cmd);
                     setCopied(true);
                     setTimeout(() => setCopied(false), 1000);
