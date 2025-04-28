@@ -43,32 +43,36 @@ function BuildCommand(
     qualityValue: number,
     outputFileName: string,
 ) {
+    function packQuate(text: string) {return "\""+text+"\"";}
+
     let command = ["ffmpeg"];
-    command.push("-i", i); // input file
+    command.push("-i", packQuate(i)); // input file
     command.push("-c:v", videoCodec); // video codec
-    command.push("-preset", preset); // preset
     command.push("-c:a", audioCodec); // audio codec
 
-    // quality mode
-    command.push("-rc", qualityMode);
-    // qualityValue = 0 でビットレート固定を無効化
-    switch (qualityMode) {
-        case QualityMode.CQP:
-            command.push("-qp", qualityValue.toString());
-            qualityValue = 0;
-            break;
-        case QualityMode.CQVBR:
-            command.push("-cq", qualityValue.toString());
-            qualityValue = 0;
-            break;
+    if (videoCodec != VideoCodec.copy) {
+        command.push("-preset", preset); // preset
+        // quality mode
+        command.push("-rc", qualityMode);
+        // qualityValue = 0 でビットレート固定を無効化
+        switch (qualityMode) {
+            case QualityMode.CQP:
+                command.push("-qp", qualityValue.toString());
+                qualityValue = 0;
+                break;
+            case QualityMode.CQVBR:
+                command.push("-cq", qualityValue.toString());
+                qualityValue = 0;
+                break;
+        }
+        command.push("-b:v", qualityValue+"K");
     }
-    command.push("-b:v", qualityValue+"K");
 
     // その他
     command.push("-movflags", "+faststart"); // メタ情報を先頭に配置
 
     // output file
-    command.push(outputFileName);
+    command.push(packQuate(outputFileName));
     return command.join(" ");
 }
 
@@ -101,9 +105,10 @@ export default function FFmpeg() {
         defaultValue: string | number | readonly string[] | undefined,
         onChange: (v: string) => void,
         options: Enum,
+        hide?: boolean,
     }) {
         return (
-            <div className={css.setting}>
+            <div className={css.setting} style={{display: props.hide?"none":""}}>
                 <span>{props.title}</span>
                 <select className={css.selector} defaultValue={props.defaultValue} onChange={v => props.onChange(v.target.value)}>
                     {EnumToOptions(props.options)}
@@ -134,12 +139,13 @@ export default function FFmpeg() {
                     }}>{sInputFile?.split("\\").slice(-1)[0] ?? "Browse..."}
                 </button>
             </div>
-            <Selector title="VideoCodec" defaultValue={sVideoCodec} onChange={v => setVideoCodec(v as VideoCodec)} options={VideoCodec}/>
-            <Selector title="Preset" defaultValue={sPreset} onChange={v => setPreset(v as Preset)} options={Preset}/>
-            <Selector title="AudioCodec" defaultValue={sAudioCodec} onChange={v => setAudioCodec(v as AudioCodec)} options={AudioCodec}/>
-            <Selector title="QualityMode" defaultValue={sQualityMode} onChange={v => setQualityMode(v as QualityMode)} options={QualityMode}/>
+            <Selector title="VideoCodec"    defaultValue={sVideoCodec   } onChange={v => setVideoCodec  (v as VideoCodec    )} options={VideoCodec  }/>
+            <Selector title="Preset"        defaultValue={sPreset       } onChange={v => setPreset      (v as Preset        )} options={Preset      } hide={sVideoCodec == VideoCodec.copy}/>
+            <Selector title="AudioCodec"    defaultValue={sAudioCodec   } onChange={v => setAudioCodec  (v as AudioCodec    )} options={AudioCodec  }/>
+            <Selector title="QualityMode"   defaultValue={sQualityMode  } onChange={v => setQualityMode (v as QualityMode   )} options={QualityMode } hide={sVideoCodec == VideoCodec.copy}/>
             {(() => {
                 // コンポーネント化により、設定を変えると毎回デフォルト値が変わるように <- もっといい方法あったような気もする
+                // BUG: 値が変えられない
                 function CreateElem(props: {v: number}) {
                     return (
                     <div className={css.setting}>
@@ -152,6 +158,7 @@ export default function FFmpeg() {
                             onChange={v => setQualityValue(v.target.valueAsNumber)}/>
                     </div>);
                 }
+                if (sVideoCodec == VideoCodec.copy) return;
                 return <CreateElem v={sQualityMode == QualityMode.CBR ? 4096 : 20}/>;
             })()}
             <div className={css.setting}>
