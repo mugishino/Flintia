@@ -1,6 +1,6 @@
 import { open, save } from "@tauri-apps/plugin-dialog";
 import css from "./FFmpeg.module.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { WInvoke } from "../InvokeWrapper";
 
 enum VideoCodec {
@@ -144,22 +144,17 @@ export default function FFmpeg() {
             <Selector title="AudioCodec"    defaultValue={sAudioCodec   } onChange={v => setAudioCodec  (v as AudioCodec    )} options={AudioCodec  }/>
             <Selector title="QualityMode"   defaultValue={sQualityMode  } onChange={v => setQualityMode (v as QualityMode   )} options={QualityMode } hide={sVideoCodec == VideoCodec.copy}/>
             {(() => {
-                // コンポーネント化により、設定を変えると毎回デフォルト値が変わるように <- もっといい方法あったような気もする
-                // BUG: 値が変えられない
-                function CreateElem(props: {v: number}) {
-                    return (
-                    <div className={css.setting}>
-                        <span>{sQualityMode == QualityMode.CBR ? "Bitrate" : "QualityLevel"}</span>
-                        <input className={css.button} type="number"
-                            defaultValue={props.v}
-                            step={sQualityMode == QualityMode.CBR ? 1024 : 1}
-                            min={sQualityMode == QualityMode.CBR ? 1024 : 15}
-                            max={sQualityMode == QualityMode.CBR ? 65536 : 28}
-                            onChange={v => setQualityValue(v.target.valueAsNumber)}/>
-                    </div>);
-                }
-                if (sVideoCodec == VideoCodec.copy) return;
-                return <CreateElem v={sQualityMode == QualityMode.CBR ? 4096 : 20}/>;
+                useEffect(() => setQualityValue(sQualityMode == QualityMode.CBR ? 4096 : 20), [sQualityMode]);
+                return (
+                <div className={css.setting} style={{display: sVideoCodec == VideoCodec.copy?"none":undefined}}>
+                    <span>{sQualityMode == QualityMode.CBR ? "Bitrate" : "QualityLevel"}</span>
+                    <input className={css.button} type="number"
+                        value={sQualityValue}
+                        step={sQualityMode == QualityMode.CBR ? 1024 : 1}
+                        min={sQualityMode == QualityMode.CBR ? 1024 : 15}
+                        max={sQualityMode == QualityMode.CBR ? 65536 : 28}
+                        onChange={v => setQualityValue(v.target.valueAsNumber)}/>
+                </div>);
             })()}
             <div className={css.setting}>
                 <span>OutputFile</span>
