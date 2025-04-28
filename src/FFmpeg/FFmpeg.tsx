@@ -171,16 +171,21 @@ export default function FFmpeg() {
                     });
                 }}>{outputFile?.split("\\").slice(-1)[0] ?? "Browse..."}</button>
             </div>
-            <button style={{fontSize: "1.2rem"}} className={css.button} disabled={(() => {
-                // ボタン無効化条件
-                if (inputFile == null) return true;
-                if (outputFile == null) return true;
-                return false;
-            })()} onClick={() => {
-                // @ts-ignore
-                const cmd = BuildCommand(inputFile, videoCodec, preset, audioCodec, qualityMode, qualityValue, outputFile);
-                navigator.clipboard.writeText(cmd);
-            }}>Copy FFmpeg command</button>
+            {(() => {
+                let [copied, setCopied] = useState(false);
+                return <button style={{fontSize: "1.2rem"}} className={css.button} disabled={(() => {
+                    // ボタン無効化条件
+                    if (inputFile == null) return true;
+                    if (outputFile == null) return true;
+                    return false;
+                })()} onClick={() => {
+                    // @ts-ignore
+                    const cmd = BuildCommand(inputFile, videoCodec, preset, audioCodec, qualityMode, qualityValue, outputFile);
+                    navigator.clipboard.writeText(cmd);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1000);
+                }}>{copied ? "Copied!" : "Copy FFmpeg command"}</button>
+            })()}
         </>
     );
 }
