@@ -10,6 +10,7 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import Sidebar from "~/Sidebar";
 import Tools from "~/Tools/Tools";
 import FFmpeg from "~/FFmpeg/FFmpeg";
+import Note from "./Note/Note";
 
 const tauriWin = getCurrentWindow();
 unregisterAll().then(() => {
@@ -42,6 +43,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                     <Route path="/" element={<Password/>}/>
                     <Route path="/Tools" element={<Tools/>}/>
                     <Route path="/FFmpeg" element={<FFmpeg/>}/>
+                    <Route path="/Note" element={<Note/>}/>
                 </Routes>
             </main>
         </BrowserRouter>
