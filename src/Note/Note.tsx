@@ -23,6 +23,6 @@ export default function Note() {
     }, []);
 
     return (
-        <textarea onChange={e => save(e.target.value)} className={css.note} defaultValue={text}/>
+        <textarea onInput={e => save(e.currentTarget.value)} className={css.note} defaultValue={text}/>
     );
 }
