@@ -5,6 +5,7 @@
 }
 
 body {
+    font-family: "Arial";
     box-sizing: border-box;
     border: thin solid #248;
     background-color: #111;
