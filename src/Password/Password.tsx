@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { dataload } from "./SaveFs";
+import { getPassRecords } from "./PasswordFs";
 import css from "./Password.module.css";
 import { WInvoke } from "~/InvokeWrapper";
 
@@ -18,7 +18,7 @@ export default function App() {
 
     useEffect(() => {
         const result: React.JSX.Element[] = [];
-        dataload().then(data => {
+        getPassRecords().then(data => {
             data.sort((a, b) => a.title.localeCompare(b.title)) // A-Zでソート
             .forEach((v, i) => {
                 if (v.hide && !showHide) return;
