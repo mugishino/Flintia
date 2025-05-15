@@ -43,7 +43,13 @@ export function BuildFFmpegCommand(
 
     let command = ["ffmpeg"];
     command.push("-i", packQuate(i)); // input file
-    command.push("-c:v", videoCodec); // video codec
+    // video codec
+    command.push("-c:v", videoCodec);
+    if (videoCodec == VideoCodec.hevc) {
+        // iOS対応: https://zenn.dev/ysktake/articles/1f71c5df8e5f69
+        command.push("-tag:v", "hvc1");
+    }
+
     command.push("-c:a", audioCodec); // audio codec
 
     if (videoCodec != VideoCodec.copy) {
