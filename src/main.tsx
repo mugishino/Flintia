@@ -12,6 +12,10 @@ import Tools from "~/Tools/Tools";
 import FFmpeg from "~/FFmpeg/FFmpeg";
 import Note from "./Note/Note";
 
+if (process.env.NODE_ENV == "development") {
+    document.body.style.border = "thin solid #800";
+}
+
 const tauriWin = getCurrentWindow();
 unregisterAll().then(() => {
     register("Shift+Ctrl+Alt+Q", e => {
