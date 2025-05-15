@@ -1,7 +1,32 @@
 import React, { useEffect, useState } from "react";
-import { getPassRecords } from "./PasswordFs";
 import css from "./Password.module.css";
 import { WInvoke } from "~/InvokeWrapper";
+import { loadConfig } from "~/Config";
+import { notExists } from "~/util";
+import { readTextFile } from "@tauri-apps/plugin-fs";
+
+class PassRecord {
+    title       = "";
+    username    = "";
+    mail        = "";
+    password    = "";
+    note        = "";
+    hide        = false;
+}
+
+async function getPassRecords() {
+    const path = (await loadConfig()).passfile;
+    if (path == "" || await notExists(path)) {
+        return [];
+    }
+
+    const raw = await readTextFile(path);
+    const json: Object[] = JSON.parse(raw);
+    const result: PassRecord[] = json.map(v => Object.assign(new PassRecord(), v));
+    return result;
+}
+
+
 
 function copy(text: string) {
     navigator.clipboard.writeText(text);
