@@ -22,10 +22,3 @@
     flex-direction: row;
     justify-content: center;
 }
-
-.notifis {
-    height: 1lh;
-    font-size: 0.75rem;
-    text-align: center;
-    border-bottom: thin solid #333;
-}
