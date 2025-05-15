@@ -8,7 +8,8 @@ export enum VideoCodec {
 export enum AudioCodec {
     aac = "aac",
     opus = "libopus",
-    ogg = "libvorbis",
+    vorbis = "libvorbis",
+    flac = "flac",
     mp3 = "libmp3lame",
     copy = "copy",
 }
@@ -53,14 +54,16 @@ export function BuildFFmpegCommand(
         switch (qualityMode) {
             case QualityMode.CQP:
                 command.push("-qp", qualityValue.toString());
-                qualityValue = 0;
+                break;
+            case QualityMode.CBR:
+                command.push("-b:v", qualityValue+"K");
                 break;
             case QualityMode.CQVBR:
+                command.push("-rc", "vbr");
                 command.push("-cq", qualityValue.toString());
-                qualityValue = 0;
+                command.push("-b:v", "0");
                 break;
         }
-        command.push("-b:v", qualityValue+"K");
     }
 
     // その他
