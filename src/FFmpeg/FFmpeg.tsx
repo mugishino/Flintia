@@ -1,7 +1,7 @@
 import { open, save } from "@tauri-apps/plugin-dialog";
 import css from "./FFmpeg.module.css";
 import React, { useEffect, useState } from "react";
-import { WInvoke } from "../InvokeWrapper";
+import { WInvoke } from "~/InvokeWrapper";
 import { AudioCodec, BuildFFmpegCommand, Preset, QualityMode, VideoCodec } from "./CommandBuilder";
 
 /**

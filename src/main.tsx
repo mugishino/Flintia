@@ -1,15 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import Password from "./Password/Password";
-import "./main.css";
+import Password from "~/Password/Password";
+import "~/main.css";
 import { register, unregisterAll } from "@tauri-apps/plugin-global-shortcut";
-import { WInvoke } from "./InvokeWrapper";
+import { WInvoke } from "~/InvokeWrapper";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { initConfig } from "./Config";
+import { initConfig } from "~/Config";
 import { BrowserRouter, Route, Routes } from "react-router";
-import Sidebar from "./Sidebar";
-import Tools from "./Tools/Tools";
-import FFmpeg from "./FFmpeg/FFmpeg";
+import Sidebar from "~/Sidebar";
+import Tools from "~/Tools/Tools";
+import FFmpeg from "~/FFmpeg/FFmpeg";
 
 const tauriWin = getCurrentWindow();
 unregisterAll().then(() => {

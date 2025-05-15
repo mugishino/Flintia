@@ -1,5 +1,5 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
-import { getAppdataDirFile, notExists } from "./util";
+import { getAppdataDirFile, notExists } from "~/util";
 
 export class ConfigData {
     passfile = "";
