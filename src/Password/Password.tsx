@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import css from "./Password.module.css";
 import { WInvoke } from "~/InvokeWrapper";
 import { loadConfig } from "~/Config";
-import { notExists } from "~/util";
+import { cls, notExists } from "~/util";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 
 class PassRecord {
@@ -67,7 +67,10 @@ export default function App() {
 
     return (
         <>
-            <input autoFocus className={css.search} onChange={e=>setSearch(e.currentTarget.value)} type="text" placeholder="search"/>
+            <div className="flex">
+                <input autoFocus className={cls(css.search, "grow")} value={search} onChange={e=>setSearch(e.currentTarget.value)} type="text" placeholder="search"/>
+                <div className="px-2 bg-neutral-700 border-l-1 border-neutral-600 hover:cursor-pointer hover:bg-neutral-600" onClick={()=>setSearch("")}>削除</div>
+            </div>
             <div className={css.main}>{view}</div>
             <div className={css.setting}>
                 <button onClick={() => setShowHide(!showHide)} className={showHide ? css.enable : undefined}>ShowHide</button>

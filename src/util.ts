@@ -12,3 +12,8 @@ export async function getAppdataDirFile(filename: string) {
     }
     return dir+"\\"+filename;
 }
+
+// tailwindとcss modulesの結合用関数
+export function cls(...args: string[]) {
+    return args.join(" ");
+}
