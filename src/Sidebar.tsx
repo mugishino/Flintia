@@ -12,15 +12,22 @@ export default function Sidebar() {
     }
 
     return (
-        <div className="bg-layerA border-r-1 border-border [writing-mode:vertical-lr]">
-            {Object.entries({
-                "Pass"  : "/",
-                "Tools" : "/Tools",
-                "FFmpeg": "/FFmpeg",
-                "Note"  : "/Note",
-                "QRCode": "/QRCode",
-                "Auth"  : "/Auth",
-            }).map(([k, v]) => <PageButton key={k} title={k} navi={v}/>)}
+        <div className="flex justify-between bg-layerA border-r-1 border-border [writing-mode:vertical-lr]">
+            <div>
+                {Object.entries({
+                    "Pass"  : "/",
+                    "Tools" : "/Tools",
+                    "FFmpeg": "/FFmpeg",
+                    "Note"  : "/Note",
+                    "QRCode": "/QRCode",
+                    "Auth"  : "/Auth",
+                }).map(([k, v]) => <PageButton key={k} title={k} navi={v}/>)}
+            </div>
+            <div>
+                {Object.entries({
+                    "System": "/System",
+                }).map(([k, v]) => <PageButton key={k} title={k} navi={v}/>)}
+            </div>
         </div>
     );
 }

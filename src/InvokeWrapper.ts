@@ -12,4 +12,8 @@ export class WInvoke {
     public static async paste() {
         await invoke("paste");
     }
+
+    public static async openExplorer(path: string) {
+        await invoke("open_explorer", {path: path});
+    }
 }

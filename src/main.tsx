@@ -13,6 +13,7 @@ import FFmpeg from "~/FFmpeg/FFmpeg";
 import Note from "./Note/Note";
 import QRCode from "./QRCode/QRCode";
 import Auth from "./Auth/Auth";
+import System from "./System/System";
 
 if (process.env.NODE_ENV == "development") {
     document.body.style.border = "thin solid #800";
@@ -53,6 +54,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                         "/Note"  : <Note/>,
                         "/QRCode": <QRCode/>,
                         "/Auth"  : <Auth/>,
+                        "/System": <System/>,
                     }).map(([k, v]) => <Route key={k} path={k} element={v}/>)}
                 </Routes>
             </main>

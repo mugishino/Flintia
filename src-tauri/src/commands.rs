@@ -1,3 +1,5 @@
+use std::process::Command;
+
 use enigo::{Enigo, Key, Keyboard, Settings};
 
 #[tauri::command]
@@ -22,4 +24,9 @@ pub fn paste() {
 
     // release Ctrl
     enigo.key(Key::Control, enigo::Direction::Release).unwrap();
+}
+
+#[tauri::command]
+pub fn open_explorer(path: &str) {
+    Command::new("explorer").arg(path).spawn().unwrap();
 }
