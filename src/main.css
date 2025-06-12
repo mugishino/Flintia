@@ -2,11 +2,12 @@
 
 @theme {
     --color-layerA: #ffffff0c;
-    --color-layerB: #ffffff1c;
-    --color-layerC: #ffffff2c;
-    --color-layerD: #ffffff3c;
-    --color-layerE: #ffffff4c;
-    --color-layerF: #ffffff5c;
+    --color-layerB: #ffffff18;
+    --color-layerC: #ffffff24;
+    --color-layerD: #ffffff30;
+    --color-layerE: #ffffff3c;
+    --color-layerF: #ffffff48;
+
     --color-border: #ffffff30;
     --color-text-gray: #777777;
     --color-fail: #c44;
