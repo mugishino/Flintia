@@ -19,6 +19,7 @@ export default function Sidebar() {
                 "FFmpeg": "/FFmpeg",
                 "Note"  : "/Note",
                 "QRCode": "/QRCode",
+                "Auth"  : "/Auth",
             }).map(([k, v]) => <PageButton key={k} title={k} navi={v}/>)}
         </div>
     );
