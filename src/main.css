@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+@theme {
+    --color-layerA: #ffffff0c;
+    --color-layerB: #ffffff1c;
+    --color-layerC: #ffffff2c;
+    --color-layerD: #ffffff3c;
+    --color-layerE: #ffffff4c;
+    --color-layerF: #ffffff5c;
+    --color-border: #ffffff30;
+    --color-text-gray: #777777;
+    --color-fail: #c44;
+    --color-link: #48f;
+}
+
 *:focus {
     outline: none;
 }
@@ -21,13 +34,6 @@ body {
     width: 100%;
     display: flex;
     flex-direction: row;
-}
-
-main {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    min-width: 0;
 }
 
 ::-webkit-scrollbar {

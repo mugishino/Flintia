@@ -1,5 +1,4 @@
 import { useLocation, useNavigate } from "react-router";
-import css from "./Sidebar.module.css";
 
 export default function Sidebar() {
     const navigate = useNavigate();
@@ -7,13 +6,13 @@ export default function Sidebar() {
 
     function PageButton(props: {title: string, navi: string}) {
         return <button
-            className={props.navi == locate.pathname ? css.inpage : undefined}
+            className={`text-text-gray border-b-1 border-black px-1 cursor-pointer ${props.navi == locate.pathname ? "bg-layerB text-white" : "bg-layerA"}`}
             onClick={() => navigate(props.navi)}
         >{props.title}</button>
     }
 
     return (
-        <div className={css.sidebar}>
+        <div className="bg-layerA border-r-1 border-border [writing-mode:vertical-lr]">
             {Object.entries({
                 "Pass"  : "/",
                 "Tools" : "/Tools",

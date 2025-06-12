@@ -54,11 +54,11 @@ export default function QRCode() {
                     setResult(qrdata);
                     setSuccess(true);
                 }
-            }} className="bg-neutral-800 border-b-1 border-neutral-500 hover:bg-neutral-700 cursor-pointer">Read from clipboard</button>
-            <div className={`grow text-center select-text break-words ${success ? "text-white" : "text-red-400"}`}>{(() => {
+            }} className="bg-layerB border-b-1 border-border hover:bg-layerC cursor-pointer">Read from clipboard</button>
+            <div className={`grow text-center select-text break-words ${success ? "text-white" : "text-fail"}`}>{(() => {
                 if (result == null) return null;
                 if (URL.canParse(result)) {
-                    return <a href={result} target="_blank" className="text-blue-500 underline">{result}</a>
+                    return <a href={result} target="_blank" className="text-link underline">{result}</a>
                 }
                 return result;
             })()}</div>

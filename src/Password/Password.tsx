@@ -50,10 +50,10 @@ export default function App() {
                 if (search != "" && !v.title.toLowerCase().startsWith(search.toLowerCase())) return;
                 result.push(
                     <details className={[css.title, css.hover].join(" ")} key={i} tabIndex={-1}>
-                        <summary className={v.hide ? css.showHide : undefined}>{v.title}</summary>
-                        {!v.username || <div className={[css.hover, css.click].join(" ")} title="Click To Copy" onClick={() => copy(v.username)}>UserName</div>}
-                        {!v.mail     || <div className={[css.hover, css.click].join(" ")} title="Click To Copy" onClick={() => copy(v.mail)}>Mail Address</div>}
-                        {!v.password || <div className={[css.hover, css.click].join(" ")} title="Click To Copy" onClick={() => copy(v.password)}>Password</div>}
+                        <summary className={`list-none ${v.hide ? "text-text-gray" : undefined}`}>{v.title}</summary>
+                        {!v.username || <div className={cls(css.hover, css.click)} title="Click To Copy" onClick={() => copy(v.username)}>UserName</div>}
+                        {!v.mail     || <div className={cls(css.hover, css.click)} title="Click To Copy" onClick={() => copy(v.mail)}>Mail Address</div>}
+                        {!v.password || <div className={cls(css.hover, css.click)} title="Click To Copy" onClick={() => copy(v.password)}>Password</div>}
                         {v.note == "" || <details className={[css.title, css.hover].join(" ")}>
                             <summary>[Note]</summary>
                             {v.note}
@@ -68,10 +68,10 @@ export default function App() {
     return (
         <>
             <div className="flex">
-                <input autoFocus className={cls(css.search, "grow")} value={search} onChange={e=>setSearch(e.currentTarget.value)} type="text" placeholder="search"/>
-                <div className="px-2 bg-neutral-700 border-l-1 border-neutral-600 hover:cursor-pointer hover:bg-neutral-600" onClick={()=>setSearch("")}>削除</div>
+                <input autoFocus className="grow bg-layerA border-b-1 border-border focus:bg-layerB" value={search} onChange={e=>setSearch(e.currentTarget.value)} type="text" placeholder="search"/>
+                <div className="px-2 bg-layerB border-l-1 border-neutral-600 hover:cursor-pointer hover:bg-layerC" onClick={()=>setSearch("")}>削除</div>
             </div>
-            <div className={css.main}>{view}</div>
+            <div className="grow overflow-x-hidden overflow-y-scroll">{view}</div>
             <div className={css.setting}>
                 <button onClick={() => setShowHide(!showHide)} className={showHide ? css.enable : undefined}>ShowHide</button>
             </div>

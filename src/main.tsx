@@ -43,7 +43,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
         <BrowserRouter>
             <Sidebar/>
-            <main>
+            <main className="flex flex-col grow min-w-0">
                 <Routes>
                     {Object.entries({
                         "/"      : <Password/>,
