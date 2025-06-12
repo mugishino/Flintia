@@ -14,11 +14,13 @@ export default function Sidebar() {
 
     return (
         <div className={css.sidebar}>
-            <PageButton title="Pass" navi="/"/>
-            <PageButton title="Tools" navi="/Tools"/>
-            <PageButton title="FFmpeg" navi="/FFmpeg"/>
-            <PageButton title="Note" navi="/Note"/>
-            <PageButton title="QRCode" navi="/QRCode"/>
+            {Object.entries({
+                "Pass"  : "/",
+                "Tools" : "/Tools",
+                "FFmpeg": "/FFmpeg",
+                "Note"  : "/Note",
+                "QRCode": "/QRCode",
+            }).map(([k, v]) => <PageButton key={k} title={k} navi={v}/>)}
         </div>
     );
 }

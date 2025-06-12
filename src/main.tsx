@@ -45,11 +45,13 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             <Sidebar/>
             <main>
                 <Routes>
-                    <Route path="/" element={<Password/>}/>
-                    <Route path="/Tools" element={<Tools/>}/>
-                    <Route path="/FFmpeg" element={<FFmpeg/>}/>
-                    <Route path="/Note" element={<Note/>}/>
-                    <Route path="/QRCode" element={<QRCode/>}/>
+                    {Object.entries({
+                        "/"      : <Password/>,
+                        "/Tools" : <Tools/>,
+                        "/FFmpeg": <FFmpeg/>,
+                        "/Note"  : <Note/>,
+                        "/QRCode": <QRCode/>,
+                    }).map(([k, v]) => <Route key={k} path={k} element={v}/>)}
                 </Routes>
             </main>
         </BrowserRouter>
