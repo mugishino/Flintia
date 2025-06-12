@@ -11,6 +11,7 @@ import Sidebar from "~/Sidebar";
 import Tools from "~/Tools/Tools";
 import FFmpeg from "~/FFmpeg/FFmpeg";
 import Note from "./Note/Note";
+import QRCode from "./QRCode/QRCode";
 
 if (process.env.NODE_ENV == "development") {
     document.body.style.border = "thin solid #800";
@@ -48,6 +49,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                     <Route path="/Tools" element={<Tools/>}/>
                     <Route path="/FFmpeg" element={<FFmpeg/>}/>
                     <Route path="/Note" element={<Note/>}/>
+                    <Route path="/QRCode" element={<QRCode/>}/>
                 </Routes>
             </main>
         </BrowserRouter>

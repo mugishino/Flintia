@@ -18,6 +18,7 @@ export default function Sidebar() {
             <PageButton title="Tools" navi="/Tools"/>
             <PageButton title="FFmpeg" navi="/FFmpeg"/>
             <PageButton title="Note" navi="/Note"/>
+            <PageButton title="QRCode" navi="/QRCode"/>
         </div>
     );
 }
