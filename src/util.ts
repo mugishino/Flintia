@@ -22,3 +22,9 @@ export function cls(...args: string[]) {
 export function useEffectAsync(effect: () => Promise<void>, deps?: React.DependencyList) {
     useEffect(() => {effect()}, deps);
 }
+
+export function stringInject(base: string, inject: string, pos: number) {
+    const x = base.slice(0, pos);
+    const y = base.slice(pos);
+    return x + inject + y;
+}

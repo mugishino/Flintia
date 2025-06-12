@@ -2,7 +2,7 @@ import { readTextFile } from "@tauri-apps/plugin-fs";
 import { TOTP } from "otpauth";
 import React, { useState } from "react";
 import { WInvoke } from "~/InvokeWrapper";
-import { getAppdataDirFile, useEffectAsync } from "~/util";
+import { getAppdataDirFile, stringInject, useEffectAsync } from "~/util";
 
 function secretToNumber(secret: string) {
     const res = new TOTP({
@@ -48,7 +48,7 @@ export default function Auth() {
                     <div className="">{props.title}</div>
                     <div>{(Math.floor(res.remaining/100)/10).toFixed(1)}</div>
                 </div>
-                <div className="my-auto text-3xl">{code}</div>
+                <div className="my-auto text-3xl">{stringInject(code ?? "", " ", 3)}</div>
             </div>
         );
     }
