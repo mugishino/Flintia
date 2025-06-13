@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import css from "./Tools.module.css";
 
 export default function Tools() {
     const [uuidView, setUUID] = useState(crypto.randomUUID());
@@ -7,6 +6,24 @@ export default function Tools() {
 
     function copyText(text: string) {
         navigator.clipboard.writeText(text);
+    }
+
+
+
+    function Button(props: {
+        className   ?: string,
+        title       ?: string,
+        onClick     ?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
+        onAuxClick  ?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
+        onMouseDown ?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
+        children: React.ReactElement|string,
+    }) {
+        return (
+            <div
+            className={`inline-block cursor-pointer text-white border-1 border-layerB bg-layerB transition-[200ms] hover:bg-layerC active:transition-[0ms] active:bg-green-800 ${props.className}`}
+            title={props.title} onClick={props.onClick} onAuxClick={props.onAuxClick} onMouseDown={props.onMouseDown}
+            >{props.children}</div>
+        );
     }
 
     function ToolElem({title, children}: {title: string, children: React.ReactElement}) {
@@ -18,27 +35,29 @@ export default function Tools() {
         );
     }
 
+
+
     return (
         <>
-            <ToolElem title="UUID Generator" children={(() => {
-                function uuidCopyAndRefresh(hyphen: boolean) {
-                    copyText(hyphen ? uuidView : uuidView.replace(/-/g, ""));
-                    setUUID(crypto.randomUUID());
-                }
-                return <div title="click to copy, right click to copy without hyphens"
-                    className={css.button}
-                    onMouseDown={e => uuidCopyAndRefresh(e.button != 2)} // 2 is mouse-right
-                >{uuidView}</div>
-            })()}/>
+            <ToolElem title="UUID Generator">
+                <Button
+                    title="左クリでコピー | 右クリでハイフンなしをコピー"
+                    onMouseDown={e => {
+                        // 2 is mouse-right
+                        copyText(e.button != 2 ? uuidView : uuidView.replace(/-/g, ""));
+                        setUUID(crypto.randomUUID());
+                    }}
+                >{uuidView}</Button>
+            </ToolElem>
 
             <ToolElem title="MIN_MAX_VALUE" children={(() => {
                 function CreateElem(props: {title: string, min: number, max: number}) {
-                    return <div
-                        className={css.button+" inline-block w-38"}
-                        title="LeftClick: MAX, RightClick: MIN"
+                    return <Button
+                        className="inline-block w-40"
+                        title="LeftClick: Max, RightClick: MIN"
                         onClick   ={() => copyText(props.max.toString())}
                         onAuxClick={() => copyText(props.min.toString())}
-                    >{props.title}</div>;
+                    >{props.title}</Button>;
                 }
                 return (
                     <div>
