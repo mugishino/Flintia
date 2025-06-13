@@ -3,6 +3,7 @@ import { getAppdataDirFile, notExists } from "~/util";
 
 export class ConfigData {
     passfile = "";
+    authfile = "";
 }
 
 
