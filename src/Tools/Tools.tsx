@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Button } from "~/Components";
 
 export default function Tools() {
     const [uuidView, setUUID] = useState(crypto.randomUUID());
@@ -9,22 +10,6 @@ export default function Tools() {
     }
 
 
-
-    function Button(props: {
-        className   ?: string,
-        title       ?: string,
-        onClick     ?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
-        onAuxClick  ?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
-        onMouseDown ?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
-        children: React.ReactElement|string,
-    }) {
-        return (
-            <div
-            className={`inline-block cursor-pointer text-white border-1 border-layerB bg-layerB transition-[200ms] hover:bg-layerC active:transition-[0ms] active:bg-green-800 ${props.className}`}
-            title={props.title} onClick={props.onClick} onAuxClick={props.onAuxClick} onMouseDown={props.onMouseDown}
-            >{props.children}</div>
-        );
-    }
 
     function ToolElem({title, children}: {title: string, children: React.ReactElement}) {
         return (
