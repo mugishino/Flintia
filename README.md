@@ -1,9 +1,25 @@
 # 概要
-自分用のパスワード管理・コピペツール
-Ctrl+Shift+ALT+Qで呼び出せる
-%AppData%/Roaming/com.soutools.app/config.jsonで指定したファイルにデータを直で書き込んでください
+自分用の便利ツールセット
 
-# パスワードファイルの書き方
+Ctrl+Shift+ALT+Qで呼び出せる
+
+# ツールリスト
+- パスワード管理
+- 開発ツール(UUID生成など)
+- FFmpegコマンドジェネレーター(映像のみ, NVENC)
+- メモ帳
+- QRCodeリーダー
+- OTP認証
+
+# 設定ファイル
+`%AppData%/Roaming/com.soutools.app/config.json`にデータを直で書き込んでください
+```
+passfile: パスワードファイル
+authfile: OTP認証コードファイル
+```
+
+# パスワードファイル記述形式
+```
 [
     {
         "title": string,
@@ -14,6 +30,11 @@ Ctrl+Shift+ALT+Qで呼び出せる
         "hide": boolean
     }
 ]
+```
 
-# 使用技術
-Tauri + React + Typescript
+# OTP認証コードファイル記述形式
+```
+{
+    "Title": "SecretCode"
+}
+```
