@@ -16,7 +16,7 @@ export default function Sidebar() {
             <div>
                 {Object.entries({
                     "Pass"  : "/",
-                    "Tools" : "/Tools",
+                    "Dev"   : "/Dev",
                     "FFmpeg": "/FFmpeg",
                     "Note"  : "/Note",
                     "QRCode": "/QRCode",

@@ -8,7 +8,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { initConfig } from "~/Config";
 import { BrowserRouter, Route, Routes } from "react-router";
 import Sidebar from "~/Sidebar";
-import Tools from "~/Tools/Tools";
+import Dev from "~/Dev/Dev";
 import FFmpeg from "~/FFmpeg/FFmpeg";
 import Note from "./Note/Note";
 import QRCode from "./QRCode/QRCode";
@@ -49,7 +49,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                 <Routes>
                     {Object.entries({
                         "/"      : <Password/>,
-                        "/Tools" : <Tools/>,
+                        "/Dev"   : <Dev/>,
                         "/FFmpeg": <FFmpeg/>,
                         "/Note"  : <Note/>,
                         "/QRCode": <QRCode/>,

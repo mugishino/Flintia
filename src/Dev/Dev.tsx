@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "~/Components";
 
-export default function Tools() {
+export default function Dev() {
     const [uuidView, setUUID] = useState(crypto.randomUUID());
 
 
