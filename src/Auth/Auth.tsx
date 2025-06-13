@@ -38,7 +38,7 @@ export default function Auth() {
         }, 100);
 
         return (
-            <div className="flex flex-row border-y-1 not-last:border-b-0 border-border px-2 justify-between bg-layerA hover:bg-layerB cursor-pointer" onClick={() => {
+            <div className="flex flex-row border-b-1 border-border px-2 justify-between bg-layerA hover:bg-layerB cursor-pointer" onClick={() => {
                 if (code == null) return;
                 navigator.clipboard.writeText(code);
                 WInvoke.hide();
@@ -65,14 +65,16 @@ export default function Auth() {
 
     return (
         <>
-            <div className="text-center text-2xl">Authentication</div>
-            {(() => {
-                const result: React.JSX.Element[] = [];
-                loadData.forEach((v, k) => {
-                    result.push(<CodeView key={k} secret={v} title={k}/>)
-                });
-                return result;
-            })()}
+            <div className="text-center text-2xl border-b-1 border-border">Authentication</div>
+            <div className="h-full overflow-y-scroll">
+                {(() => {
+                    const result: React.JSX.Element[] = [];
+                    loadData.forEach((v, k) => {
+                        result.push(<CodeView key={k} secret={v} title={k}/>)
+                    });
+                    return result;
+                })()}
+            </div>
         </>
     );
 }
