@@ -62,18 +62,15 @@ export default function Auth() {
         setLoadData(new Map(Object.entries(json)));
     }, []);
 
+    const result: React.JSX.Element[] = [];
+    loadData.forEach((v, k) => {
+        result.push(<CodeView key={k} secret={v} title={k}/>);
+    });
+
     return (
         <>
             <div className="text-center text-2xl border-b-1 border-border">Authentication</div>
-            <div className="h-full overflow-y-scroll">
-                {(() => {
-                    const result: React.JSX.Element[] = [];
-                    loadData.forEach((v, k) => {
-                        result.push(<CodeView key={k} secret={v} title={k}/>)
-                    });
-                    return result;
-                })()}
-            </div>
+            <div className="h-full overflow-y-scroll">{result}</div>
         </>
     );
 }

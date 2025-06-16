@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Button } from "~/Components";
+import { useState } from "react";
+import { Button, Tool } from "~/Components";
 import UnixTime from "./UnixTime";
 import { copyText } from "~/util";
 
@@ -8,20 +8,9 @@ export default function Dev() {
 
 
 
-    function ToolElem({title, children}: {title: string, children: React.ReactElement}) {
-        return (
-            <div className="flex flex-col text-center mb-4">
-                <div>{title}</div>
-                {children}
-            </div>
-        );
-    }
-
-
-
     return (
         <>
-            <ToolElem title="UUID Generator">
+            <Tool title="UUID Generator">
                 <Button
                     title="左クリでコピー | 右クリでハイフンなしをコピー"
                     onMouseDown={e => {
@@ -30,9 +19,9 @@ export default function Dev() {
                         setUUID(crypto.randomUUID());
                     }}
                 >{uuidView}</Button>
-            </ToolElem>
+            </Tool>
 
-            <ToolElem title="MIN_MAX_VALUE" children={(() => {
+            <Tool title="MIN_MAX_VALUE" children={(() => {
                 function CreateElem(props: {title: string, min: number, max: number}) {
                     return <Button
                         className="inline-block w-40"
@@ -55,9 +44,9 @@ export default function Dev() {
                 );
             })()}/>
 
-            <ToolElem title="UnixTime">
+            <Tool title="UnixTime">
                 <UnixTime/>
-            </ToolElem>
+            </Tool>
         </>
     );
 }

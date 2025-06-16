@@ -11,22 +11,26 @@ export default function Sidebar() {
         >{props.title}</button>
     }
 
+    function AutoSideButton(map: {[_:string]:string}) {
+        return Object.entries(map).map(([k, v]) => <PageButton key={k} title={k} navi={v}/>);
+    }
+
     return (
         <div className="flex justify-between bg-layerA border-r-1 border-border [writing-mode:vertical-lr]">
             <div>
-                {Object.entries({
+                {AutoSideButton({
                     "Pass"  : "/",
                     "Dev"   : "/Dev",
                     "FFmpeg": "/FFmpeg",
                     "Note"  : "/Note",
                     "QRCode": "/QRCode",
                     "Auth"  : "/Auth",
-                }).map(([k, v]) => <PageButton key={k} title={k} navi={v}/>)}
+                })}
             </div>
             <div>
-                {Object.entries({
+                {AutoSideButton({
                     "System": "/System",
-                }).map(([k, v]) => <PageButton key={k} title={k} navi={v}/>)}
+                })}
             </div>
         </div>
     );

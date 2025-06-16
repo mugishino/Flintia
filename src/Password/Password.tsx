@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import css from "./Password.module.css";
 import { loadConfig } from "~/Config";
-import { cls, copyText, notExists } from "~/util";
+import { cls, copyText, notExists, useEffectAsync } from "~/util";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 
 class PassRecord {
@@ -28,35 +28,40 @@ async function getPassRecords() {
 
 
 export default function App() {
-    const [view, setView] = useState<React.JSX.Element[]>([]);
+    const [view, setView] = useState<PassRecord[]>([]);
     const [search, setSearch] = useState("");
 
     // setting
     const [showHide, setShowHide] = useState(false);
 
-    useEffect(() => {
-        const result: React.JSX.Element[] = [];
-        getPassRecords().then(data => {
-            data.sort((a, b) => a.title.localeCompare(b.title)) // A-Zでソート
-            .forEach((v, i) => {
-                if (v.hide && !showHide) return;
-                if (search != "" && !v.title.toLowerCase().startsWith(search.toLowerCase())) return;
-                result.push(
-                    <details className={[css.title, css.hover].join(" ")} key={i} tabIndex={-1}>
-                        <summary className={`list-none ${v.hide ? "text-text-gray" : undefined}`}>{v.title}</summary>
-                        {!v.username || <div className={cls(css.hover, css.click)} title="Click To Copy" onClick={() => copyText(v.username, true)}>UserName</div>}
-                        {!v.mail     || <div className={cls(css.hover, css.click)} title="Click To Copy" onClick={() => copyText(v.mail    , true)}>Mail Address</div>}
-                        {!v.password || <div className={cls(css.hover, css.click)} title="Click To Copy" onClick={() => copyText(v.password, true)}>Password</div>}
-                        {v.note == "" || <details className={[css.title, css.hover].join(" ")}>
-                            <summary>[Note]</summary>
-                            {v.note}
-                        </details>}
-                    </details>
-                );
-            });
-            setView(result);
-        });
+
+
+    useEffectAsync(async () => {
+        const data = await getPassRecords();
+        const sorted = data.sort((a, b) => a.title.localeCompare(b.title)) // A-Zでソート
+        setView(sorted);
     }, [search, showHide]);
+
+    const result: React.JSX.Element[] = [];
+    view.forEach((v, i) => {
+        if (v.hide && !showHide) return;
+        if (search != "" && !v.title.toLowerCase().startsWith(search.toLowerCase())) return;
+        result.push(
+            <details className={cls(css.title, css.hover)} key={i} tabIndex={-1}>
+                <summary className={`list-none ${v.hide ? "text-text-gray" : undefined}`}>{v.title}</summary>
+                {!v.username || <div className={cls(css.hover, css.click)} title="Click To Copy" onClick={() => copyText(v.username, true)}>UserName</div>}
+                {!v.mail     || <div className={cls(css.hover, css.click)} title="Click To Copy" onClick={() => copyText(v.mail    , true)}>Mail Address</div>}
+                {!v.password || <div className={cls(css.hover, css.click)} title="Click To Copy" onClick={() => copyText(v.password, true)}>Password</div>}
+                {v.note == "" ||
+                <details className={cls(css.title, css.hover)}>
+                    <summary>[Note]</summary>
+                    {v.note}
+                </details>}
+            </details>
+        );
+    });
+
+
 
     return (
         <>
@@ -64,7 +69,7 @@ export default function App() {
                 <input autoFocus className="grow bg-layerA border-b-1 border-border focus:bg-layerB" value={search} onChange={e=>setSearch(e.currentTarget.value)} type="text" placeholder="search"/>
                 <div className="px-2 bg-layerB border-l-1 border-neutral-600 hover:cursor-pointer hover:bg-layerC" onClick={()=>setSearch("")}>削除</div>
             </div>
-            <div className="grow overflow-x-hidden overflow-y-scroll">{view}</div>
+            <div className="grow overflow-x-hidden overflow-y-scroll">{result}</div>
             <div className={css.setting}>
                 <button onClick={() => setShowHide(!showHide)} className={showHide ? css.enable : undefined}>ShowHide</button>
             </div>
