@@ -5,7 +5,7 @@ import "~/main.css";
 import { register, unregisterAll } from "@tauri-apps/plugin-global-shortcut";
 import { WInvoke } from "~/InvokeWrapper";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { initConfig } from "~/Config";
+import Config from "~/Config";
 import { BrowserRouter, Route, Routes } from "react-router";
 import Sidebar from "~/Sidebar";
 import Dev from "~/Dev/Dev";
@@ -39,7 +39,7 @@ tauriWin.onFocusChanged(({payload}) => {
     if (!payload) WInvoke.hide();
 });
 
-await initConfig();
+await Config.init();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>

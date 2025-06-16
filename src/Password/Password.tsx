@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import css from "./Password.module.css";
-import { loadConfig } from "~/Config";
+import Config from "~/Config";
 import { cls, copyText, notExists, useEffectAsync } from "~/util";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 
@@ -14,7 +14,7 @@ class PassRecord {
 }
 
 async function getPassRecords() {
-    const path = (await loadConfig()).passfile;
+    const path = (await Config.load()).passfile;
     if (path == "" || await notExists(path)) {
         return [];
     }

@@ -1,27 +1,26 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { getAppdataDirFile, notExists } from "~/util";
 
-export class ConfigData {
+export default class Config {
     passfile = "";
     authfile = "";
-}
 
-
-async function getConfigFile() {
-    return await getAppdataDirFile("config.json");
-}
-
-export async function initConfig() {
-    const file = await getConfigFile();
-    if (await notExists(file)) {
-        await writeTextFile(file, JSON.stringify(new ConfigData(), undefined, 4));
+    private static async getFile() {
+        return await getAppdataDirFile("config.json");
     }
-}
 
-export async function loadConfig() {
-    const path = await getConfigFile();
-    const raw = await readTextFile(path);
-    const json = JSON.parse(raw);
-    const conf: ConfigData = Object.assign(new ConfigData(), json);
-    return conf;
+    public static async init() {
+        const file = await Config.getFile();
+        if (await notExists(file)) {
+            await writeTextFile(file, JSON.stringify(new Config(), undefined, 4));
+        }
+    }
+
+    public static async load() {
+        const path = await Config.getFile();
+        const raw = await readTextFile(path);
+        const json = JSON.parse(raw);
+        const conf: Config = Object.assign(new Config(), json);
+        return conf;
+    }
 }

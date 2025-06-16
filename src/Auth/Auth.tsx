@@ -1,7 +1,7 @@
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { TOTP } from "otpauth";
 import React, { useState } from "react";
-import { loadConfig } from "~/Config";
+import Config from "~/Config";
 import { copyText, notExists, stringInject, useEffectAsync } from "~/util";
 
 function secretToNumber(secret: string) {
@@ -55,7 +55,7 @@ export default function Auth() {
 
     const [loadData, setLoadData] = useState(new Map<string, string>());
     useEffectAsync(async() => {
-        const file = (await loadConfig()).authfile;
+        const file = (await Config.load()).authfile;
         if (await notExists(file)) return;
         const read = await readTextFile(file);
         const json = JSON.parse(read);
