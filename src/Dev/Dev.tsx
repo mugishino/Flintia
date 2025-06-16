@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "~/Components";
+import UnixTime from "./UnixTime";
 
 export default function Dev() {
     const [uuidView, setUUID] = useState(crypto.randomUUID());
@@ -57,6 +58,10 @@ export default function Dev() {
                     </div>
                 );
             })()}/>
+
+            <ToolElem title="UnixTime">
+                <UnixTime/>
+            </ToolElem>
         </>
     );
 }
