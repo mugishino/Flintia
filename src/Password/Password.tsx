@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import css from "./Password.module.css";
-import { WInvoke } from "~/InvokeWrapper";
 import { loadConfig } from "~/Config";
-import { cls, notExists } from "~/util";
+import { cls, copyText, notExists } from "~/util";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 
 class PassRecord {
@@ -28,12 +27,6 @@ async function getPassRecords() {
 
 
 
-function copy(text: string) {
-    navigator.clipboard.writeText(text);
-    WInvoke.hide();
-    WInvoke.paste();
-}
-
 export default function App() {
     const [view, setView] = useState<React.JSX.Element[]>([]);
     const [search, setSearch] = useState("");
@@ -51,9 +44,9 @@ export default function App() {
                 result.push(
                     <details className={[css.title, css.hover].join(" ")} key={i} tabIndex={-1}>
                         <summary className={`list-none ${v.hide ? "text-text-gray" : undefined}`}>{v.title}</summary>
-                        {!v.username || <div className={cls(css.hover, css.click)} title="Click To Copy" onClick={() => copy(v.username)}>UserName</div>}
-                        {!v.mail     || <div className={cls(css.hover, css.click)} title="Click To Copy" onClick={() => copy(v.mail)}>Mail Address</div>}
-                        {!v.password || <div className={cls(css.hover, css.click)} title="Click To Copy" onClick={() => copy(v.password)}>Password</div>}
+                        {!v.username || <div className={cls(css.hover, css.click)} title="Click To Copy" onClick={() => copyText(v.username, true)}>UserName</div>}
+                        {!v.mail     || <div className={cls(css.hover, css.click)} title="Click To Copy" onClick={() => copyText(v.mail    , true)}>Mail Address</div>}
+                        {!v.password || <div className={cls(css.hover, css.click)} title="Click To Copy" onClick={() => copyText(v.password, true)}>Password</div>}
                         {v.note == "" || <details className={[css.title, css.hover].join(" ")}>
                             <summary>[Note]</summary>
                             {v.note}

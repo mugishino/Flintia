@@ -2,8 +2,7 @@ import { readTextFile } from "@tauri-apps/plugin-fs";
 import { TOTP } from "otpauth";
 import React, { useState } from "react";
 import { loadConfig } from "~/Config";
-import { WInvoke } from "~/InvokeWrapper";
-import { notExists, stringInject, useEffectAsync } from "~/util";
+import { copyText, notExists, stringInject, useEffectAsync } from "~/util";
 
 function secretToNumber(secret: string) {
     const res = new TOTP({
@@ -41,9 +40,7 @@ export default function Auth() {
         return (
             <div className="flex flex-row border-b-1 border-border px-2 justify-between bg-layerA hover:bg-layerB cursor-pointer" onClick={() => {
                 if (code == null) return;
-                navigator.clipboard.writeText(code);
-                WInvoke.hide();
-                WInvoke.paste();
+                copyText(code, true);
             }}>
                 <div>
                     <div className="">{props.title}</div>

@@ -1,14 +1,10 @@
 import React, { useState } from "react";
 import { Button } from "~/Components";
 import UnixTime from "./UnixTime";
+import { copyText } from "~/util";
 
 export default function Dev() {
     const [uuidView, setUUID] = useState(crypto.randomUUID());
-
-
-    function copyText(text: string) {
-        navigator.clipboard.writeText(text);
-    }
 
 
 

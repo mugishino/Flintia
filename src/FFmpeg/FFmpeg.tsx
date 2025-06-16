@@ -3,6 +3,7 @@ import css from "./FFmpeg.module.css";
 import React, { useEffect, useState } from "react";
 import { WInvoke } from "~/InvokeWrapper";
 import { AudioCodec, BuildFFmpegCommand, Preset, QualityMode, VideoCodec } from "./CommandBuilder";
+import { copyText } from "~/util";
 
 /**
  * EnumをOptionの配列で返します
@@ -109,7 +110,7 @@ export default function FFmpeg() {
                 })()} onClick={() => {
                     // @ts-ignore
                     const cmd = BuildFFmpegCommand(sInputFile, sVideoCodec, sPreset, sAudioCodec, sQualityMode, sQualityValue, sOutputFile);
-                    navigator.clipboard.writeText(cmd);
+                    copyText(cmd);
                     setCopied(true);
                     setTimeout(() => setCopied(false), 1000);
                 }}>{copied ? "Copied!" : "Copy FFmpeg command"}</button>
