@@ -34,7 +34,33 @@ export default defineConfig(async () => ({
     },
   },
   build: {
-    target: "ES2023"
+    target: "ES2023",
+    /**
+     * 500KBはweb配信基準の為1024KBに変更
+     * 上げすぎるとホットリロードで重くなる
+     */
+    chunkSizeWarningLimit: 1024,
+    rollupOptions: {
+      output: {
+        manualChunks(id: string) {
+          if (id.includes("node_modules")) {
+            return Object.entries({
+              tauri: [
+                "@tauri-apps"
+              ],
+              render: [
+                "react",
+                "tailwindcss", "@tailwindcss"
+              ],
+              qrcode: [
+                "@zxing/browser",
+                "jsqr"
+              ],
+            }).find(([_, pkgs]) => pkgs.some(pkg => id.includes(pkg)))?.[0];
+          }
+        }
+      }
+    }
   },
 
   resolve: {
