@@ -14,6 +14,7 @@ import Note from "./Note/Note";
 import QRCode from "./QRCode/QRCode";
 import Auth from "./Auth/Auth";
 import System from "./System/System";
+import ToDo from "./ToDo/ToDo";
 
 if (process.env.NODE_ENV == "development") {
     document.body.style.border = "thin solid #800";
@@ -55,6 +56,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                         "/QRCode": <QRCode/>,
                         "/Auth"  : <Auth/>,
                         "/System": <System/>,
+                        "/ToDo"  : <ToDo/>,
                     }).map(([k, v]) => <Route key={k} path={k} element={v}/>)}
                 </Routes>
             </main>

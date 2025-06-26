@@ -1,6 +1,6 @@
 import { appDataDir } from "@tauri-apps/api/path";
 import { exists, mkdir } from "@tauri-apps/plugin-fs";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { WInvoke } from "./InvokeWrapper";
 
 export async function notExists(path: string) {
@@ -36,4 +36,9 @@ export function copyText(text: string|number, paste: boolean=false) {
         WInvoke.hide();
         WInvoke.paste();
     }
+}
+
+export function useUpdateRender() {
+    const [value, setValue] = useState(false);
+    return () => setValue(!value);
 }

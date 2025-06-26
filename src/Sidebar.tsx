@@ -27,6 +27,7 @@ export default function Sidebar() {
                     "Dev"   : "/Dev",
                     "FFmpeg": "/FFmpeg",
                     "Note"  : "/Note",
+                    "ToDo"  : "/ToDo",
                     "QRCode": "/QRCode",
                     "Auth"  : "/Auth",
                 }, false)}
