@@ -15,6 +15,7 @@ import QRCode from "./QRCode/QRCode";
 import Auth from "./Auth/Auth";
 import System from "./System/System";
 import ToDo from "./ToDo/ToDo";
+import "~/global";
 
 if (process.env.NODE_ENV == "development") {
     document.body.style.border = "thin solid #800";

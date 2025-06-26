@@ -35,7 +35,7 @@ export default function FFmpeg() {
         hide?: boolean,
     }) {
         return (
-            <div className={css.setting} style={{display: props.hide?"none":""}}>
+            <div className={css.setting} style={{display: props.hide?"none":undefined}}>
                 <span>{props.title}</span>
                 <select className={css.selector} defaultValue={props.defaultValue} onChange={v => props.onChange(v.target.value)}>
                     {EnumToOptions(props.options)}
@@ -88,10 +88,10 @@ export default function FFmpeg() {
                 <button className={css.button} onClick={() => {
                     save({
                         filters: [
-                            {name: "", extensions: ["webm"]},
-                            {name: "", extensions: ["mkv" ]},
-                            {name: "", extensions: ["mp4" ]},
-                            {name: "", extensions: ["mov" ]},
+                            {name: String.empty, extensions: ["webm"]},
+                            {name: String.empty, extensions: ["mkv" ]},
+                            {name: String.empty, extensions: ["mp4" ]},
+                            {name: String.empty, extensions: ["mov" ]},
                         ],
                         title: "Output file",
                     }).then(f => {

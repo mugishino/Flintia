@@ -77,5 +77,5 @@ export function BuildFFmpegCommand(
 
     // output file
     command.push(packQuate(outputFileName));
-    return command.join(" ");
+    return command.join(String.space);
 }

@@ -43,10 +43,10 @@ export default function Auth() {
                 copyText(code, true);
             }}>
                 <div>
-                    <div className="">{props.title}</div>
+                    <div>{props.title}</div>
                     <div>{(Math.floor(res.remaining/100)/10).toFixed(1)}</div>
                 </div>
-                <div className="my-auto text-3xl">{stringInject(code ?? "", " ", 3)}</div>
+                <div className="my-auto text-3xl">{stringInject(code ?? String.empty, String.space, 3)}</div>
             </div>
         );
     }

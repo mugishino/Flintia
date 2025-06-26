@@ -17,7 +17,7 @@ export async function getAppdataDirFile(filename: string) {
 
 // tailwindとcss modulesの結合用関数
 export function cls(...args: (string|null|undefined)[]) {
-    return args.join(" ");
+    return args.join(String.space);
 }
 
 export function useEffectAsync(effect: () => Promise<void>, deps?: React.DependencyList) {

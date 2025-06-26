@@ -5,7 +5,7 @@ import { getAppdataDirFile } from "~/util";
 export default function System() {
     return (
         <>
-            <Button onClick={() => getAppdataDirFile("").then(dir => WInvoke.openExplorer(dir))}>Open AppData directory</Button>
+            <Button onClick={() => getAppdataDirFile(String.empty).then(dir => WInvoke.openExplorer(dir))}>Open AppData directory</Button>
         </>
     );
 }

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 const NOTE_PATH = await getAppdataDirFile("note.txt");
 
 async function load() {
-    if (await notExists(NOTE_PATH)) return "";
+    if (await notExists(NOTE_PATH)) return String.empty;
     return await readTextFile(NOTE_PATH);
 }
 
@@ -17,7 +17,7 @@ async function save(data: string) {
 
 
 export default function Note() {
-    const [text, setText] = useState("");
+    const [text, setText] = useState(String.empty);
     useEffect(() => {
         load().then(setText);
     }, []);

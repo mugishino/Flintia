@@ -12,7 +12,7 @@ async function loadToDoList() {
 }
 
 async function saveToDoList(data: string[]) {
-    const json = JSON.stringify(data.filter(v => v != ""));
+    const json = JSON.stringify(data.filter(v => v != String.empty));
     await writeTextFile(file, json);
 }
 
@@ -31,7 +31,7 @@ function TodoColumn({
     return (
         <textarea
             className="field-sizing-content border-border border-b-1 resize-none focus:bg-layerA overflow-clip" value={text}
-            onBlur={e => e.currentTarget.value == "" ? removeTodo() : null}
+            onBlur={e => e.currentTarget.value == String.empty ? removeTodo() : null}
             onInput={e => {
                 setText(e.currentTarget.value);
                 onInput(e.currentTarget.value);
@@ -50,7 +50,7 @@ export default function ToDo() {
             todoList[i] = v;
             saveToDoList(todoList);
         }} removeTodo={() => {
-            todoList.splice(i, 1); // 自身を削除
+            todoList.remove(i);
             updateRendering();
         }}/>);
 
@@ -60,7 +60,7 @@ export default function ToDo() {
                 {elems}
             </div>
             <Button onClick={() => {
-                todoList.push("");
+                todoList.push(String.empty);
                 updateRendering();
             }}>New ToDo</Button>
         </>
