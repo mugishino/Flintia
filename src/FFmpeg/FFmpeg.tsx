@@ -21,9 +21,9 @@ function EnumToOptions<T extends object>(arg: T) {
 export default function FFmpeg() {
     const [sInputFile, setInputFile] = useState<string|null>(null);
     const [sVideoCodec, setVideoCodec] = useState(VideoCodec.hevc);
-    const [sPreset, setPreset] = useState(Preset.medium);
-    const [sAudioCodec, setAudioCodec] = useState(AudioCodec.aac);
-    const [sQualityMode, setQualityMode] = useState(QualityMode.CQP);
+    const [sPreset, setPreset] = useState(Preset.auto);
+    const [sAudioCodec, setAudioCodec] = useState(AudioCodec.auto);
+    const [sQualityMode, setQualityMode] = useState(QualityMode.CBR);
     const [sQualityValue, setQualityValue] = useState(0);
     const [sOutputFile, setOutputFile] = useState<string|null>(null);
 
@@ -71,7 +71,7 @@ export default function FFmpeg() {
             <Selector title="AudioCodec"    defaultValue={sAudioCodec   } onChange={v => setAudioCodec  (v as AudioCodec    )} options={AudioCodec  }/>
             <Selector title="QualityMode"   defaultValue={sQualityMode  } onChange={v => setQualityMode (v as QualityMode   )} options={QualityMode } hide={sVideoCodec == VideoCodec.copy}/>
             {(() => {
-                useEffect(() => setQualityValue(sQualityMode == QualityMode.CBR ? 4096 : 20), [sQualityMode]);
+                useEffect(() => setQualityValue(sQualityMode == QualityMode.CBR ? 1024*16 : 20), [sQualityMode]);
                 return (
                 <div className={css.setting} style={{display: sVideoCodec == VideoCodec.copy?"none":undefined}}>
                     <span>{sQualityMode == QualityMode.CBR ? "Bitrate" : "QualityLevel"}</span>
@@ -79,7 +79,7 @@ export default function FFmpeg() {
                         value={sQualityValue}
                         step={sQualityMode == QualityMode.CBR ? 1024 : 1}
                         min={sQualityMode == QualityMode.CBR ? 1024 : 15}
-                        max={sQualityMode == QualityMode.CBR ? 65536 : 28}
+                        max={sQualityMode == QualityMode.CBR ? 65536 : 30}
                         onChange={v => setQualityValue(v.target.valueAsNumber)}/>
                 </div>);
             })()}
@@ -102,14 +102,17 @@ export default function FFmpeg() {
             </div>
             {(() => {
                 let [copied, setCopied] = useState(false);
-                return <button style={{fontSize: "1.2rem"}} className={css.button} disabled={(() => {
-                    // ボタン無効化条件
-                    if (sInputFile == null) return true;
-                    if (sOutputFile == null) return true;
-                    return false;
-                })()} onClick={() => {
+                return <button style={{fontSize: "1.2rem"}} className={css.button} onClick={() => {
                     // @ts-ignore
-                    const cmd = BuildFFmpegCommand(sInputFile, sVideoCodec, sPreset, sAudioCodec, sQualityMode, sQualityValue, sOutputFile);
+                    const cmd = BuildFFmpegCommand(
+                        sInputFile ?? "i.",
+                        sVideoCodec,
+                        sPreset,
+                        sAudioCodec,
+                        sQualityMode,
+                        sQualityValue,
+                        sOutputFile ?? "o.",
+                    );
                     copyText(cmd);
                     setCopied(true);
                     setTimeout(() => setCopied(false), 1000);

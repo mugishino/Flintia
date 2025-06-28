@@ -6,6 +6,7 @@ export enum VideoCodec {
 }
 
 export enum AudioCodec {
+    auto = "auto",
     aac = "aac",
     opus = "libopus",
     vorbis = "libvorbis",
@@ -15,7 +16,8 @@ export enum AudioCodec {
 }
 
 export enum Preset {
-    ultraslow = "1",
+    auto = "auto",
+    ultraslow = "p1",
     veryslow = "p2",
     slow = "p3",
     medium = "p4",
@@ -50,10 +52,15 @@ export function BuildFFmpegCommand(
         command.push("-tag:v", "hvc1");
     }
 
-    command.push("-c:a", audioCodec); // audio codec
+    if (audioCodec != AudioCodec.auto) {
+        command.push("-c:a", audioCodec); // audio codec
+    }
 
     if (videoCodec != VideoCodec.copy) {
-        command.push("-preset", preset); // preset
+        if (preset != Preset.auto) {
+            command.push("-preset", preset); // preset
+        }
+
         // quality mode
         command.push("-rc", qualityMode);
         // qualityValue = 0 でビットレート固定を無効化

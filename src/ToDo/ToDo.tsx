@@ -22,10 +22,12 @@ function TodoColumn({
     defaultText,
     onInput,
     removeTodo,
+    focus,
 }: {
     defaultText: string,
     onInput: (v: string) => void,
     removeTodo: () => void,
+    focus: boolean,
 }) {
     const [text, setText] = useState(defaultText);
     return (
@@ -36,6 +38,7 @@ function TodoColumn({
                 setText(e.currentTarget.value);
                 onInput(e.currentTarget.value);
             }}
+            autoFocus={focus}
         />
     );
 }
@@ -45,6 +48,7 @@ export default function ToDo() {
     const updateRendering = useUpdateRender();
     let todoList = data;
 
+    const listLength = todoList.length;
     const elems = todoList.map((v, i) =>
         <TodoColumn key={i+v} defaultText={v} onInput={v => {
             todoList[i] = v;
@@ -52,7 +56,7 @@ export default function ToDo() {
         }} removeTodo={() => {
             todoList.remove(i);
             updateRendering();
-        }}/>);
+        }} focus={listLength == i+1}/>);
 
     return (
         <>
