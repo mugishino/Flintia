@@ -46,7 +46,7 @@ export default function ToDo() {
     let todoList = data;
 
     const elems = todoList.map((v, i) =>
-        <TodoColumn key={i} defaultText={v} onInput={v => {
+        <TodoColumn key={i+v} defaultText={v} onInput={v => {
             todoList[i] = v;
             saveToDoList(todoList);
         }} removeTodo={() => {
