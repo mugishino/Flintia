@@ -30,6 +30,7 @@ async function getPassRecords() {
 export default function App() {
     const [view, setView] = useState<PassRecord[]>([]);
     const [search, setSearch] = useState(String.empty);
+    const [errMsg, setErrMsg] = useState(String.empty);
 
     // setting
     const [showHide, setShowHide] = useState(false);
@@ -37,9 +38,14 @@ export default function App() {
 
 
     useEffectAsync(async () => {
-        const data = await getPassRecords();
-        const sorted = data.sort((a, b) => a.title.localeCompare(b.title)) // A-Zでソート
-        setView(sorted);
+        setErrMsg(String.empty);
+        try {
+            const data = await getPassRecords();
+            const sorted = data.sort((a, b) => a.title.localeCompare(b.title)) // A-Zでソート
+            setView(sorted);
+        } catch (err) {
+            setErrMsg(String(err));
+        }
     }, [search, showHide]);
 
     const result: React.JSX.Element[] = [];
@@ -69,7 +75,10 @@ export default function App() {
                 <input autoFocus className="grow bg-layerA border-b-1 border-border focus:bg-layerB" value={search} onChange={e=>setSearch(e.currentTarget.value)} type="text" placeholder="search"/>
                 <div className="px-2 bg-layerB border-l-1 border-neutral-600 hover:cursor-pointer hover:bg-layerC" onClick={()=>setSearch(String.empty)}>削除</div>
             </div>
-            <div className="grow overflow-x-hidden overflow-y-scroll">{result}</div>
+            <div className="grow overflow-x-hidden overflow-y-scroll">
+                <div className="text-fail">{errMsg}</div>
+                {result}
+            </div>
             <div className={css.setting}>
                 <button onClick={() => setShowHide(!showHide)} className={showHide ? css.enable : undefined}>ShowHide</button>
             </div>

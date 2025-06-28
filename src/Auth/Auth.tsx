@@ -53,13 +53,19 @@ export default function Auth() {
 
 
 
+    const [errMsg, setErrMsg] = useState<string>(String.empty);
     const [loadData, setLoadData] = useState(new Map<string, string>());
     useEffectAsync(async() => {
+        setErrMsg(String.empty);
         const file = (await Config.load()).authfile;
         if (await notExists(file)) return;
         const read = await readTextFile(file);
-        const json = JSON.parse(read);
-        setLoadData(new Map(Object.entries(json)));
+        try {
+            const json = JSON.parse(read);
+            setLoadData(new Map(Object.entries(json)));
+        } catch (err) {
+            setErrMsg(String(err));
+        }
     }, []);
 
     const result: React.JSX.Element[] = [];
@@ -70,7 +76,10 @@ export default function Auth() {
     return (
         <>
             <div className="text-center text-2xl border-b-1 border-border">Authentication</div>
-            <div className="h-full overflow-y-scroll">{result}</div>
+            <div className="h-full overflow-y-scroll">
+                <div className="text-fail">{errMsg}</div>
+                {result}
+            </div>
         </>
     );
 }
