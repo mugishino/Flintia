@@ -12,7 +12,7 @@ Ctrl+Shift+ALT+Qで呼び出せる
 - OTP認証
 
 # 設定ファイル
-`%AppData%/Roaming/com.soutools.app/config.json`にデータを直で書き込んでください
+`%AppData%/Roaming/com.flintia.app/config.json`にデータを直で書き込んでください
 ```
 passfile: パスワードファイル
 authfile: OTP認証コードファイル

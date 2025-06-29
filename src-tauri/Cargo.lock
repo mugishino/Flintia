@@ -3,7 +3,7 @@
 version = 4
 
 [[package]]
-name = "SouTools"
+name = "Flintia"
 version = "1.4.2"
 dependencies = [
  "enigo",

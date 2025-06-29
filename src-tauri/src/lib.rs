@@ -39,7 +39,7 @@ pub fn run() {
                     "info" => {
                         app.dialog()
                         .message(format!(
-                            "SouTools {}\n(C) 2025 sou",
+                            "Flintia {}\n(C) 2025 sou",
                             app.package_info().version.to_string()
                         ))
                         .kind(tauri_plugin_dialog::MessageDialogKind::Info)
@@ -68,7 +68,7 @@ pub fn run() {
                 })
                 .show_menu_on_left_click(true)
                 .icon(app.default_window_icon().unwrap().clone())
-                .tooltip("SouTools")
+                .tooltip("Flintia")
                 .build(app);
             Ok(())
         })
