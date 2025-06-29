@@ -3,7 +3,7 @@ import { Tool } from "~/Components";
 import UnixTime from "./UnixTime";
 import { copyText } from "~/util";
 
-export default function Dev() {
+export default function Tools() {
     const [uuidView, setUUID] = useState(crypto.randomUUID());
 
 

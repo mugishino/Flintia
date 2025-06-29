@@ -23,7 +23,7 @@ export default function Sidebar() {
             <div>
                 {AutoSideButton({
                     "Pass"  : "/",
-                    "Dev"   : "/Dev",
+                    "Tools" : "/Tools",
                     "FFmpeg": "/FFmpeg",
                     "Note"  : "/Note",
                     "ToDo"  : "/ToDo",
