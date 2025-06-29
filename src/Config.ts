@@ -9,15 +9,11 @@ export default class Config {
         return await getAppdataDirFile("config.json");
     }
 
-    public static async init() {
-        const file = await Config.getFile();
-        if (await notExists(file)) {
-            await writeTextFile(file, JSON.stringify(new Config(), undefined, 4));
-        }
-    }
-
     public static async load() {
         const path = await Config.getFile();
+        if (await notExists(path)) {
+            await writeTextFile(path, JSON.stringify(new Config(), undefined, 4));
+        }
         const raw = await readTextFile(path);
         const json = JSON.parse(raw);
         const conf: Config = Object.assign(new Config(), json);

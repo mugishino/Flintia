@@ -10,7 +10,7 @@ export async function notExists(path: string) {
 export async function getAppdataDirFile(filename: string) {
     const dir = await appDataDir();
     if (await notExists(dir)) {
-        await mkdir(dir);
+        await mkdir(dir, {recursive: true});
     }
     return dir+"\\"+filename;
 }
