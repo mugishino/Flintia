@@ -1,52 +1,22 @@
-import { useState } from "react";
-import { Tool } from "~/Components";
 import UnixTime from "./UnixTime";
-import { copyText } from "~/util";
+import MinMaxValue from "./MinMaxValue";
+import UUIDGenerator from "./UUIDGenerator";
+
+export function Tool({title, children}: {title: string, children: React.ReactElement}) {
+    return (
+        <div className="flex flex-col text-center mb-4">
+            <div className="text-[1.2rem]">{title}</div>
+            {children}
+        </div>
+    );
+}
 
 export default function Tools() {
-    const [uuidView, setUUID] = useState(crypto.randomUUID());
-
-
-
     return (
         <>
-            <Tool title="UUID Generator">
-                <button
-                    title="左クリでコピー | 右クリでハイフンなしをコピー"
-                    onMouseDown={e => {
-                        // 2 is mouse-right
-                        copyText(e.button != 2 ? uuidView : uuidView.replace(/-/g, String.empty));
-                        setUUID(crypto.randomUUID());
-                    }}
-                >{uuidView}</button>
-            </Tool>
-
-            <Tool title="MIN_MAX_VALUE" children={(() => {
-                function CreateElem(props: {title: string, min: number, max: number}) {
-                    return <button
-                        className="inline-block w-40"
-                        title="LeftClick: Max, RightClick: MIN"
-                        onClick   ={() => copyText(props.max.toString())}
-                        onAuxClick={() => copyText(props.min.toString())}
-                    >{props.title}</button>;
-                }
-                return (
-                    <div>
-                        <CreateElem title="sbyte"  min={-128}                 max={127}/>
-                        <CreateElem title="byte"   min={0}                    max={255}/>
-                        <CreateElem title="ushort" min={0}                    max={65535}/>
-                        <CreateElem title="short"  min={-32768}               max={32767}/>
-                        <CreateElem title="uint"   min={0}                    max={4294967295}/>
-                        <CreateElem title="int"    min={-2147483648}          max={2147483647}/>
-                        <CreateElem title="ulong"  min={0}                    max={18446744073709551615}/>
-                        <CreateElem title="long"   min={-9223372036854775808} max={9223372036854775807}/>
-                    </div>
-                );
-            })()}/>
-
-            <Tool title="UnixTime">
-                <UnixTime/>
-            </Tool>
+            <Tool title="UUID Generator" children={<UUIDGenerator/>}/>
+            <Tool title="MIN_MAX_VALUE" children={<MinMaxValue/>}/>
+            <Tool title="UnixTime" children={<UnixTime/>}/>
         </>
     );
 }
