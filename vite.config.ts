@@ -45,12 +45,10 @@ export default defineConfig(async () => ({
         manualChunks(id: string) {
           if (id.includes("node_modules")) {
             return Object.entries({
-              tauri: [
-                "@tauri-apps"
-              ],
               render: [
+                "@tauri-apps",
                 "react",
-                "tailwindcss", "@tailwindcss"
+                "tailwindcss", "@tailwindcss",
               ],
               qrcode: [
                 "@zxing/browser",
