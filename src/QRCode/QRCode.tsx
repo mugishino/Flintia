@@ -54,7 +54,7 @@ export default function QRCode() {
                     setResult(qrdata);
                     setSuccess(true);
                 }
-            }} className="bg-layerB border-b-1 border-border hover:bg-layerC cursor-pointer">Read from clipboard</button>
+            }} className="bg-layerB border-0 border-b-1 border-border hover:bg-layerC cursor-pointer">Read from clipboard</button>
             <div className={`grow text-center select-text break-words ${success ? "text-white" : "text-fail"}`}>{(() => {
                 if (result == null) return null;
                 if (URL.canParse(result)) {

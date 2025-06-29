@@ -72,7 +72,7 @@ export default function App() {
     return (
         <>
             <div className="flex">
-                <input autoFocus className="grow bg-layerA border-b-1 border-border focus:bg-layerB" value={search} onChange={e=>setSearch(e.currentTarget.value)} type="text" placeholder="search"/>
+                <input autoFocus className="grow bg-layerA border-0 border-b-1 border-border focus:bg-layerB" value={search} onChange={e=>setSearch(e.currentTarget.value)} type="text" placeholder="search"/>
                 <div className="px-2 bg-layerB border-l-1 border-neutral-600 hover:cursor-pointer hover:bg-layerC" onClick={()=>setSearch(String.empty)}>削除</div>
             </div>
             <div className="grow overflow-x-hidden overflow-y-scroll">

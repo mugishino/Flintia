@@ -6,21 +6,9 @@
 }
 
 .button, .selector {
-    background-color: #fff2;
-    border: thin solid black;
-    color: white;
     font-size: 1rem;
     padding: 1vw;
     min-width: 30%;
-    box-sizing: border-box;
-
-    &[disabled] {
-        color: gray;
-    }
-
-    &:hover {
-        background-color: #fff3;
-    }
 
     &::-webkit-inner-spin-button, &::-webkit-outer-spin-button {
         display: none;

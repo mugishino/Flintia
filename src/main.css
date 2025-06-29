@@ -48,9 +48,12 @@ body {
 
 @layer base {
     button {
-        display: inline-block;
-        cursor: pointer;
         text-align: center;
+        cursor: pointer;
+    }
+
+    button, select, input {
+        display: inline-block;
         color: white;
 
         border: thin solid var(--color-layerB);
