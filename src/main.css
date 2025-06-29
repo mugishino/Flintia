@@ -45,3 +45,24 @@ body {
 ::-webkit-scrollbar-thumb {
     background-color: #fff1;
 }
+
+@layer base {
+    button {
+        display: inline-block;
+        cursor: pointer;
+        text-align: center;
+        color: white;
+
+        border: thin solid var(--color-layerB);
+        background-color: var(--color-layerB);
+        transition: 200ms;
+
+        &:hover {
+            background-color: var(--color-layerC);
+        }
+        &:active {
+            transition: 0;
+            background-color: var(--color-green-800);
+        }
+    }
+}

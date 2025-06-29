@@ -1,11 +1,10 @@
-import { Button } from "~/Components";
 import { WInvoke } from "~/InvokeWrapper";
 import { getAppdataDirFile } from "~/util";
 
 export default function System() {
     return (
         <>
-            <Button onClick={() => getAppdataDirFile(String.empty).then(dir => WInvoke.openExplorer(dir))}>Open AppData directory</Button>
+            <button onClick={() => getAppdataDirFile(String.empty).then(dir => WInvoke.openExplorer(dir))}>Open AppData directory</button>
         </>
     );
 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Tool } from "~/Components";
+import { Tool } from "~/Components";
 import UnixTime from "./UnixTime";
 import { copyText } from "~/util";
 
@@ -11,24 +11,24 @@ export default function Dev() {
     return (
         <>
             <Tool title="UUID Generator">
-                <Button
+                <button
                     title="左クリでコピー | 右クリでハイフンなしをコピー"
                     onMouseDown={e => {
                         // 2 is mouse-right
                         copyText(e.button != 2 ? uuidView : uuidView.replace(/-/g, String.empty));
                         setUUID(crypto.randomUUID());
                     }}
-                >{uuidView}</Button>
+                >{uuidView}</button>
             </Tool>
 
             <Tool title="MIN_MAX_VALUE" children={(() => {
                 function CreateElem(props: {title: string, min: number, max: number}) {
-                    return <Button
+                    return <button
                         className="inline-block w-40"
                         title="LeftClick: Max, RightClick: MIN"
                         onClick   ={() => copyText(props.max.toString())}
                         onAuxClick={() => copyText(props.min.toString())}
-                    >{props.title}</Button>;
+                    >{props.title}</button>;
                 }
                 return (
                     <div>

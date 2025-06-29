@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Button } from "~/Components";
 
 export default function UnixTime() {
     const [time, setTime] = useState(Date.now());
@@ -9,5 +8,5 @@ export default function UnixTime() {
         }, 100);
     }, []);
 
-    return <Button onClick={() => navigator.clipboard.writeText(time.toString())}>{time.toString()}</Button>;
+    return <button onClick={() => navigator.clipboard.writeText(time.toString())}>{time.toString()}</button>;
 }

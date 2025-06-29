@@ -1,6 +1,5 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { useState } from "react";
-import { Button } from "~/Components";
 import { getAppdataDirFile, notExists, useUpdateRender } from "~/util";
 
 const file = await getAppdataDirFile("todo.json");
@@ -63,10 +62,10 @@ export default function ToDo() {
             <div className="grow flex flex-col overflow-y-scroll">
                 {elems}
             </div>
-            <Button onClick={() => {
+            <button onClick={() => {
                 todoList.push(String.empty);
                 updateRendering();
-            }}>New ToDo</Button>
+            }}>New ToDo</button>
         </>
     );
 }

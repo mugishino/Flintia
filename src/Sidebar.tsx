@@ -5,12 +5,11 @@ export default function Sidebar() {
     const locate = useLocation();
 
     function PageButton(props: {title: string, navi: string, borderTop: boolean}) {
+        const border = props.borderTop ? "border-t-1": "border-b-1";
+        const active = props.navi == locate.pathname ? "bg-layerB text-white" : "bg-layerA";
+
         return <button
-            className={
-                `text-text-gray px-1 cursor-pointer border-black
-                ${props.borderTop ? "border-t-1": "border-b-1"}
-                ${props.navi == locate.pathname ? "bg-layerB text-white" : "bg-layerA"}
-            `}
+            className={`text-text-gray px-1 cursor-pointer border-black border-0 ${border} ${active}`}
             onClick={() => navigate(props.navi)}
         >{props.title}</button>
     }
