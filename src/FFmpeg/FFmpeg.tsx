@@ -1,5 +1,4 @@
 import { open, save } from "@tauri-apps/plugin-dialog";
-import css from "./FFmpeg.module.css";
 import React, { useEffect, useState } from "react";
 import { WInvoke } from "~/InvokeWrapper";
 import { AudioCodec, BuildFFmpegCommand, Preset, QualityMode, VideoCodec } from "./CommandBuilder";
@@ -16,6 +15,23 @@ function EnumToOptions<T extends object>(arg: T) {
         elems.push(<option key={i} value={k[1]}>{k[0]}</option>);
     });
     return elems;
+}
+
+function Setting({
+    title,
+    hide,
+    children,
+}: {
+    title: string,
+    hide?: boolean,
+    children: React.ReactElement,
+}) {
+    return (
+        <div className={`flex flex-row justify-between ${hide == true ? "hidden" : "visible"}`}>
+            <span className="pl-1">{title}</span>
+            <div className="min-w-1/3 [&>*]:w-full [&>*]:h-7">{children}</div>
+        </div>
+    );
 }
 
 export default function FFmpeg() {
@@ -35,21 +51,21 @@ export default function FFmpeg() {
         hide?: boolean,
     }) {
         return (
-            <div className={css.setting} style={{display: props.hide?"none":undefined}}>
-                <span>{props.title}</span>
-                <select className={css.selector} defaultValue={props.defaultValue} onChange={v => props.onChange(v.target.value)}>
+            <Setting title={props.title} hide={props.hide}>
+                <select className="inline-block" defaultValue={props.defaultValue} onChange={v => props.onChange(v.target.value)}>
                     {EnumToOptions(props.options)}
                 </select>
-            </div>
+            </Setting>
         );
     }
+
+    useEffect(() => setQualityValue(sQualityMode == QualityMode.CBR ? 1024*16 : 20), [sQualityMode]);
 
     return (
         <>
             <div style={{textAlign: "center", borderBottom: "thin solid gray"}}>動画にのみ対応しています。NVENCを使用します。</div>
-            <div className={css.setting}>
-                <span>InputFile</span>
-                <button className={css.button} onClick={
+            <Setting title="InputFile">
+                <button onClick={
                     async() => {
                         open({
                             directory: false,
@@ -65,27 +81,23 @@ export default function FFmpeg() {
                         });
                     }}>{sInputFile?.split("\\").slice(-1)[0] ?? "Browse..."}
                 </button>
-            </div>
+            </Setting>
             <Selector title="VideoCodec"    defaultValue={sVideoCodec   } onChange={v => setVideoCodec  (v as VideoCodec    )} options={VideoCodec  }/>
             <Selector title="Preset"        defaultValue={sPreset       } onChange={v => setPreset      (v as Preset        )} options={Preset      } hide={sVideoCodec == VideoCodec.copy}/>
             <Selector title="AudioCodec"    defaultValue={sAudioCodec   } onChange={v => setAudioCodec  (v as AudioCodec    )} options={AudioCodec  }/>
             <Selector title="QualityMode"   defaultValue={sQualityMode  } onChange={v => setQualityMode (v as QualityMode   )} options={QualityMode } hide={sVideoCodec == VideoCodec.copy}/>
-            {(() => {
-                useEffect(() => setQualityValue(sQualityMode == QualityMode.CBR ? 1024*16 : 20), [sQualityMode]);
-                return (
-                <div className={css.setting} style={{display: sVideoCodec == VideoCodec.copy?"none":undefined}}>
-                    <span>{sQualityMode == QualityMode.CBR ? "Bitrate" : "QualityLevel"}</span>
-                    <input className={css.button} type="number"
-                        value={sQualityValue}
-                        step={sQualityMode == QualityMode.CBR ? 1024 : 1}
-                        min={sQualityMode == QualityMode.CBR ? 1024 : 15}
-                        max={sQualityMode == QualityMode.CBR ? 65536 : 30}
-                        onChange={v => setQualityValue(v.target.valueAsNumber)}/>
-                </div>);
-            })()}
-            <div className={css.setting}>
-                <span>OutputFile</span>
-                <button className={css.button} onClick={() => {
+            <Setting title={sQualityMode == QualityMode.CBR ? "Bitrate" : "QualityLevel"} hide={sVideoCodec == VideoCodec.copy}>
+                <input type="number"
+                    className="disable-spin-button pl-1"
+                    value={sQualityValue}
+                    step={sQualityMode == QualityMode.CBR ? 1024 : 1}
+                    min={sQualityMode == QualityMode.CBR ? 1024 : 15}
+                    max={sQualityMode == QualityMode.CBR ? 65536 : 30}
+                    onChange={v => setQualityValue(v.target.valueAsNumber)}
+                />
+            </Setting>
+            <Setting title="OutputFile">
+                <button onClick={() => {
                     save({
                         filters: [
                             {name: String.empty, extensions: ["webm"]},
@@ -99,10 +111,10 @@ export default function FFmpeg() {
                         WInvoke.show();
                     });
                 }}>{sOutputFile?.split("\\").slice(-1)[0] ?? "Browse..."}</button>
-            </div>
+            </Setting>
             {(() => {
                 let [copied, setCopied] = useState(false);
-                return <button style={{fontSize: "1.2rem"}} className={css.button} onClick={() => {
+                return <button onClick={() => {
                     // @ts-ignore
                     const cmd = BuildFFmpegCommand(
                         sInputFile ?? "i.",

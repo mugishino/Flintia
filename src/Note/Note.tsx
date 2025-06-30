@@ -1,5 +1,4 @@
 import { getAppdataDirFile, notExists } from "~/util";
-import css from "./Note.module.css";
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { useEffect, useState } from "react";
 
@@ -22,7 +21,10 @@ export default function Note() {
         load().then(setText);
     }, []);
 
-    return (
-        <textarea onInput={e => save(e.currentTarget.value)} className={css.note} defaultValue={text}/>
-    );
+    return <textarea
+        onInput={e => save(e.currentTarget.value)}
+        defaultValue={text}
+        style={{}}
+        className="scrollbar-default-cursor grow resize-none overflow-y-scroll"
+    />
 }

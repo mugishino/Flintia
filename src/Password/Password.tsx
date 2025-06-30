@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import css from "./Password.module.css";
 import Config from "~/Config";
-import { cls, copyText, notExists, useEffectAsync } from "~/util";
+import { copyText, notExists, useEffectAsync } from "~/util";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 
 class PassRecord {
@@ -49,19 +48,20 @@ export default function App() {
     }, [search, showHide]);
 
     const result: React.JSX.Element[] = [];
+    const rowStyle = "cursor-pointer duration-100 hover:bg-layerA active:bg-green-800"
     view.forEach((v, i) => {
         if (v.hide && !showHide) return;
         if (search != String.empty && !v.title.toLowerCase().startsWith(search.toLowerCase())) return;
         result.push(
-            <details className={cls(css.title, css.hover)} key={i} tabIndex={-1}>
-                <summary className={`list-none ${v.hide ? "text-text-gray" : undefined}`}>{v.title}</summary>
-                {!v.username || <div className={cls(css.hover, css.click)} title="Click To Copy" onClick={() => copyText(v.username, true)}>UserName</div>}
-                {!v.mail     || <div className={cls(css.hover, css.click)} title="Click To Copy" onClick={() => copyText(v.mail    , true)}>Mail Address</div>}
-                {!v.password || <div className={cls(css.hover, css.click)} title="Click To Copy" onClick={() => copyText(v.password, true)}>Password</div>}
+            <details className="cursor-pointer open:text-center open:border-y-1 not-open:hover:bg-layerA" key={i} tabIndex={-1}>
+                <summary className={`in-open:bg-layerA list-none ${v.hide ? "text-text-gray" : undefined}`}>{v.title}</summary>
+                {!v.username || <div className={rowStyle} title="Click To Copy" onClick={() => copyText(v.username, true)}>UserName</div>}
+                {!v.mail     || <div className={rowStyle} title="Click To Copy" onClick={() => copyText(v.mail    , true)}>Mail Address</div>}
+                {!v.password || <div className={rowStyle} title="Click To Copy" onClick={() => copyText(v.password, true)}>Password</div>}
                 {v.note == String.empty ||
-                <details className={cls(css.title, css.hover)}>
+                <details className="cursor-pointer hover:bg-layerA open:border-t-1 [&:open_summary]:bg-layerA">
                     <summary>[Note]</summary>
-                    {v.note}
+                    <div className="select-text">{v.note}</div>
                 </details>}
             </details>
         );
@@ -79,8 +79,8 @@ export default function App() {
                 <div className="text-fail">{errMsg}</div>
                 {result}
             </div>
-            <div className={css.setting}>
-                <button onClick={() => setShowHide(!showHide)} className={showHide ? css.enable : undefined}>ShowHide</button>
+            <div className="border-t-1 flex flex-row">
+                <button onClick={() => setShowHide(!showHide)} className={`border-0 grow bg-layerA duration-0 hover:bg-layerB ${showHide ? "text-enable" : "text-disable"}`}>ShowHide</button>
             </div>
         </>
     );

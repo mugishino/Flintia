@@ -12,6 +12,8 @@
     --color-text-gray: #777777;
     --color-fail: #c44;
     --color-link: #48f;
+    --color-disable: #f44;
+    --color-enable: #4bf;
 }
 
 *:focus {
@@ -47,9 +49,17 @@ body {
 }
 
 @layer base {
+    * {
+        border-color: var(--color-border);
+    }
+
     button {
         text-align: center;
         cursor: pointer;
+    }
+
+    input {
+        @apply pl-1;
     }
 
     button, select, input {
@@ -66,6 +76,25 @@ body {
         &:active {
             transition: 0;
             background-color: var(--color-green-800);
+        }
+    }
+
+    option {
+        background-color: var(--color-neutral-900);
+    }
+}
+
+@layer utilities {
+    .scrollbar-default-cursor {
+        &::-webkit-scrollbar:hover,
+        &::-webkit-scrollbar-thumb:hover {
+            cursor: default;
+        }
+    }
+    .disable-spin-button {
+        &::-webkit-inner-spin-button,
+        &::-webkit-outer-spin-button {
+            display: none;
         }
     }
 }
