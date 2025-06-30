@@ -42,3 +42,19 @@ export function useUpdateRender() {
     const [value, setValue] = useState(false);
     return () => setValue(!value);
 }
+
+/**
+ * ClipboardItemが画像か判定します。
+ * @param item 判定するClipboardItem
+ * @returns 画像のMIMEタイプ, 画像でなければundefined
+ */
+export function getImageMimeByClipboardImage(item: ClipboardItem) {
+    const itemType = item.types.find(t => [
+        "image/png",
+        "image/jpeg",
+        "image/webp",
+        "image/tiff",
+        "image/bmp",
+    ].includes(t));
+    return itemType;
+}

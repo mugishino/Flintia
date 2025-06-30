@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BrowserQRCodeReader } from "@zxing/browser";
 import jsQR from "jsqr";
+import { getImageMimeByClipboardImage } from "~/util";
 
 async function tryZxing(blob: Blob) {
     const url = URL.createObjectURL(blob);
@@ -37,13 +38,7 @@ export default function QRCode() {
             <button onClick={async () => {
                 setSuccess(false);
                 const item = (await navigator.clipboard.read())[0];
-                const itemType = item.types.find(t => [
-                    "image/png",
-                    "image/jpeg",
-                    "image/webp",
-                    "image/tiff",
-                    "image/bmp",
-                ].includes(t));
+                const itemType = getImageMimeByClipboardImage(item);
                 if (!itemType) return setResult("クリップボードが画像ではありません");
 
                 const blob = await item.getType(itemType);
