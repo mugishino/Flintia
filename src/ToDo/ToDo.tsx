@@ -22,30 +22,51 @@ function TodoColumn({
     onInput,
     removeTodo,
     focus,
+    onClick,
+    onAuxClick,
+    className,
 }: {
     defaultText: string,
     onInput: (v: string) => void,
     removeTodo: () => void,
     focus: boolean,
+    onClick: () => void,
+    onAuxClick: () => void,
+    className?: string,
 }) {
     const [text, setText] = useState(defaultText);
     return (
         <textarea
-            className="field-sizing-content border-border border-b-1 resize-none focus:bg-layerA overflow-clip" value={text}
+            className={`field-sizing-content border-border border-b-1 resize-none overflow-clip ${className}`} value={text}
             onBlur={e => e.currentTarget.value == String.empty ? removeTodo() : null}
             onInput={e => {
                 setText(e.currentTarget.value);
                 onInput(e.currentTarget.value);
             }}
             autoFocus={focus}
+            onClick={onClick}
+            onAuxClick={onAuxClick}
         />
     );
 }
 
 const data = await loadToDoList();
 export default function ToDo() {
+    const [move, setMove] = useState<number|null>(null);
     const updateRendering = useUpdateRender();
     let todoList = data;
+
+    /**
+     * リスト内で位置を移動させます。
+     * @param index 移動元・移動先のindex
+     * @param start このindexで移動を開始するか
+     */
+    function moveProcess(index: number, start: boolean) {
+        if (move == null) return start ? setMove(index) : undefined;
+        const data = todoList.remove(move);
+        todoList.insert(index, data);
+        setMove(null);
+    }
 
     const listLength = todoList.length;
     const elems = todoList.map((v, i) =>
@@ -55,7 +76,11 @@ export default function ToDo() {
         }} removeTodo={() => {
             todoList.remove(i);
             updateRendering();
-        }} focus={listLength == i+1}/>);
+        }} focus={listLength == i+1}
+        onClick   ={() => moveProcess(i, false)}
+        onAuxClick={() => moveProcess(i, true )}
+        className={move == null ? "focus:bg-layerA" : `cursor-pointer ${move == i ? "bg-red-950" : "bg-green-950"}`}
+        />);
 
     return (
         <>
