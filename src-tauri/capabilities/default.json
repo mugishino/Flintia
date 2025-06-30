@@ -18,6 +18,7 @@
     {"allow": [{"path": "$APPDATA"}], "identifier": "fs:allow-mkdir"},
     {"allow": [{"path": "$APPDATA/**"}], "identifier": "fs:allow-write-text-file"},
     {"allow": [{"path": "**"}], "identifier": "fs:allow-exists"},
+    {"allow": [{"path": "**"}], "identifier": "fs:allow-write-file"},
     {"allow": [{"path": "**"}], "identifier": "fs:allow-read-text-file"}
   ]
 }
