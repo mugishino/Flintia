@@ -24,28 +24,27 @@ export default function Auth() {
         secret: string,
         title: string,
     }) {
-        const res = secretToNumber(props.secret);
         const [code, setCode] = useState<string|null>(null);
         const [time, setTime] = useState(0);
 
         setTimeout(() => {
-            setTime(time-100);
+            setTime(time-10);
             if (time <= 0) {
                 const data = secretToNumber(props.secret);
                 setCode(data.number);
                 setTime(data.remaining);
             }
-        }, 100);
+        }, 10);
 
         return (
-            <div className="flex flex-row border-b-1 border-border px-2 justify-between bg-layerA hover:bg-layerB cursor-pointer" onClick={() => {
+            <div
+            className="flex flex-row h-10 border-b-1 border-border px-2 justify-between hover:bg-layerB cursor-pointer hover:brightness-150"
+            style={{background: `linear-gradient(to right, #08f3 ${time / 300}%, #181818 0)`}}
+            onClick={() => {
                 if (code == null) return;
                 copyText(code, true);
             }}>
-                <div>
-                    <div>{props.title}</div>
-                    <div>{(Math.floor(res.remaining/100)/10).toFixed(1)}</div>
-                </div>
+                <div className="flex items-center">{props.title}</div>
                 <div className="my-auto text-3xl">{stringInject(code ?? String.empty, String.space, 3)}</div>
             </div>
         );
