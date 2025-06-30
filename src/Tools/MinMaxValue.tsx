@@ -3,14 +3,13 @@ import { copyText } from "~/util";
 export default function MinMaxValue() {
     function CreateElem(props: {title: string, min: number, max: number}) {
         return <button
-            className="inline-block w-40"
             title="LeftClick: Max, RightClick: MIN"
             onClick   ={() => copyText(props.max.toString())}
             onAuxClick={() => copyText(props.min.toString())}
         >{props.title}</button>;
     }
     return (
-        <div>
+        <div className="grid grid-cols-2">
             <CreateElem title="sbyte"  min={-128}                 max={127}/>
             <CreateElem title="byte"   min={0}                    max={255}/>
             <CreateElem title="ushort" min={0}                    max={65535}/>
