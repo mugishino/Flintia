@@ -8,6 +8,7 @@ Ctrl+Shift+ALT+Qで呼び出せる
 - 開発ツール(UUID生成など)
 - FFmpegコマンドジェネレーター(映像のみ, NVENC)
 - メモ帳
+- ToDoリスト
 - QRCodeリーダー
 - OTP認証
 
@@ -18,23 +19,22 @@ passfile: パスワードファイル
 authfile: OTP認証コードファイル
 ```
 
-# パスワードファイル記述形式
+# パスワードファイル記述形式(yaml)
 ```
-[
-    {
-        "title": string,
-        "username": string,
-        "mail": string,
-        "password": string,
-        "note": string,
-        "hide": boolean
-    }
-]
+- title   : string
+  username: string
+  mail    : string
+  password: string
+  note    : string
+  hide    : boolean
 ```
 
-# OTP認証コードファイル記述形式
+# OTP認証コードファイル記述形式(json)
 ```
 {
     "Title": "SecretCode"
 }
 ```
+
+# ToDoリスト
+右クリックで並べ替えモードに入り、並べ替え先をクリックするとそこにToDoが移動します。
