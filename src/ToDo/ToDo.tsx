@@ -66,6 +66,7 @@ export default function ToDo() {
         const data = todoList.remove(move);
         todoList.insert(index, data);
         setMove(null);
+        saveToDoList(todoList);
     }
 
     const listLength = todoList.length;
