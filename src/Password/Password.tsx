@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Config from "~/Config";
 import { copyText, notExists, useEffectAsync } from "~/util";
 import { readTextFile } from "@tauri-apps/plugin-fs";
+import yaml from "js-yaml";
 
 class PassRecord {
     title       = String.empty;
@@ -19,9 +20,7 @@ async function getPassRecords() {
     }
 
     const raw = await readTextFile(path);
-    const json: Object[] = JSON.parse(raw);
-    const result: PassRecord[] = json.map(v => Object.assign(new PassRecord(), v));
-    return result;
+    return yaml.load(raw) as PassRecord[];
 }
 
 

@@ -18,6 +18,7 @@
     "@tauri-apps/plugin-global-shortcut": "^2.2.0",
     "@tauri-apps/plugin-opener": "^2",
     "@zxing/browser": "^0.1.5",
+    "js-yaml": "^4.1.0",
     "jsqr": "^1.4.0",
     "otpauth": "^9.4.0",
     "react": "^18.3.1",
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.15.18",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
