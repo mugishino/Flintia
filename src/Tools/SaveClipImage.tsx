@@ -26,7 +26,7 @@ export default function SaveClipImage() {
 
         const desktopPath = await desktopDir();
         const savePath = await save({
-            defaultPath: desktopPath,
+            defaultPath: `${desktopPath}/${Date.now()}.png`,
             title: "名前を付けて保存",
             filters: [{
                 "extensions": ["png"],
