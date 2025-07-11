@@ -24,12 +24,6 @@ export function useEffectAsync(effect: () => Promise<void>, deps?: React.Depende
     useEffect(() => {effect()}, deps);
 }
 
-export function stringInject(base: string, inject: string, pos: number) {
-    const x = base.slice(0, pos);
-    const y = base.slice(pos);
-    return x + inject + y;
-}
-
 export function copyText(text: string|number, paste: boolean=false) {
     navigator.clipboard.writeText(text.toString());
     if (paste) {

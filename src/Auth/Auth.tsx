@@ -2,7 +2,7 @@ import { readTextFile } from "@tauri-apps/plugin-fs";
 import { TOTP } from "otpauth";
 import React, { useState } from "react";
 import Config from "~/Config";
-import { copyText, notExists, stringInject, useEffectAsync } from "~/util";
+import { copyText, notExists, useEffectAsync } from "~/util";
 
 function secretToNumber(secret: string) {
     const res = new TOTP({
@@ -45,7 +45,7 @@ export default function Auth() {
                 copyText(code, true);
             }}>
                 <div className="flex items-center">{props.title}</div>
-                <div className="my-auto text-3xl">{stringInject(code ?? String.empty, String.space, 3)}</div>
+                <div className="my-auto text-3xl">{(code ?? String.empty).inject(String.space, 3)}</div>
             </div>
         );
     }
