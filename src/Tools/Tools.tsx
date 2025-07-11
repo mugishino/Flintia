@@ -2,6 +2,7 @@ import UnixTime from "./UnixTime";
 import MinMaxValue from "./MinMaxValue";
 import UUIDGenerator from "./UUIDGenerator";
 import SaveClipImage from "./SaveClipImage";
+import HexConverter from "./HexConverter";
 
 export function Tool({title, children}: {title: string, children: React.ReactElement}) {
     return (
@@ -19,6 +20,7 @@ export default function Tools() {
             <Tool title="UUID Generator" children={<UUIDGenerator/>}/>
             <Tool title="MIN_MAX_VALUE" children={<MinMaxValue/>}/>
             <Tool title="UnixTime" children={<UnixTime/>}/>
+            <Tool title="HexConverter" children={<HexConverter/>}/>
         </>
     );
 }
