@@ -57,7 +57,7 @@ export default function App() {
                 {!v.username || <div className={rowStyle} title="Click To Copy" onClick={() => copyText(v.username, true)}>UserName</div>}
                 {!v.mail     || <div className={rowStyle} title="Click To Copy" onClick={() => copyText(v.mail    , true)}>Mail Address</div>}
                 {!v.password || <div className={rowStyle} title="Click To Copy" onClick={() => copyText(v.password, true)}>Password</div>}
-                {v.note == String.empty ||
+                {!v.note ||
                 <details className="cursor-pointer hover:bg-layerA open:border-t-1 [&:open_summary]:bg-layerA">
                     <summary>[Note]</summary>
                     <div className="select-text">{v.note}</div>
