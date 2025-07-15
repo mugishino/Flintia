@@ -3,15 +3,7 @@ import MinMaxValue from "./MinMaxValue";
 import UUIDGenerator from "./UUIDGenerator";
 import SaveClipImage from "./SaveClipImage";
 import HexConverter from "./HexConverter";
-
-export function Tool({title, children}: {title: string, children: React.ReactElement}) {
-    return (
-        <div className="flex flex-col text-center mb-4">
-            <div className="text-[1.2rem]">{title}</div>
-            {children}
-        </div>
-    );
-}
+import { Tool } from "~/Components";
 
 export default function Tools() {
     return (

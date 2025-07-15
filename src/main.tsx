@@ -8,13 +8,13 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { BrowserRouter, Route, Routes } from "react-router";
 import Sidebar from "~/Sidebar";
 import Tools from "~/Tools/Tools";
-import FFmpeg from "~/FFmpeg/FFmpeg";
 import Note from "./Note/Note";
 import QRCode from "./QRCode/QRCode";
 import Auth from "./Auth/Auth";
 import System from "./System/System";
 import ToDo from "./ToDo/ToDo";
 import "~/global";
+import CmdGen from "./CmdGen/CmdGen";
 
 if (process.env.NODE_ENV == "development") {
     document.body.style.border = "thin solid #800";
@@ -49,7 +49,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                     {Object.entries({
                         "/"      : <Password/>,
                         "/Tools" : <Tools/>,
-                        "/FFmpeg": <FFmpeg/>,
+                        "/CmdGen": <CmdGen/>,
                         "/Note"  : <Note/>,
                         "/QRCode": <QRCode/>,
                         "/Auth"  : <Auth/>,
