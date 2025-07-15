@@ -3,16 +3,16 @@ import MinMaxValue from "./MinMaxValue";
 import UUIDGenerator from "./UUIDGenerator";
 import SaveClipImage from "./SaveClipImage";
 import HexConverter from "./HexConverter";
-import { Tool } from "~/Components";
+import { Section } from "~/Components";
 
 export default function Tools() {
     return (
         <>
-            <Tool title="Save Clipboard Image" children={<SaveClipImage/>}/>
-            <Tool title="UUID Generator" children={<UUIDGenerator/>}/>
-            <Tool title="MIN_MAX_VALUE" children={<MinMaxValue/>}/>
-            <Tool title="UnixTime" children={<UnixTime/>}/>
-            <Tool title="HexConverter" children={<HexConverter/>}/>
+            <Section title="Save Clipboard Image" children={<SaveClipImage/>}/>
+            <Section title="UUID Generator" children={<UUIDGenerator/>}/>
+            <Section title="MIN_MAX_VALUE" children={<MinMaxValue/>}/>
+            <Section title="UnixTime" children={<UnixTime/>}/>
+            <Section title="HexConverter" children={<HexConverter/>}/>
         </>
     );
 }

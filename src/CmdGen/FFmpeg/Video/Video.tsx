@@ -63,7 +63,6 @@ export default function Video() {
 
     return (
         <>
-            <div style={{textAlign: "center", borderBottom: "thin solid gray"}}>動画にのみ対応しています。NVENCを使用します。</div>
             <Setting title="InputFile">
                 <button onClick={
                     async() => {
