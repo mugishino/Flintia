@@ -1,10 +1,12 @@
 import { Tool } from "~/Components";
-import FFmpeg from "./FFmpeg/FFmpeg";
+import ExportKeyFrame from "./FFmpeg/ExportKeyFrame/ExportKeyFrame";
+import Video from "./FFmpeg/Video/Video";
 
 export default function CmdGen() {
     return (
         <>
-            <Tool title="FFmpeg - Video" children={<FFmpeg/>}/>
+            <Tool title="FFmpeg - Video [NVEnc]" children={<Video/>}/>
+            <Tool title="FFmpeg - Export Key Frame" children={<ExportKeyFrame/>}/>
         </>
     );
 }

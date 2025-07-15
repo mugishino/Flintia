@@ -34,7 +34,7 @@ function Setting({
     );
 }
 
-export default function FFmpeg() {
+export default function Video() {
     const [sInputFile, setInputFile] = useState<string|null>(null);
     const [sVideoCodec, setVideoCodec] = useState(VideoCodec.hevc);
     const [sPreset, setPreset] = useState(Preset.auto);

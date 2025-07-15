@@ -64,18 +64,23 @@ body {
 
     button, select, input {
         display: inline-block;
-        color: white;
+        color: gray;
+        cursor: not-allowed;
 
         border: thin solid var(--color-layerB);
         background-color: var(--color-layerB);
         transition: 200ms;
 
-        &:hover {
-            background-color: var(--color-layerC);
-        }
-        &:active {
-            transition: 0;
-            background-color: var(--color-green-800);
+        &:not(:disabled) {
+            color: white;
+            cursor: auto;
+            &:hover {
+                background-color: var(--color-layerC);
+            }
+            &:active {
+                transition: 0;
+                background-color: var(--color-green-800);
+            }
         }
     }
 
