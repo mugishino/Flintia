@@ -3,15 +3,17 @@ import MinMaxValue from "./MinMaxValue";
 import UUIDGenerator from "./UUIDGenerator";
 import SaveClipImage from "./SaveClipImage";
 import HexConverter from "./HexConverter";
-import { Section } from "~/Components";
+import { Section, EvenlyDividedRow } from "~/Components";
 
 export default function Tools() {
     return (
         <>
-            <Section title="Save Clipboard Image" children={<SaveClipImage/>}/>
+            <EvenlyDividedRow>
+                <Section title="Save Clipboard Image" children={<SaveClipImage/>}/>
+                <Section title="UnixTime" children={<UnixTime/>}/>
+            </EvenlyDividedRow>
             <Section title="UUID Generator" children={<UUIDGenerator/>}/>
             <Section title="MIN_MAX_VALUE" children={<MinMaxValue/>}/>
-            <Section title="UnixTime" children={<UnixTime/>}/>
             <Section title="HexConverter" children={<HexConverter/>}/>
         </>
     );

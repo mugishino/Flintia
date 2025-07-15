@@ -13,7 +13,7 @@
     "windows": [
       {
         "title": "Flintia",
-        "width": 400,
+        "width": 540,
         "height": 720,
         "center": true,
         "alwaysOnTop": true,

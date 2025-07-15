@@ -19,8 +19,8 @@ export default function Sidebar() {
     }
 
     return (
-        <div className="flex justify-between bg-layerA border-r-1 border-border [writing-mode:vertical-lr]">
-            <div>
+        <div className="flex flex-col justify-between bg-layerA border-r-1 border-border w-1/6">
+            <div className="flex flex-col">
                 {AutoSideButton({
                     "Pass"  : "/",
                     "Tools" : "/Tools",
@@ -31,7 +31,7 @@ export default function Sidebar() {
                     "Auth"  : "/Auth",
                 }, false)}
             </div>
-            <div>
+            <div className="flex flex-col">
                 {AutoSideButton({
                     "System": "/System",
                 }, true)}

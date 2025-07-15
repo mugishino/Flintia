@@ -1,6 +1,6 @@
-import { getAppdataDirFile, notExists } from "~/util";
+import { getAppdataDirFile, notExists, useEffectAsync } from "~/util";
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const NOTE_PATH = await getAppdataDirFile("note.txt");
 
@@ -9,22 +9,25 @@ async function load() {
     return await readTextFile(NOTE_PATH);
 }
 
-async function save(data: string) {
-    await writeTextFile(NOTE_PATH, data);
+async function save(text: string) {
+    await writeTextFile(NOTE_PATH, text);
 }
-
-
 
 export default function Note() {
     const [text, setText] = useState(String.empty);
-    useEffect(() => {
-        load().then(setText);
+    useEffectAsync(async () => {
+        setText(await load());
     }, []);
 
     return <textarea
-        onInput={e => save(e.currentTarget.value)}
-        defaultValue={text}
-        style={{}}
-        className="scrollbar-default-cursor grow resize-none overflow-y-scroll"
+        onChange={async e => {
+            const text = e.currentTarget.value;
+            setText(text);
+            await save(text);
+        }}
+        value={text}
+        autoFocus={true}
+        placeholder="Typing..."
+        className="scrollbar-default-cursor grow resize-none overflow-y-scroll pl-[0px]"
     />
 }

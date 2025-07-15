@@ -63,23 +63,26 @@ body {
     }
 
     button, select, input {
+        padding: 2px;
         display: inline-block;
-        color: gray;
-        cursor: not-allowed;
+        color: white;
 
         border: thin solid var(--color-layerB);
         background-color: var(--color-layerB);
         transition: 200ms;
 
+        &:disabled {
+            color: gray;
+            cursor: not-allowed;
+        }
+
         &:not(:disabled) {
-            color: white;
-            cursor: auto;
             &:hover {
                 background-color: var(--color-layerC);
             }
             &:active {
                 transition: 0;
-                background-color: var(--color-green-800);
+                background-color: var(--color-teal-800);
             }
         }
     }

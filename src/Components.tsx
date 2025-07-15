@@ -7,6 +7,14 @@ export function Section({title, children}: {title: string, children: React.React
     );
 }
 
+export function EvenlyDividedRow({children}: {children: React.ReactElement[]}) {
+    return (
+        <div className={`flex flex-row flex-wrap overflow-x-clip [&>*]:w-1/${children.length} [&>*]:grow`}>
+            {children}
+        </div>
+    );
+}
+
 export function Setting({
     title,
     hide,
@@ -19,7 +27,7 @@ export function Setting({
     return (
         <div className={`flex flex-row justify-between ${hide == true ? "hidden" : "visible"}`}>
             <span className="pl-1">{title}</span>
-            <div className="min-w-1/3 [&>*]:w-full [&>*]:h-7">{children}</div>
+            <div className="min-w-2/5 [&>*]:w-full [&>*]:h-7">{children}</div>
         </div>
     );
 }
