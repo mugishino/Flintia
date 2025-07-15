@@ -27,7 +27,7 @@ export function Setting({
     return (
         <div className={`flex flex-row justify-between ${hide == true ? "hidden" : "visible"}`}>
             <span className="pl-1">{title}</span>
-            <div className="min-w-2/5 [&>*]:w-full [&>*]:h-7">{children}</div>
+            <div className="min-w-2/5 [&>*]:w-full [&>*]:min-h-7">{children}</div>
         </div>
     );
 }

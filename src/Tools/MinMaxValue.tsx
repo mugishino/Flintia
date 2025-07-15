@@ -9,7 +9,7 @@ export default function MinMaxValue() {
         >{props.title}</button>;
     }
     return (
-        <div className="grid grid-cols-2">
+        <div className="grid grid-cols-4">
             <CreateElem title="sbyte"  min={-128}                 max={127}/>
             <CreateElem title="byte"   min={0}                    max={255}/>
             <CreateElem title="ushort" min={0}                    max={65535}/>

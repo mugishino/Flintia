@@ -9,7 +9,7 @@ export default function Sidebar() {
         const active = props.navi == locate.pathname ? "bg-layerB text-white" : "bg-layerA";
 
         return <button
-            className={`text-text-gray px-1 cursor-pointer border-black border-0 ${border} ${active}`}
+            className={`text-text-gray cursor-pointer border-black border-0 ${border} ${active}`}
             onClick={() => navigate(props.navi)}
         >{props.title}</button>
     }
@@ -19,7 +19,7 @@ export default function Sidebar() {
     }
 
     return (
-        <div className="flex flex-col justify-between bg-layerA border-r-1 border-border w-1/6">
+        <div className="flex flex-col justify-between bg-layerA border-r-1 border-border w-1/6 shrink-0">
             <div className="flex flex-col">
                 {AutoSideButton({
                     "Pass"  : "/",
