@@ -4,6 +4,7 @@ import UUIDGenerator from "./UUIDGenerator";
 import SaveClipImage from "./SaveClipImage";
 import HexConverter from "./HexConverter";
 import { Section, EvenlyDividedRow } from "~/Components";
+import RatioCalc from "./RatioCalc";
 
 export default function Tools() {
     return (
@@ -15,6 +16,7 @@ export default function Tools() {
             <Section title="UUID Generator" children={<UUIDGenerator/>}/>
             <Section title="MIN_MAX_VALUE" children={<MinMaxValue/>}/>
             <Section title="HexConverter" children={<HexConverter/>}/>
+            <Section title="Aspect Ratio Calc" children={<RatioCalc/>}/>
         </>
     );
 }
