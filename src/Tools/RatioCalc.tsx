@@ -50,7 +50,7 @@ export default function RatioCalc() {
                     <div className="flex flex-row">
                         <input type="number" value={inputCalc} onChange={e => setInputCalc(formatInputNum(e))} className="disable-spin-button w-24"/>
                         <Split>:</Split>
-                        <CopyButton value={Math.floor(result*100)/100}/>
+                        <CopyButton value={Math.floorEx(result, 2)}/>
                     </div>
                     <div className="flex flex-row">
                         <CopyButton value={ratio[0]}/>
