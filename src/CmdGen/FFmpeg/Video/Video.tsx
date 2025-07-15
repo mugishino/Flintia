@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { WInvoke } from "~/InvokeWrapper";
 import { AudioCodec, BuildFFmpegCommand, Preset, QualityMode, VideoCodec } from "./CommandBuilder";
 import { copyText } from "~/util";
+import { Setting } from "~/Components";
 
 /**
  * EnumをOptionの配列で返します
@@ -15,23 +16,6 @@ function EnumToOptions<T extends object>(arg: T) {
         elems.push(<option key={i} value={k[1]}>{k[0]}</option>);
     });
     return elems;
-}
-
-function Setting({
-    title,
-    hide,
-    children,
-}: {
-    title: string,
-    hide?: boolean,
-    children: React.ReactElement,
-}) {
-    return (
-        <div className={`flex flex-row justify-between ${hide == true ? "hidden" : "visible"}`}>
-            <span className="pl-1">{title}</span>
-            <div className="min-w-1/3 [&>*]:w-full [&>*]:h-7">{children}</div>
-        </div>
-    );
 }
 
 export default function Video() {

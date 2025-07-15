@@ -6,3 +6,20 @@ export function Section({title, children}: {title: string, children: React.React
         </div>
     );
 }
+
+export function Setting({
+    title,
+    hide,
+    children,
+}: {
+    title: string,
+    hide?: boolean,
+    children: React.ReactElement,
+}) {
+    return (
+        <div className={`flex flex-row justify-between ${hide == true ? "hidden" : "visible"}`}>
+            <span className="pl-1">{title}</span>
+            <div className="min-w-1/3 [&>*]:w-full [&>*]:h-7">{children}</div>
+        </div>
+    );
+}
