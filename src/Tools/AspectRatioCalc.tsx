@@ -14,7 +14,7 @@ function getAspectRatio(x: number, y: number) {
     return [resultX, resultY];
 }
 
-export default function RatioCalc() {
+export default function AspectRatioCalc() {
     const [inputX, setInputX] = useState(0);
     const [inputY, setInputY] = useState(0);
     const [inputCalc, setInputCalc] = useState(0);
