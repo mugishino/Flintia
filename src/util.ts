@@ -53,6 +53,13 @@ export function getImageMimeByClipboardImage(item: ClipboardItem) {
     return itemType;
 }
 
+export async function getClipboardImageBlob() {
+    const item = (await navigator.clipboard.read())[0];
+    const mime = getImageMimeByClipboardImage(item);
+    if (!mime) return null;
+    return await item.getType(mime);
+}
+
 export function getBasename(file: string) {
     return file.split("\\").get(-1).split("/").get(-1);
 }

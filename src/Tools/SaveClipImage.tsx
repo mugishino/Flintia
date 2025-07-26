@@ -2,7 +2,7 @@ import { desktopDir } from "@tauri-apps/api/path";
 import { save } from "@tauri-apps/plugin-dialog";
 import { writeFile } from "@tauri-apps/plugin-fs";
 import { useState } from "react";
-import { getImageMimeByClipboardImage } from "~/util";
+import { getClipboardImageBlob } from "~/util";
 
 export default function SaveClipImage() {
     const [errMsg, setErrMsgRaw] = useState<string|null>(null);
@@ -13,15 +13,8 @@ export default function SaveClipImage() {
         }, 1000);
     }
 
-    async function getImageBlob() {
-        const item = (await navigator.clipboard.read())[0];
-        const mime = getImageMimeByClipboardImage(item);
-        if (mime == undefined) return null;
-        return await item.getType(mime);
-    }
-
     async function onSaveButtonClick() {
-        const blob = await getImageBlob();
+        const blob = await getClipboardImageBlob();
         if (blob == null) return setErrorMessage("クリップボードが画像ではありません。");
 
         const desktopPath = await desktopDir();
