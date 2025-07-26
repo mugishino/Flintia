@@ -57,6 +57,10 @@ body {
         @apply px-1 py-0.5;
         text-align: center;
         cursor: pointer;
+
+        &:not(:disabled):hover {
+            background-color: var(--color-layerC);
+        }
     }
 
     input {
@@ -77,13 +81,16 @@ body {
         }
 
         &:not(:disabled) {
-            &:hover {
-                background-color: var(--color-layerC);
-            }
             &:active {
                 transition: 0;
                 background-color: var(--color-teal-800);
             }
+        }
+    }
+
+    select {
+        &:not(:disabled):hover {
+            border-color: var(--color-layerF);
         }
     }
 
