@@ -33,6 +33,11 @@ export default function AspectRatioCalc() {
         return <button className="w-24" onClick={() => copyText(value)}>{String(value)}</button>
     }
 
+    function SwapInput() {
+        setInputX(inputY);
+        setInputY(inputX);
+    }
+
 
     const result = inputCalc / inputX * inputY;
     const ratio = getAspectRatio(inputX, inputY);
@@ -40,12 +45,17 @@ export default function AspectRatioCalc() {
     return (
         <>
             <div className="flex flex-row justify-center">
-                <div className="my-auto">
-                    <input type="number" value={inputX} onChange={e => setInputX(formatInputNum(e))} className="disable-spin-button w-24"/>
-                    <Split>:</Split>
-                    <input type="number" value={inputY} onChange={e => setInputY(formatInputNum(e))} className="disable-spin-button w-24"/>
-                    <Split>=</Split>
+                <div className="flex flex-col">
+                    <div className="flex flex-row">
+                        <input type="number" value={inputX} onChange={e => setInputX(formatInputNum(e))} className="disable-spin-button w-24"/>
+                        <Split>:</Split>
+                        <input type="number" value={inputY} onChange={e => setInputY(formatInputNum(e))} className="disable-spin-button w-24"/>
+                    </div>
+                    <div className="flex flex-row">
+                        <button className="grow" onClick={SwapInput}>SWAP</button>
+                    </div>
                 </div>
+                <Split>=</Split>
                 <div className="flex flex-col">
                     <div className="flex flex-row">
                         <input type="number" value={inputCalc} onChange={e => setInputCalc(formatInputNum(e))} className="disable-spin-button w-24"/>
