@@ -54,5 +54,15 @@ export function getImageMimeByClipboardImage(item: ClipboardItem) {
 }
 
 export function getBasename(file: string) {
-    return file.split("\\").slice(-1)[0].split("/").slice(-1)[0];
+    return file.split("\\").get(-1).split("/").get(-1);
+}
+
+export function splitExt(filename: string) {
+    const split = filename.split(".");
+    const ext = split.splice(-1)[0];
+    const name = split.join(".");
+    return {
+        name: name,
+        ext: ext,
+    };
 }

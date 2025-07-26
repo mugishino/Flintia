@@ -41,6 +41,11 @@ declare global {
          * @param value 追加する値
          */
         insert(index: number, value: T): void;
+        /**
+         * データをインデックスから取得します。
+         * @param index マイナス値も使用可能
+         */
+        get(index: number): T;
     }
 }
 Array.prototype.remove = function(index: number) {
@@ -51,6 +56,10 @@ Array.prototype.swap = function(x: number, y: number) {
 }
 Array.prototype.insert = function<T>(index: number, value: T) {
     this.splice(index, 0, value);
+}
+Array.prototype.get = function(index: number) {
+    const array = [...this];
+    return array.splice(index)[0];
 }
 
 

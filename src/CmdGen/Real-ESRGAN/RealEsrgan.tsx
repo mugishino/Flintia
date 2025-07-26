@@ -3,7 +3,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { useState } from "react";
 import { Setting } from "~/Components";
 import { WInvoke } from "~/InvokeWrapper";
-import { copyText, getBasename } from "~/util";
+import { copyText, getBasename, splitExt } from "~/util";
 
 const Model = {
     "GAN x4Plus Anime": "RealESRGAN-x4plus-anime",
@@ -67,7 +67,10 @@ export default function RealEsrgan() {
             </Setting>
 
             <button onClick={() => {
-                const cmd = files.map(f => `realesrgan-ncnn-vulkan -i "${f}" -o "${outdir}/reg${getBasename(f)}" -n ${Model[model]}`).join("&");
+                const cmd = files.map(f => {
+                    const outFileName = splitExt(getBasename(f)).name;
+                    return `realesrgan-ncnn-vulkan -i "${f}" -o "${outdir}/REG_${outFileName}.png" -n ${Model[model]}`;
+                }).join("&");
                 copyText(cmd);
                 // コピー通知、コマンド長が8192を超えてれば長めに出す
                 const over8192 = cmd.length > 8191;
