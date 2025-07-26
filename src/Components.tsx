@@ -7,9 +7,10 @@ export function Section({title, children}: {title: string, children: React.React
     );
 }
 
+// childrenの型がReactElement[]の理由: ReactNodeにするとlengthが使えない他、そもそもこれは複数の要素が前提のコンポーネントです。
 export function EvenlyDividedRow({children}: {children: React.ReactElement[]}) {
     return (
-        <div className={`flex flex-row flex-wrap overflow-x-clip [&>*]:w-1/${children.length} [&>*]:grow`}>
+        <div className={`flex flex-row flex-wrap overflow-x-clip [&>*]:w-0 [&>*]:grow`}>
             {children}
         </div>
     );
