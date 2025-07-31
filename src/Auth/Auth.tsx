@@ -1,6 +1,6 @@
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { TOTP } from "otpauth";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Config from "~/Config";
 import { copyText, notExists, useEffectAsync } from "~/util";
 
@@ -26,6 +26,7 @@ export default function Auth() {
     }) {
         const [code, setCode] = useState<string|null>(null);
         const [time, setTime] = useState(0);
+        const isHover = useRef(false);
 
         setTimeout(() => {
             setTime(time-10);
@@ -36,10 +37,15 @@ export default function Auth() {
             }
         }, 10);
 
+        const colorLeft  = isHover.current ? "#08f5" : "#08f3";
+        const colorRight = isHover.current ? "#fff1" : "#0000";
+
         return (
             <div
-            className="flex flex-row h-10 border-b-1 border-border px-2 justify-between hover:bg-layerB cursor-pointer hover:brightness-150"
-            style={{background: `linear-gradient(to right, #08f3 ${time / 300}%, #181818 0)`}}
+            className="flex flex-row h-10 border-b-1 border-border px-2 justify-between cursor-pointer"
+            style={{background: `linear-gradient(to right, ${colorLeft} ${time / 300}%, ${colorRight} 0)`}}
+            onMouseOver ={() => isHover.current = true }
+            onMouseLeave={() => isHover.current = false}
             onClick={() => {
                 if (code == null) return;
                 copyText(code, true);
