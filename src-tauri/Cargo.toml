@@ -1,6 +1,6 @@
 [package]
 name = "Flintia"
-version = "2.2.1"
+version = "2.2.2"
 description = "A Tauri App"
 authors = ["sou"]
 edition = "2021"
