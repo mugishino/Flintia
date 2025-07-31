@@ -6,9 +6,8 @@ export default function HexConverter() {
     const [afterRadix, setAfterRadix] = useState(10);
 
     function SwapRadix() {
-        const after = afterRadix;
         setAfterRadix(beforeRadix);
-        setBeforeRadix(after);
+        setBeforeRadix(afterRadix);
     }
 
     return (
