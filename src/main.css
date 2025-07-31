@@ -54,7 +54,6 @@ body {
     }
 
     button {
-        @apply px-1 py-0.5;
         text-align: center;
         cursor: pointer;
 
@@ -63,11 +62,8 @@ body {
         }
     }
 
-    input {
-        @apply px-1;
-    }
-
     button, select, input {
+        @apply px-1 py-0.5;
         display: inline-block;
         color: white;
 
