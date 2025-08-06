@@ -29,7 +29,7 @@ function TodoColumn({
     defaultText: string,
     onInput: (v: string) => void,
     removeTodo: () => void,
-    focus: boolean,
+    focus?: boolean,
     onClick: () => void,
     onAuxClick: () => void,
     className?: string,
@@ -52,6 +52,8 @@ function TodoColumn({
 
 const data = await loadToDoList();
 export default function ToDo() {
+    const [search, setSearch] = useState(String.empty);
+
     const [move, setMove] = useState<number|null>(null);
     const updateRendering = useUpdateRender();
     let todoList = data;
@@ -69,22 +71,27 @@ export default function ToDo() {
         saveToDoList(todoList);
     }
 
-    const listLength = todoList.length;
-    const elems = todoList.map((v, i) =>
-        <TodoColumn key={i+v} defaultText={v} onInput={v => {
+    const elems = todoList.map((v, i) => {
+        if (search.length > 0 && !v.toLowerCase().includes(search.toLowerCase())) return;
+        return <TodoColumn key={i+v} defaultText={v} onInput={v => {
             todoList[i] = v;
             saveToDoList(todoList);
         }} removeTodo={() => {
             todoList.remove(i);
             updateRendering();
-        }} focus={listLength == i+1}
+        }}
         onClick   ={() => moveProcess(i, false)}
         onAuxClick={() => moveProcess(i, true )}
         className={move == null ? "focus:bg-layerA" : `cursor-pointer ${move == i ? "bg-red-950" : "bg-green-950"}`}
-        />);
+        />
+    });
 
     return (
         <>
+            <div className="flex flex-row">
+                <input className="grow border-0 border-b-1 bg-layerA focus:bg-layerB" placeholder="search" autoFocus value={search} onChange={e => setSearch(e.currentTarget.value)}/>
+                <button className="w-1/8 border-0 border-l-1 border-b-1" onClick={() => setSearch("")}>削除</button>
+            </div>
             <div className="grow flex flex-col overflow-y-scroll">
                 {elems}
             </div>
