@@ -30,7 +30,7 @@ export default function AspectRatioCalc() {
     }
 
     function CopyButton({value}: {value: any}) {
-        return <button className="w-24" onClick={() => copyText(value)}>{String(value)}</button>
+        return <button className="w-full" onClick={() => copyText(value)}>{String(value)}</button>
     }
 
     function SwapInput() {
@@ -44,21 +44,22 @@ export default function AspectRatioCalc() {
 
     return (
         <>
-            <div className="flex flex-row justify-center">
-                <div className="flex flex-col">
+            <div className="flex flex-row justify-between">
+                <div className="flex flex-col w-7/15">
                     <div className="flex flex-row">
-                        <input type="number" value={inputX} onChange={e => setInputX(formatInputNum(e))} className="disable-spin-button w-24"/>
+                        <input type="number" value={inputX} onChange={e => setInputX(formatInputNum(e))} className="disable-spin-button w-full"/>
                         <Split>:</Split>
-                        <input type="number" value={inputY} onChange={e => setInputY(formatInputNum(e))} className="disable-spin-button w-24"/>
+                        <input type="number" value={inputY} onChange={e => setInputY(formatInputNum(e))} className="disable-spin-button w-full"/>
                     </div>
                     <div className="flex flex-row">
                         <button className="grow" onClick={SwapInput}>SWAP</button>
                     </div>
                 </div>
-                <Split>=</Split>
-                <div className="flex flex-col">
+                {<Split>=</Split>
+                }
+                <div className="flex flex-col w-7/15">
                     <div className="flex flex-row">
-                        <input type="number" value={inputCalc} onChange={e => setInputCalc(formatInputNum(e))} className="disable-spin-button w-24"/>
+                        <input type="number" value={inputCalc} onChange={e => setInputCalc(formatInputNum(e))} className="disable-spin-button w-full"/>
                         <Split>:</Split>
                         <CopyButton value={Math.floorEx(result, 2)}/>
                     </div>
