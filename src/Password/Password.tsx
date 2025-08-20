@@ -32,6 +32,7 @@ export default function App() {
 
     // setting
     const [showHide, setShowHide] = useState(false);
+    const [paste, setPaste] = useState(true);
 
 
 
@@ -46,17 +47,20 @@ export default function App() {
         }
     }, [search, showHide]);
 
+    function PasswordPasteableData({value, label}: {value: string, label: string}) {
+        return !value || <div className="cursor-pointer duration-100 hover:bg-layerA active:bg-green-800" title="Click To Copy" onClick={() => copyText(value, paste)}>{label}</div>;
+    }
+
     const result: React.JSX.Element[] = [];
-    const rowStyle = "cursor-pointer duration-100 hover:bg-layerA active:bg-green-800"
     view.forEach((v, i) => {
         if (v.hide && !showHide) return;
         if (search != String.empty && !v.title.toLowerCase().startsWith(search.toLowerCase())) return;
         result.push(
             <details className="cursor-pointer open:text-center open:border-y-1 not-open:hover:bg-layerA" key={i} tabIndex={-1}>
                 <summary className={`in-open:bg-layerA list-none ${v.hide ? "text-text-gray" : undefined}`}>{v.title}</summary>
-                {!v.username || <div className={rowStyle} title="Click To Copy" onClick={() => copyText(v.username, true)}>UserName</div>}
-                {!v.mail     || <div className={rowStyle} title="Click To Copy" onClick={() => copyText(v.mail    , true)}>Mail Address</div>}
-                {!v.password || <div className={rowStyle} title="Click To Copy" onClick={() => copyText(v.password, true)}>Password</div>}
+                <PasswordPasteableData value={v.username} label="UserName"/>
+                <PasswordPasteableData value={v.mail    } label="Mail Address"/>
+                <PasswordPasteableData value={v.password} label="Password"/>
                 {!v.note ||
                 <details className="cursor-pointer hover:bg-layerA open:border-t-1 [&:open_summary]:bg-layerA">
                     <summary>[Note]</summary>
@@ -79,7 +83,8 @@ export default function App() {
                 {result}
             </div>
             <div className="border-t-1 flex flex-row">
-                <button onClick={() => setShowHide(!showHide)} className={`border-0 grow bg-layerA duration-0 hover:bg-layerB ${showHide ? "text-enable" : "text-disable"}`}>ShowHide</button>
+                <button onClick={() => setShowHide(!showHide)} className={`border-0 not-last:border-r-1 ${showHide ? "text-enable" : "text-disable"}`}>ShowHide</button>
+                <button onClick={() => setPaste   (!paste   )} className={`border-0 not-last:border-r-1 ${paste    ? "text-enable" : "text-disable"}`}>Paste</button>
             </div>
         </>
     );
