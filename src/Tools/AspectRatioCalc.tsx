@@ -30,7 +30,7 @@ export default function AspectRatioCalc() {
     }
 
     function CopyButton({value}: {value: any}) {
-        return <button className="w-full" onClick={() => copyText(value)}>{String(value)}</button>
+        return <button onClick={() => copyText(value)}>{String(value)}</button>
     }
 
     function SwapInput() {
@@ -47,9 +47,9 @@ export default function AspectRatioCalc() {
             <div className="flex flex-row justify-between">
                 <div className="flex flex-col w-7/15">
                     <div className="flex flex-row">
-                        <input type="number" value={inputX} onChange={e => setInputX(formatInputNum(e))} className="disable-spin-button w-full"/>
+                        <input type="number" value={inputX} onChange={e => setInputX(formatInputNum(e))}/>
                         <Split>:</Split>
-                        <input type="number" value={inputY} onChange={e => setInputY(formatInputNum(e))} className="disable-spin-button w-full"/>
+                        <input type="number" value={inputY} onChange={e => setInputY(formatInputNum(e))}/>
                     </div>
                     <div className="flex flex-row">
                         <button className="grow" onClick={SwapInput}>SWAP</button>
@@ -59,7 +59,7 @@ export default function AspectRatioCalc() {
                 }
                 <div className="flex flex-col w-7/15">
                     <div className="flex flex-row">
-                        <input type="number" value={inputCalc} onChange={e => setInputCalc(formatInputNum(e))} className="disable-spin-button w-full"/>
+                        <input type="number" value={inputCalc} onChange={e => setInputCalc(formatInputNum(e))}/>
                         <Split>:</Split>
                         <CopyButton value={Math.floorEx(result, 2)}/>
                     </div>

@@ -71,7 +71,7 @@ export default function Video() {
             <Selector title="QualityMode"   defaultValue={sQualityMode  } onChange={v => setQualityMode (v as QualityMode   )} options={QualityMode } hide={sVideoCodec == VideoCodec.copy}/>
             <Setting title={sQualityMode == QualityMode.CBR ? "Bitrate" : "QualityLevel"} hide={sVideoCodec == VideoCodec.copy}>
                 <input type="number"
-                    className="disable-spin-button pl-1"
+                    className="pl-1"
                     value={sQualityValue}
                     step={sQualityMode == QualityMode.CBR ? 1024 : 1}
                     min={sQualityMode == QualityMode.CBR ? 1024 : 15}
