@@ -1,0 +1,26 @@
+import { useState } from "react";
+import { copyText, getNumberOrDefault } from "~/util";
+
+export default function UnixToTime() {
+    const [time, setTime] = useState<number>(0);
+    const date = new Date(time);
+
+    const [zone, setZone] = useState<number>(date.getTimezoneOffset() / -60);
+    date.setUTCHours(date.getUTCHours()+zone);
+
+    const text = `${date.getUTCFullYear()}年${date.getUTCMonth()}月${date.getUTCDate()}日 ${date.getUTCHours()}時${date.getUTCMinutes()}分${date.getUTCSeconds()}秒${date.getUTCMilliseconds()}${zone>=0?"+":""}${zone}00`;
+
+    return (
+        <div className="flex flex-col">
+            <div className="flex flex-row">
+                <input type="number" className="w-full" placeholder="UnixTime(ms)" value={time} onChange={e => setTime(getNumberOrDefault(e.currentTarget.valueAsNumber, 0))}/>
+                <div className="flex flex-row">
+                    <button className="w-10" onClick={() => setZone(zone-1)}>{"<"}</button>
+                    <input type="number" placeholder="TimeZone" value={zone} onChange={e => setZone(getNumberOrDefault(e.currentTarget.valueAsNumber, 0))}/>
+                    <button className="w-10" onClick={() => setZone(zone+1)}>{">"}</button>
+                </div>
+            </div>
+            <button onClick={() => copyText(text)}>{text}</button>
+        </div>
+    );
+}

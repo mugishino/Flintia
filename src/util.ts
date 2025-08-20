@@ -73,3 +73,10 @@ export function splitExt(filename: string) {
         ext: ext,
     };
 }
+
+/**
+ * NaNだった場合にデフォルト値を返す
+ */
+export function getNumberOrDefault(value: number, default_: number) {
+    return isNaN(value) ? default_ : value;
+}
