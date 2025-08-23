@@ -48,7 +48,7 @@ export default function RealEsrgan() {
             {files.length == 0 ? null :
                 <details>
                     <summary className="text-left pl-2">Selected File List</summary>
-                    <div className="text-left min-h-1 wrap-break-word border-1 border-border">{files.map(f => getBasename(f)).join(", ")}</div>
+                    <div className="text-left min-h-1 wrap-break-word border-1">{files.map(f => getBasename(f)).join(", ")}</div>
                 </details>
             }
 

@@ -37,7 +37,7 @@ function TodoColumn({
     const [text, setText] = useState(defaultText);
     return (
         <textarea
-            className={`field-sizing-content border-border border-b-1 resize-none overflow-clip ${className}`} value={text}
+            className={`field-sizing-content border-b-1 resize-none overflow-clip ${className}`} value={text}
             onBlur={e => e.currentTarget.value == String.empty ? removeTodo() : null}
             onInput={e => {
                 setText(e.currentTarget.value);
@@ -90,12 +90,12 @@ export default function ToDo() {
         <>
             <div className="flex flex-row">
                 <input className="grow border-0 border-b-1 bg-layerA focus:bg-layerB" placeholder="search" autoFocus value={search} onChange={e => setSearch(e.currentTarget.value)}/>
-                <button className="w-1/8 border-0 border-l-1 border-b-1" onClick={() => setSearch("")}>削除</button>
+                <button className="w-1/8 border-0 border-l-1 border-b-1" onClick={() => setSearch(String.empty)}>削除</button>
             </div>
             <div className="grow flex flex-col overflow-y-scroll">
                 {elems}
             </div>
-            <button onClick={() => {
+            <button className="border-0 border-t-1" onClick={() => {
                 todoList.push(String.empty);
                 updateRendering();
             }}>New ToDo</button>

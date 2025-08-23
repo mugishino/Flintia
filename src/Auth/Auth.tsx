@@ -42,7 +42,7 @@ export default function Auth() {
 
         return (
             <div
-            className="flex flex-row h-10 border-b-1 border-border px-2 justify-between cursor-pointer"
+            className="flex flex-row h-10 border-b-1 px-2 justify-between cursor-pointer"
             style={{background: `linear-gradient(to right, ${colorLeft} ${time / 300}%, ${colorRight} 0)`}}
             onMouseOver ={() => isHover.current = true }
             onMouseLeave={() => isHover.current = false}
@@ -80,7 +80,7 @@ export default function Auth() {
 
     return (
         <>
-            <div className="text-center text-2xl border-b-1 border-border">Authentication</div>
+            <div className="text-center text-2xl border-b-1">Authentication</div>
             <div className="h-full overflow-y-scroll">
                 <div className="text-fail">{errMsg}</div>
                 {result}

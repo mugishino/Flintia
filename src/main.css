@@ -8,7 +8,7 @@
     --color-layerE: #ffffff3c;
     --color-layerF: #ffffff48;
 
-    --color-border: #ffffff30;
+    --color-border: #444;
     --color-text-gray: #777777;
     --color-fail: #c44;
     --color-link: #48f;
@@ -68,7 +68,7 @@ body {
         color: white;
         width: 100%;
 
-        border: thin solid var(--color-layerB);
+        border: thin solid var(--color-border);
         background-color: var(--color-layerB);
         transition: 200ms;
 
@@ -94,7 +94,7 @@ body {
 
     select {
         &:not(:disabled):hover {
-            border-color: var(--color-layerF);
+            border-color: #888;
         }
     }
 

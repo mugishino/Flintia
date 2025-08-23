@@ -19,7 +19,7 @@ export default function Sidebar() {
     }
 
     return (
-        <div className="flex flex-col justify-between bg-layerA border-r-1 border-border w-1/6 shrink-0">
+        <div className="flex flex-col justify-between bg-layerA border-r-1 w-1/6 shrink-0">
             <div className="flex flex-col">
                 {AutoSideButton({
                     "Pass"  : "/",

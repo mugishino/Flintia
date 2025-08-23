@@ -74,17 +74,17 @@ export default function App() {
 
     return (
         <>
-            <div className="flex">
-                <input autoFocus className="grow bg-layerA border-0 border-b-1 border-border focus:bg-layerB" value={search} onChange={e=>setSearch(e.currentTarget.value)} type="text" placeholder="search"/>
-                <div className="px-2 bg-layerB border-l-1 border-b-1 border-neutral-600 hover:cursor-pointer hover:bg-layerC shrink-0" onClick={()=>setSearch(String.empty)}>削除</div>
+            <div className="flex border-b-1">
+                <input autoFocus className="grow bg-layerA border-0 focus:bg-layerB" value={search} onChange={e=>setSearch(e.currentTarget.value)} type="text" placeholder="search"/>
+                <button className="border-0 border-l-1 w-1/8" onClick={() => setSearch(String.empty)}>削除</button>
             </div>
             <div className="grow overflow-x-hidden overflow-y-scroll">
                 <div className="text-fail">{errMsg}</div>
                 {result}
             </div>
-            <div className="border-t-1 flex flex-row">
-                <button onClick={() => setShowHide(!showHide)} className={`border-0 not-last:border-r-1 ${showHide ? "text-enable" : "text-disable"}`}>ShowHide</button>
-                <button onClick={() => setPaste   (!paste   )} className={`border-0 not-last:border-r-1 ${paste    ? "text-enable" : "text-disable"}`}>Paste</button>
+            <div className="border-t-1 flex flex-row [&>*]:border-0 [&>*]:not-last:border-r-1">
+                <button onClick={() => setShowHide(!showHide)} className={showHide ? "text-enable" : "text-disable"}>ShowHide</button>
+                <button onClick={() => setPaste   (!paste   )} className={paste    ? "text-enable" : "text-disable"}>Paste</button>
             </div>
         </>
     );
