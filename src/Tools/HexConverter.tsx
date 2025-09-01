@@ -5,19 +5,11 @@ export default function HexConverter() {
     const [beforeRadix, setBeforeRadix] = useState(16);
     const [afterRadix, setAfterRadix] = useState(10);
 
-    function SwapRadix() {
-        setAfterRadix(beforeRadix);
-        setBeforeRadix(afterRadix);
-    }
-
     return (
         <>
             <div className="flex flex-row">
                 <input type="number" min={2} max={36} value={beforeRadix} onChange={e => setBeforeRadix(e.currentTarget.valueAsNumber)} className="text-center w-1/6"/>
                 <input type="text" value={value.toString(beforeRadix)} onChange={e => setValue(parseInt(e.currentTarget.value, beforeRadix))} className="grow"/>
-            </div>
-            <div className="flex flex-row justify-center">
-                <button className="w-1/4" onClick={SwapRadix}>SWAP</button>
             </div>
             <div className="flex flex-row">
                 <input type="number" min={2} max={36} value={afterRadix} onChange={e => setAfterRadix(e.currentTarget.valueAsNumber)} className="text-center w-1/6"/>
