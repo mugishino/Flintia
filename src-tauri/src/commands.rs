@@ -27,6 +27,11 @@ pub fn paste() {
 }
 
 #[tauri::command]
-pub fn open_explorer(path: &str) {
-    Command::new("explorer").arg(path).spawn().unwrap();
+pub fn run_process(file: &str, args: Vec<String>) -> Result<String, String> {
+    let output = Command::new(file).args(args).spawn();
+
+    match output {
+        Ok(_) => Ok("Process started successfully".to_string()),
+        Err(e) => Err(format!("Failed to start: {}", e)),
+    }
 }
