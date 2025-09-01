@@ -3,7 +3,7 @@ use tauri::{
     tray::TrayIconBuilder,
     Manager,
 };
-use tauri_plugin_autostart::{MacosLauncher, ManagerExt};
+use tauri_plugin_autostart::{MacosLauncher};
 use tauri_plugin_dialog::DialogExt;
 mod commands;
 
@@ -27,7 +27,6 @@ pub fn run() {
                     app,
                     &[
                         &MenuItem::with_id(app, "show", "Show", true, None::<&str>)?,
-                        &MenuItem::with_id(app, "al", "AutoLaunch", true, None::<&str>)?,
                         &MenuItem::with_id(app, "info", "Info", true, None::<&str>)?,
                         &MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?,
                     ],
@@ -45,19 +44,6 @@ pub fn run() {
                         .kind(tauri_plugin_dialog::MessageDialogKind::Info)
                         .title("Infomation")
                         .blocking_show();
-                    }
-                    "al" => {
-                        let ans = app.dialog()
-                            .message("StartUp is Enabled(Y)/Disabled(N)")
-                            .kind(tauri_plugin_dialog::MessageDialogKind::Info)
-                            .title("Startup")
-                            .buttons(tauri_plugin_dialog::MessageDialogButtons::YesNo)
-                            .blocking_show();
-                        if ans {
-                            let _ = app.autolaunch().enable();
-                        } else {
-                            let _ = app.autolaunch().disable();
-                        }
                     }
                     "show" => {
                         commands::show(app.get_webview_window("main").expect("no main window"));

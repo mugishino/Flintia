@@ -28,7 +28,14 @@ export function Setting({
     return (
         <div className={`flex flex-row justify-between ${hide == true ? "hidden" : "visible"}`}>
             <span className="pl-1">{title}</span>
-            <div className="min-w-2/5 [&>*]:w-full [&>*]:min-h-7">{children}</div>
+            <div className="min-w-2/5 [&>*]:min-h-7">{children}</div>
         </div>
+    );
+}
+
+export function ToggleSwitch({value, onChange}: {value: boolean, onChange: (v: boolean) => void}) {
+    return (
+        <button onClick={() => onChange(!value)} className={`bg-layerB border-1 duration-0 ${value ? "text-enable" : "text-disable"}`}
+        >{value ? "Enabled" : "Disabled"}</button>
     );
 }
