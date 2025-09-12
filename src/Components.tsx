@@ -1,4 +1,4 @@
-export function Section({title, children}: {title: string, children: React.ReactElement}) {
+export function Section({title, children}: {title: string, children: React.ReactNode}) {
     return (
         <div className="flex flex-col text-center not-last:mb-4">
             <div className="text-[1.2rem]">{title}</div>
@@ -23,7 +23,7 @@ export function Setting({
 }: {
     title: string,
     hide?: boolean,
-    children: React.ReactElement,
+    children: React.ReactNode,
 }) {
     return (
         <div className={`flex flex-row justify-between ${hide == true ? "hidden" : "visible"}`}>
@@ -33,9 +33,11 @@ export function Setting({
     );
 }
 
-export function ToggleSwitch({value, onChange}: {value: boolean, onChange: (v: boolean) => void}) {
+export function ToggleSwitch({value, label, onChange}: {value: boolean, label?: string, onChange: (v: boolean) => void}) {
     return (
-        <button onClick={() => onChange(!value)} className={`bg-layerB border-1 duration-0 ${value ? "text-enable" : "text-disable"}`}
-        >{value ? "Enabled" : "Disabled"}</button>
+        <button
+            onClick={() => onChange(!value)}
+            className={`bg-layerB border-1 duration-0 ${value ? "text-enable" : "text-disable"}`}
+        >{label ?? (value ? "Enabled" : "Disabled")}</button>
     );
 }

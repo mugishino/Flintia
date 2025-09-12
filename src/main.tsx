@@ -20,15 +20,30 @@ if (process.env.NODE_ENV == "development") {
     document.body.style.border = "thin solid #800";
 }
 
-const tauriWin = getCurrentWindow();
-unregisterAll().then(() => {
-    register("Shift+Ctrl+Alt+Q", e => {
-        if (e.state != "Pressed") return;
-        tauriWin.isVisible().then(visible => {
-            visible ? WInvoke.hide() : WInvoke.show();
-        });
+export type HOTKEY_MAINKEY = "A"|"B"|"C"|"D"|"E"|"F"|"G"|"H"|"I"|"J"|"K"|"L"|"M"|"N"|"O"|"P"|"Q"|"R"|"S"|"T"|"U"|"V"|"W"|"X"|"Y"|"Z";
+export async function registerHotkey(shift: boolean, ctrl: boolean, alt: boolean, win: boolean, main: HOTKEY_MAINKEY): Promise<boolean> {
+    await unregisterAll();
+
+    const key: string[] = [];
+    if (shift) key.push("Shift");
+    if (ctrl ) key.push("Ctrl" );
+    if (alt  ) key.push("Alt"  );
+    if (win  ) key.push("Super");
+    key.push(main);
+
+    return new Promise(resolve => {
+        // 成功時はtrueが返る
+        register(key.join("+"), async e => {
+            if (e.state != "Pressed") return;
+            await tauriWin.isVisible() ? WInvoke.hide() : WInvoke.show();
+        })
+        .then (() => resolve(true ))
+        .catch(() => resolve(false));
     });
-});
+}
+
+const tauriWin = getCurrentWindow();
+await registerHotkey(true, true, true, false, "Q");
 
 document.addEventListener("keydown", e => {
     if (e.code == "Escape") {

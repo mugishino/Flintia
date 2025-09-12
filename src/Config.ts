@@ -1,9 +1,16 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { getAppdataDirFile, notExists } from "~/util";
+import { HOTKEY_MAINKEY } from "./main";
 
 export default class Config {
     passfile = "";
     authfile = "";
+
+    hotkey_shift = true;
+    hotkey_ctrl = true;
+    hotkey_alt = true;
+    hotkey_win = false;
+    hotkey_main = "Q" as HOTKEY_MAINKEY;
 
     private static async getFile() {
         return await getAppdataDirFile("config.json");
@@ -18,5 +25,10 @@ export default class Config {
         const json = JSON.parse(raw);
         const conf: Config = Object.assign(new Config(), json);
         return conf;
+    }
+
+    public async save() {
+        const path = await Config.getFile();
+        await writeTextFile(path, JSON.stringify(this, undefined, 4));
     }
 }
