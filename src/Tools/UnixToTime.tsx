@@ -15,7 +15,7 @@ export default function UnixToTime() {
 
     // view
     const text =
-    `${date.getUTCFullYear()}年${date.getUTCMonth()}月${date.getUTCDate()}日 `+
+    `${date.getUTCFullYear()}年${date.getUTCMonth()+1}月${date.getUTCDate()}日 `+
     `${date.getUTCHours()}時${date.getUTCMinutes()}分${date.getUTCSeconds()}秒`+
     `${date.getUTCMilliseconds()}${zone>=0?"+":String.empty}${zone}00`;
 
