@@ -52,7 +52,8 @@ export default defineConfig(async () => ({
               ],
               qrcode: [
                 "@zxing/browser",
-                "jsqr"
+                "jsqr",
+                "qrcode"
               ],
             }).find(([_, pkgs]) => pkgs.some(pkg => id.includes(pkg)))?.[0];
           }
