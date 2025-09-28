@@ -11,12 +11,12 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.6",
-    "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-autostart": "^2.2.0",
-    "@tauri-apps/plugin-dialog": "^2.2.0",
-    "@tauri-apps/plugin-fs": "^2.2.0",
-    "@tauri-apps/plugin-global-shortcut": "^2.2.0",
-    "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/api": "^2.8.0",
+    "@tauri-apps/plugin-autostart": "^2.5.0",
+    "@tauri-apps/plugin-dialog": "^2.4.0",
+    "@tauri-apps/plugin-fs": "^2.4.2",
+    "@tauri-apps/plugin-global-shortcut": "^2.3.0",
+    "@tauri-apps/plugin-opener": "^2.5.0",
     "@types/qrcode": "^1.5.5",
     "@zxing/browser": "^0.1.5",
     "js-yaml": "^4.1.0",
@@ -29,7 +29,7 @@
     "tailwindcss": "^4.1.6"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2",
+    "@tauri-apps/cli": "^2.8.4",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.15.18",
     "@types/react": "^18.3.1",
