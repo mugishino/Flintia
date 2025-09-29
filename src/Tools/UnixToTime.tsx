@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { copyText, getNumberOrDefault } from "~/util";
+import { copyText } from "~/util";
 
 export default function UnixToTime() {
     const [copied, setCopied] = useState(false);
@@ -24,10 +24,10 @@ export default function UnixToTime() {
     return (
         <div className="flex flex-col">
             <div className="flex flex-row">
-                <input type="number" className="w-full" placeholder="UnixTime(ms)" value={time} onChange={e => setTime(getNumberOrDefault(e.currentTarget.valueAsNumber, 0))}/>
+                <input type="number" className="w-full" placeholder="UnixTime(ms)" value={time} onChange={e => setTime(e.currentTarget.valueAsNumber.orDefault(0))}/>
                 <div className="flex flex-row">
                     <button className="w-10" onClick={() => setZone(zone-1)}>{"<"}</button>
-                    <input type="number" placeholder="TimeZone" value={zone} onChange={e => setZone(getNumberOrDefault(e.currentTarget.valueAsNumber, 0))}/>
+                    <input type="number" placeholder="TimeZone" value={zone} onChange={e => setZone(e.currentTarget.valueAsNumber.orDefault(0))}/>
                     <button className="w-10" onClick={() => setZone(zone+1)}>{">"}</button>
                 </div>
             </div>

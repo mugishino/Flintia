@@ -73,16 +73,19 @@ export default function ToDo() {
 
     const elems = todoList.map((v, i) => {
         if (search.length > 0 && !v.toLowerCase().includes(search.toLowerCase())) return;
-        return <TodoColumn key={i+v} defaultText={v} onInput={v => {
-            todoList[i] = v;
-            saveToDoList(todoList);
-        }} removeTodo={() => {
-            todoList.remove(i);
-            updateRendering();
-        }}
-        onClick   ={() => moveProcess(i, false)}
-        onAuxClick={() => moveProcess(i, true )}
-        className={move == null ? "focus:bg-layerA" : `cursor-pointer ${move == i ? "bg-red-950" : "bg-green-950"}`}
+        return <TodoColumn
+            key={i+v}
+            defaultText={v}
+            onInput={v => {
+                todoList[i] = v;
+                saveToDoList(todoList);
+            }} removeTodo={() => {
+                todoList.remove(i);
+                updateRendering();
+            }}
+            onClick   ={() => moveProcess(i, false)}
+            onAuxClick={() => moveProcess(i, true )}
+            className={move == null ? "focus:bg-layerA" : `cursor-pointer ${move == i ? "bg-red-950" : "bg-green-950"}`}
         />
     });
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Config from "~/Config";
 import { copyText, notExists, useEffectAsync } from "~/util";
 import { readTextFile } from "@tauri-apps/plugin-fs";
@@ -51,11 +51,10 @@ export default function App() {
         return !value || <div className="cursor-pointer duration-100 hover:bg-layerA active:bg-green-800" title="Click To Copy" onClick={() => copyText(value, paste)}>{label}</div>;
     }
 
-    const result: React.JSX.Element[] = [];
-    view.forEach((v, i) => {
+    const result = view.map((v, i) => {
         if (v.hide && !showHide) return;
         if (search != String.empty && !v.title.toLowerCase().startsWith(search.toLowerCase())) return;
-        result.push(
+        return (
             <details className="cursor-pointer open:text-center open:border-y-1 not-open:hover:bg-layerA" key={i} tabIndex={-1}>
                 <summary className={`in-open:bg-layerA list-none ${v.hide ? "text-text-gray" : undefined}`}>{v.title}</summary>
                 <PasswordPasteableData value={v.username} label="UserName"/>

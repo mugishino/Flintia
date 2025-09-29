@@ -1,5 +1,5 @@
 import { open, save } from "@tauri-apps/plugin-dialog";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { WInvoke } from "~/InvokeWrapper";
 import { AudioCodec, BuildFFmpegCommand, Preset, QualityMode, VideoCodec } from "./CommandBuilder";
 import { copyText } from "~/util";
@@ -11,11 +11,7 @@ import { Setting } from "~/Components";
  * @returns Option要素の配列
  */
 function EnumToOptions<T extends object>(arg: T) {
-    let elems: React.JSX.Element[] = [];
-    Object.entries(arg).forEach((k, i) => {
-        elems.push(<option key={i} value={k[1]}>{k[0]}</option>);
-    });
-    return elems;
+    return Object.entries(arg).map(([k, v], i) => <option key={i} value={v}>{k}</option>);
 }
 
 export default function Video() {

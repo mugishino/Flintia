@@ -1,6 +1,6 @@
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { TOTP } from "otpauth";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Config from "~/Config";
 import { copyText, notExists, useEffectAsync } from "~/util";
 
@@ -66,24 +66,19 @@ export default function Auth() {
         if (await notExists(file)) return;
         const read = await readTextFile(file);
         try {
-            const json = JSON.parse(read);
-            setLoadData(new Map(Object.entries(json)));
+            const map = JSON.toMap<string, string>(read);
+            setLoadData(map);
         } catch (err) {
             setErrMsg(String(err));
         }
     }, []);
-
-    const result: React.JSX.Element[] = [];
-    loadData.forEach((v, k) => {
-        result.push(<CodeView key={k} secret={v} title={k}/>);
-    });
 
     return (
         <>
             <div className="text-center text-2xl border-b-1">Authentication</div>
             <div className="h-full overflow-y-scroll">
                 <div className="text-fail">{errMsg}</div>
-                {result}
+                {loadData.map((k, v) => <CodeView key={k} secret={v} title={k}/>)}
             </div>
         </>
     );

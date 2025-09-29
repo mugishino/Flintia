@@ -15,11 +15,6 @@ export async function getAppdataDirFile(filename: string) {
     return dir+"\\"+filename;
 }
 
-// tailwindとcss modulesの結合用関数
-export function cls(...args: (string|null|undefined)[]) {
-    return args.join(String.space);
-}
-
 export function useEffectAsync(effect: () => Promise<void>, deps?: React.DependencyList) {
     useEffect(() => {effect()}, deps);
 }
@@ -72,11 +67,4 @@ export function splitExt(filename: string) {
         name: name,
         ext: ext,
     };
-}
-
-/**
- * NaNだった場合にデフォルト値を返す
- */
-export function getNumberOrDefault(value: number, default_: number) {
-    return isNaN(value) ? default_ : value;
 }
