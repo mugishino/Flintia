@@ -22,13 +22,13 @@ export default function Sidebar() {
         <div className="flex flex-col justify-between bg-layerA border-r-1 w-1/6 shrink-0">
             <div className="flex flex-col">
                 {AutoSideButton({
-                    "Pass"  : "/",
-                    "Tools" : "/Tools",
-                    "CmdGen": "/CmdGen",
-                    "Note"  : "/Note",
-                    "ToDo"  : "/ToDo",
-                    "QRCode": "/QRCode",
-                    "Auth"  : "/Auth",
+                    "Password"  : "/Password",
+                    "Tools"     : "/Tools",
+                    "Command"   : "/CmdGen",
+                    "Note"      : "/Note",
+                    "ToDo"      : "/ToDo",
+                    "QRCode"    : "/QRCode",
+                    "Auth"      : "/Auth",
                 }, false)}
             </div>
             <div className="flex flex-col">
