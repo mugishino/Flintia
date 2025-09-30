@@ -1,20 +1,30 @@
+// Utils
+import "~/main.css";
+import "~/global/array";
+import "~/global/json";
+import "~/global/map";
+import "~/global/math";
+import "~/global/number";
+import "~/global/string";
+// Tauri
+import { register, unregisterAll } from "@tauri-apps/plugin-global-shortcut";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { WInvoke } from "~/InvokeWrapper";
+// React
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
-import Password from "~/pages/Password";
-import "~/main.css";
-import { register, unregisterAll } from "@tauri-apps/plugin-global-shortcut";
-import { WInvoke } from "~/InvokeWrapper";
-import { getCurrentWindow } from "@tauri-apps/api/window";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router";
+// Sidebar
 import Sidebar from "~/Sidebar";
+import Password from "~/pages/Password";
 import Tools from "~/pages/Tools";
+import CmdGen from "./pages/CmdGen";
 import Note from "./pages/Note";
+import ToDo from "./pages/ToDo";
 import QRCode from "./pages/QRCode";
 import Auth from "./pages/Auth";
 import System from "./pages/System";
-import ToDo from "./pages/ToDo";
-import "~/global";
-import CmdGen from "./pages/CmdGen";
+// その他と未分類
 import NotFoundPage from "./404";
 
 if (process.env.NODE_ENV == "development") {
