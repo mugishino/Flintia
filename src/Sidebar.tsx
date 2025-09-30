@@ -1,4 +1,6 @@
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useLocation, useNavigate } from "react-router";
+import { WINDOW_DEFAULT_SIZE } from "./main";
 
 export default function Sidebar() {
     const navigate = useNavigate();
@@ -10,7 +12,12 @@ export default function Sidebar() {
 
         return <button
             className={`cursor-pointer border-black border-0 ${border} ${active}`}
-            onClick={() => navigate(props.navi)}
+            onClick={async () => {
+                await navigate(props.navi);
+                const mainWin = getCurrentWindow();
+                mainWin.setSize(WINDOW_DEFAULT_SIZE);
+                mainWin.center();
+            }}
         >{props.title}</button>
     }
 
@@ -19,7 +26,7 @@ export default function Sidebar() {
     }
 
     return (
-        <div className="flex flex-col justify-between bg-layerA border-r-1 w-1/6 shrink-0">
+        <div className="flex flex-col justify-between bg-layerA border-r-1 w-24 shrink-0">
             <div className="flex flex-col">
                 {AutoSideButton({
                     "Password"  : "/Password",

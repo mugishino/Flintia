@@ -53,6 +53,8 @@ export async function registerHotkey(shift: boolean, ctrl: boolean, alt: boolean
     });
 }
 
+
+
 const tauriWin = getCurrentWindow();
 await registerHotkey(true, true, true, false, "Q");
 
@@ -65,6 +67,13 @@ document.addEventListener("keydown", e => {
 tauriWin.onFocusChanged(({payload}) => {
     if (!payload) WInvoke.hide();
 });
+
+// default window size
+const physicalSize = await tauriWin.innerSize();
+const scaleFactor  = await tauriWin.scaleFactor();
+export const WINDOW_DEFAULT_SIZE  = physicalSize.toLogical(scaleFactor);
+
+
 
 function LandingPage() {
     const navigate = useNavigate();
