@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { BrowserQRCodeReader } from "@zxing/browser";
 import jsQR from "jsqr";
-import { getClipboardImageBlob } from "~/util";
+import { canvasToClipboard, getClipboardImageBlob } from "~/util";
 import { EvenlyDividedRow } from "~/Components";
 import * as mkqr from "qrcode";
 
@@ -53,12 +53,10 @@ export default function QRCode() {
         if (text.length == 0) return setResult("QRコード生成には文字列が必要です");
 
         mkqr.toCanvas(canvas, text);
-        canvas.toBlob(blob => {
-            if (blob == null) return;
-            navigator.clipboard.write([new ClipboardItem({[blob.type]: blob})]);
+        if (await canvasToClipboard(canvas)) {
             setResult("生成したQRコードをコピーしました");
             setSuccess(true);
-        });
+        }
     }
 
     return (

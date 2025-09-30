@@ -48,6 +48,10 @@ export function getImageMimeByClipboardImage(item: ClipboardItem) {
     return itemType;
 }
 
+/**
+ * クリップボードの画像をBlobで取得します。
+ * @returns 失敗した場合nullが返ります。
+ */
 export async function getClipboardImageBlob() {
     const item = (await navigator.clipboard.read())[0];
     const mime = getImageMimeByClipboardImage(item);
@@ -67,4 +71,19 @@ export function splitExt(filename: string) {
         name: name,
         ext: ext,
     };
+}
+
+/**
+ * canvasの画像をクリップボードにコピーします。
+ * @param canvas コピーするcanvas
+ * @returns 成功した場合true
+ */
+export async function canvasToClipboard(canvas: HTMLCanvasElement) {
+    canvas.toBlob(async blob => {
+        if (blob == null) return false;
+        await navigator.clipboard.write([
+            new ClipboardItem({"image/png": blob})
+        ]);
+    });
+    return true;
 }
