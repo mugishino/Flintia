@@ -1,11 +1,11 @@
-import UnixTime from "./UnixTime";
-import MinMaxValue from "./MinMaxValue";
-import UUIDGenerator from "./UUIDGenerator";
-import SaveClipImage from "./SaveClipImage";
-import HexConverter from "./HexConverter";
+import UnixTime from "./Tools/UnixTime";
+import MinMaxValue from "./Tools/MinMaxValue";
+import UUIDGenerator from "./Tools/UUIDGenerator";
+import SaveClipImage from "./Tools/SaveClipImage";
+import HexConverter from "./Tools/HexConverter";
 import { Section, EvenlyDividedRow } from "~/Components";
-import AspectRatioCalc from "./AspectRatioCalc";
-import UnixToTime from "./UnixToTime";
+import AspectRatioCalc from "./Tools/AspectRatioCalc";
+import UnixToTime from "./Tools/UnixToTime";
 
 export default function Tools() {
     return (

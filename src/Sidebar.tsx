@@ -24,7 +24,7 @@ export default function Sidebar() {
                 {AutoSideButton({
                     "Password"  : "/Password",
                     "Tools"     : "/Tools",
-                    "Command"   : "/CmdGen",
+                    "CmdGen"    : "/CmdGen",
                     "Note"      : "/Note",
                     "ToDo"      : "/ToDo",
                     "QRCode"    : "/QRCode",

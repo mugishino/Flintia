@@ -1,20 +1,20 @@
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
-import Password from "~/Password/Password";
+import Password from "~/pages/Password";
 import "~/main.css";
 import { register, unregisterAll } from "@tauri-apps/plugin-global-shortcut";
 import { WInvoke } from "~/InvokeWrapper";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router";
 import Sidebar from "~/Sidebar";
-import Tools from "~/Tools/Tools";
-import Note from "./Note/Note";
-import QRCode from "./QRCode/QRCode";
-import Auth from "./Auth/Auth";
-import System from "./System/System";
-import ToDo from "./ToDo/ToDo";
+import Tools from "~/pages/Tools";
+import Note from "./pages/Note";
+import QRCode from "./pages/QRCode";
+import Auth from "./pages/Auth";
+import System from "./pages/System";
+import ToDo from "./pages/ToDo";
 import "~/global";
-import CmdGen from "./CmdGen/CmdGen";
+import CmdGen from "./pages/CmdGen";
 import NotFoundPage from "./404";
 
 if (process.env.NODE_ENV == "development") {
