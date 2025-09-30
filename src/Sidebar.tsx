@@ -1,6 +1,6 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useLocation, useNavigate } from "react-router";
-import { WINDOW_DEFAULT_SIZE } from "./main";
+import { DEFAULT_WINDOW_SIZE } from "./Flintia";
 
 export default function Sidebar() {
     const navigate = useNavigate();
@@ -15,7 +15,7 @@ export default function Sidebar() {
             onClick={async () => {
                 await navigate(props.navi);
                 const mainWin = getCurrentWindow();
-                mainWin.setSize(WINDOW_DEFAULT_SIZE);
+                mainWin.setSize(DEFAULT_WINDOW_SIZE);
                 mainWin.center();
             }}
         >{props.title}</button>

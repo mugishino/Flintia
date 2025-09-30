@@ -1,14 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 
 export const WInvoke = {
-    async show() {
-        await invoke("show");
-    },
-
-    async hide() {
-        await invoke("hide");
-    },
-
     async paste() {
         await invoke("paste");
     },

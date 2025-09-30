@@ -3,9 +3,9 @@ import { WInvoke } from "~/InvokeWrapper";
 import { getAppdataDirFile } from "~/util/path";
 import * as AutoStart from "@tauri-apps/plugin-autostart";
 import { useEffect, useState } from "react";
-import { HOTKEY_MAINKEY, registerHotkey } from "~/main";
 import Config from "~/Config";
 import { useEffectAsync } from "~/util/react";
+import { Flintia, HotkeyMainKey } from "~/Flintia";
 
 export default function System() {
     const [autostart, setAutostart] = useState(false);
@@ -31,13 +31,13 @@ export default function System() {
     }, []);
 
     useEffect(() => {
-        registerHotkey(shift, ctrl, alt, win, key as HOTKEY_MAINKEY).then(isError => setHotkeyOk(isError));
+        Flintia.registerHotkey(shift, ctrl, alt, win, key as HotkeyMainKey).then(isError => setHotkeyOk(isError));
         Config.load().then(config => {
             config.hotkey_shift = shift;
             config.hotkey_ctrl  = ctrl ;
             config.hotkey_alt   = alt  ;
             config.hotkey_win   = win  ;
-            config.hotkey_main  = key as HOTKEY_MAINKEY;
+            config.hotkey_main  = key as HotkeyMainKey;
             config.save();
         });
     }, [shift, ctrl, alt, win, key]);

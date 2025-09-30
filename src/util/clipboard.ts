@@ -1,9 +1,10 @@
+import { Flintia } from "~/Flintia";
 import { WInvoke } from "../InvokeWrapper";
 
 export function copyText(text: string|number, paste: boolean=false) {
     navigator.clipboard.writeText(text.toString());
     if (paste) {
-        WInvoke.hide();
+        Flintia.hide();
         WInvoke.paste();
     }
 }

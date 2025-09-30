@@ -6,16 +6,15 @@ import "~/global/map";
 import "~/global/math";
 import "~/global/number";
 import "~/global/string";
-// Tauri
-import { register, unregisterAll } from "@tauri-apps/plugin-global-shortcut";
-import { getCurrentWindow } from "@tauri-apps/api/window";
-import { WInvoke } from "~/InvokeWrapper";
+// Core
+import { Flintia } from "./Flintia";
 // React
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router";
-// Sidebar
+// Pages
 import Sidebar from "~/Sidebar";
+import NotFoundPage from "./pages/404";
 import Password from "~/pages/Password";
 import Tools from "~/pages/Tools";
 import CmdGen from "./pages/CmdGen";
@@ -25,53 +24,24 @@ import QRCode from "./pages/QRCode";
 import Auth from "./pages/Auth";
 import System from "./pages/System";
 // その他と未分類
-import NotFoundPage from "./404";
 
 if (process.env.NODE_ENV == "development") {
     document.body.style.border = "thin solid #800";
 }
 
-export type HOTKEY_MAINKEY = "A"|"B"|"C"|"D"|"E"|"F"|"G"|"H"|"I"|"J"|"K"|"L"|"M"|"N"|"O"|"P"|"Q"|"R"|"S"|"T"|"U"|"V"|"W"|"X"|"Y"|"Z";
-export async function registerHotkey(shift: boolean, ctrl: boolean, alt: boolean, win: boolean, main: HOTKEY_MAINKEY): Promise<boolean> {
-    await unregisterAll();
-
-    const key: string[] = [];
-    if (shift) key.push("Shift");
-    if (ctrl ) key.push("Ctrl" );
-    if (alt  ) key.push("Alt"  );
-    if (win  ) key.push("Super");
-    key.push(main);
-
-    return new Promise(resolve => {
-        // 成功時はtrueが返る
-        register(key.join("+"), async e => {
-            if (e.state != "Pressed") return;
-            await tauriWin.isVisible() ? WInvoke.hide() : WInvoke.show();
-        })
-        .then (() => resolve(true ))
-        .catch(() => resolve(false));
-    });
-}
 
 
-
-const tauriWin = getCurrentWindow();
-await registerHotkey(true, true, true, false, "Q");
+await Flintia.registerHotkey(true, true, true, false, "Q");
 
 document.addEventListener("keydown", e => {
     if (e.code == "Escape") {
-        WInvoke.hide();
+        Flintia.hide();
     }
 });
 
-tauriWin.onFocusChanged(({payload}) => {
-    if (!payload) WInvoke.hide();
+Flintia.mainWindow.onFocusChanged(({payload}) => {
+    if (!payload) Flintia.hide();
 });
-
-// default window size
-const physicalSize = await tauriWin.innerSize();
-const scaleFactor  = await tauriWin.scaleFactor();
-export const WINDOW_DEFAULT_SIZE  = physicalSize.toLogical(scaleFactor);
 
 
 

@@ -11,6 +11,8 @@
     "core:window:allow-inner-size",
     "core:window:allow-set-size",
     "core:window:allow-center",
+    "core:window:allow-hide",
+    "core:window:allow-show",
 
     "global-shortcut:allow-unregister-all",
     "global-shortcut:allow-register",

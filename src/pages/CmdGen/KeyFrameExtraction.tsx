@@ -2,9 +2,9 @@ import { desktopDir } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
 import { useState } from "react";
 import { Setting } from "~/Components";
-import { WInvoke } from "~/InvokeWrapper";
 import { getBasename } from "~/util/path";
 import { copyText } from "~/util/clipboard";
+import { Flintia } from "~/Flintia";
 
 const DESKTOP_DIR = await desktopDir();
 export default function KeyFrameExtraction() {
@@ -27,7 +27,7 @@ export default function KeyFrameExtraction() {
                             extensions: ["mp4", "webm", "mkv", "mov"]
                         }],
                     }).then(async v => {
-                        await WInvoke.show();
+                        await Flintia.show();
                         if (v != null) setVideo(v);
                     });
                 }}>{video ? getBasename(video) : "Browse..."}</button>
@@ -40,7 +40,7 @@ export default function KeyFrameExtraction() {
                         directory: true,
                         title: "Output Directory"
                     }).then(async v => {
-                        await WInvoke.show();
+                        await Flintia.show();
                         if (v != null) setOutdir(v);
                     });
                 }}>{outdir ? outdir : "Browse..."}</button>

@@ -1,6 +1,6 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { getAppdataDirFile, notExists } from "~/util/path";
-import { HOTKEY_MAINKEY } from "./main";
+import { HotkeyMainKey } from "./Flintia";
 
 export default class Config {
     passfile = "";
@@ -10,7 +10,7 @@ export default class Config {
     hotkey_ctrl = true;
     hotkey_alt = true;
     hotkey_win = false;
-    hotkey_main = "Q" as HOTKEY_MAINKEY;
+    hotkey_main = "Q" as HotkeyMainKey;
 
     private static async getFile() {
         return await getAppdataDirFile("config.json");

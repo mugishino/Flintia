@@ -1,9 +1,9 @@
 import { open, save } from "@tauri-apps/plugin-dialog";
 import { useEffect, useState } from "react";
-import { WInvoke } from "~/InvokeWrapper";
 import { AudioCodec, BuildFFmpegCommand, Preset, QualityMode, VideoCodec } from "./CommandBuilder";
 import { copyText } from "~/util/clipboard";
 import { Setting } from "~/Components";
+import { Flintia } from "~/Flintia";
 
 /**
  * EnumをOptionの配列で返します
@@ -56,7 +56,7 @@ export default function Video() {
                             }]
                         }).then(f => {
                             if (f != null) setInputFile(f);
-                            WInvoke.show();
+                            Flintia.show();
                         });
                     }}>{sInputFile?.split("\\").slice(-1)[0] ?? "Browse..."}
                 </button>
@@ -87,7 +87,7 @@ export default function Video() {
                         title: "Output file",
                     }).then(f => {
                         if (f != null) setOutputFile(f);
-                        WInvoke.show();
+                        Flintia.show();
                     });
                 }}>{sOutputFile?.split("\\").slice(-1)[0] ?? "Browse..."}</button>
             </Setting>

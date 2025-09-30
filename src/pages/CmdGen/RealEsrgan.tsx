@@ -2,9 +2,9 @@ import { desktopDir } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
 import { useState } from "react";
 import { Setting } from "~/Components";
-import { WInvoke } from "~/InvokeWrapper";
 import { getBasename, splitExt } from "~/util/path";
 import { copyText } from "~/util/clipboard";
+import { Flintia } from "~/Flintia";
 
 const Model = {
     "GAN x4Plus Anime": "RealESRGAN-x4plus-anime",
@@ -41,7 +41,7 @@ export default function RealEsrgan() {
                         title: "Select Images",
                         multiple: true,
                     }).then(async v => {
-                        await WInvoke.show();
+                        await Flintia.show();
                         if (v != null) setFiles(v);
                     });
                 }}>Browse...</button>
@@ -61,7 +61,7 @@ export default function RealEsrgan() {
                         multiple: false,
                         title: "Select Output Directory"
                     }).then(async v => {
-                        await WInvoke.show();
+                        await Flintia.show();
                         if (v != null) setOutdir(v);
                     });
                 }}>{outdir ?? "Browse..."}</button>
