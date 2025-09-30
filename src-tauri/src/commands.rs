@@ -3,18 +3,6 @@ use std::process::Command;
 use enigo::{Enigo, Key, Keyboard, Settings};
 
 #[tauri::command]
-pub fn show(win: tauri::WebviewWindow) {
-    let _ = win.center();
-    let _ = win.show();
-    let _ = win.set_focus();
-}
-
-#[tauri::command]
-pub fn hide(win: tauri::WebviewWindow) {
-    let _ = win.hide();
-}
-
-#[tauri::command]
 pub fn paste() {
     let mut enigo = Enigo::new(&Settings::default()).unwrap();
 

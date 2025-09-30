@@ -46,7 +46,13 @@ pub fn run() {
                         .blocking_show();
                     }
                     "show" => {
-                        commands::show(app.get_webview_window("main").expect("no main window"));
+                        let win = app.get_webview_window("main").expect("no main window");
+                        // 開発時にJS側でエラーが発生し、ウィンドウが非表示にできない場合の対応策
+                        if !win.is_visible().unwrap_or(false) {
+                            win.show().expect("window show failure");
+                        } else {
+                            win.hide().expect("window hide failure");
+                        }
                     }
                     _ => {
                         println!("unknown menu item")
@@ -62,8 +68,6 @@ pub fn run() {
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
-            commands::show,
-            commands::hide,
             commands::paste,
             commands::run_process
         ])

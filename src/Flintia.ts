@@ -28,7 +28,9 @@ export namespace Flintia {
     }
 
     export async function show() {
+        mainWindow.center();
         mainWindow.show();
+        mainWindow.setFocus();
     }
 
     export async function hide() {
