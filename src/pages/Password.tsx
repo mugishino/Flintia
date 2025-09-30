@@ -27,7 +27,7 @@ async function getPassRecords() {
 
 
 
-export default function App() {
+export default function Password() {
     const [view, setView] = useState<PassRecord[]>([]);
     const [search, setSearch] = useState(String.empty);
     const [errMsg, setErrMsg] = useState(String.empty);

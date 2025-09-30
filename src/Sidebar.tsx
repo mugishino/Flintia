@@ -1,9 +1,8 @@
-import { getCurrentWindow } from "@tauri-apps/api/window";
-import { useLocation, useNavigate } from "react-router";
-import { DEFAULT_WINDOW_SIZE } from "./Flintia";
+import { useLocation } from "react-router";
+import { Routing, useFlintiaNavigate } from "./Routing";
 
 export default function Sidebar() {
-    const navigate = useNavigate();
+    const navigate = useFlintiaNavigate();
     const locate = useLocation();
 
     function PageButton(props: {title: string, navi: string, borderTop: boolean}) {
@@ -14,9 +13,6 @@ export default function Sidebar() {
             className={`cursor-pointer border-black border-0 ${border} ${active}`}
             onClick={async () => {
                 await navigate(props.navi);
-                const mainWin = getCurrentWindow();
-                mainWin.setSize(DEFAULT_WINDOW_SIZE);
-                mainWin.center();
             }}
         >{props.title}</button>
     }
@@ -25,24 +21,18 @@ export default function Sidebar() {
         return Object.entries(map).map(([k, v]) => <PageButton key={k} title={k} navi={v} borderTop={borderTop}/>);
     }
 
+    const sidebar_top: {[_:string]:string} = {};
+    const sidebar_bot: {[_:string]:string} = {};
+    Object.entries(Routing.Data).forEach(([k, v]) => {
+        if (v.sidebar == undefined) return;
+        if (v.sidebar.pos == "Top"   ) sidebar_top[v.sidebar.label] = k;
+        if (v.sidebar.pos == "Bottom") sidebar_bot[v.sidebar.label] = k;
+    });
+
     return (
         <div className="flex flex-col justify-between bg-layerA border-r-1 w-24 shrink-0">
-            <div className="flex flex-col">
-                {AutoSideButton({
-                    "Password"  : "/Password",
-                    "Tools"     : "/Tools",
-                    "CmdGen"    : "/CmdGen",
-                    "Note"      : "/Note",
-                    "ToDo"      : "/ToDo",
-                    "QRCode"    : "/QRCode",
-                    "Auth"      : "/Auth",
-                }, false)}
-            </div>
-            <div className="flex flex-col">
-                {AutoSideButton({
-                    "System": "/System",
-                }, true)}
-            </div>
+            <div className="flex flex-col">{AutoSideButton(sidebar_top, false)}</div>
+            <div className="flex flex-col">{AutoSideButton(sidebar_bot, true )}</div>
         </div>
     );
 }
