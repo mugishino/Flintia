@@ -2,7 +2,7 @@ import { desktopDir } from "@tauri-apps/api/path";
 import { save } from "@tauri-apps/plugin-dialog";
 import { writeFile } from "@tauri-apps/plugin-fs";
 import { useState } from "react";
-import { getClipboardImageBlob } from "~/util";
+import { getClipboardImageBlob } from "~/util/clipboard";
 
 export default function SaveClipImage() {
     const [errMsg, setErrMsgRaw] = useState<string|null>(null);

@@ -3,7 +3,8 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { useState } from "react";
 import { Setting } from "~/Components";
 import { WInvoke } from "~/InvokeWrapper";
-import { copyText, getBasename } from "~/util";
+import { getBasename } from "~/util/path";
+import { copyText } from "~/util/clipboard";
 
 const DESKTOP_DIR = await desktopDir();
 export default function KeyFrameExtraction() {

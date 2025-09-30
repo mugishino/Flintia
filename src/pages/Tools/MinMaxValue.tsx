@@ -1,4 +1,4 @@
-import { copyText } from "~/util";
+import { copyText } from "~/util/clipboard";
 
 export default function MinMaxValue() {
     function CreateElem(props: {title: string, min: number, max: number}) {

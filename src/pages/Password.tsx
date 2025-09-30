@@ -1,8 +1,10 @@
 import { useState } from "react";
 import Config from "~/Config";
-import { copyText, notExists, useEffectAsync } from "~/util";
+import { copyText } from "~/util/clipboard";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import yaml from "js-yaml";
+import { notExists } from "~/util/path";
+import { useEffectAsync } from "~/util/react";
 
 class PassRecord {
     title       = String.empty;

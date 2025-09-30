@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { copyText } from "~/util";
+import { copyText } from "~/util/clipboard";
 
 export default function UUIDGenerator() {
     const [uuidView, setUUID] = useState(crypto.randomUUID());

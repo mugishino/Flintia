@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { BrowserQRCodeReader } from "@zxing/browser";
 import jsQR from "jsqr";
-import { canvasToClipboard, getClipboardImageBlob } from "~/util";
+import { canvasToClipboard, getClipboardImageBlob } from "~/util/clipboard";
 import { EvenlyDividedRow } from "~/Components";
 import * as mkqr from "qrcode";
 

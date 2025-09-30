@@ -1,5 +1,5 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
-import { getAppdataDirFile, notExists } from "~/util";
+import { getAppdataDirFile, notExists } from "~/util/path";
 import { HOTKEY_MAINKEY } from "./main";
 
 export default class Config {

@@ -1,6 +1,7 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { useState } from "react";
-import { getAppdataDirFile, notExists, useUpdateRender } from "~/util";
+import { getAppdataDirFile, notExists } from "~/util/path";
+import { useUpdateRender } from "~/util/react";
 
 const file = await getAppdataDirFile("todo.json");
 async function loadToDoList() {

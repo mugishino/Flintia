@@ -3,7 +3,8 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { useState } from "react";
 import { Setting } from "~/Components";
 import { WInvoke } from "~/InvokeWrapper";
-import { copyText, getBasename, splitExt } from "~/util";
+import { getBasename, splitExt } from "~/util/path";
+import { copyText } from "~/util/clipboard";
 
 const Model = {
     "GAN x4Plus Anime": "RealESRGAN-x4plus-anime",

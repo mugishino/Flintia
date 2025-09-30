@@ -1,10 +1,11 @@
 import { Section, Setting, ToggleSwitch } from "~/Components";
 import { WInvoke } from "~/InvokeWrapper";
-import { getAppdataDirFile, useEffectAsync } from "~/util";
+import { getAppdataDirFile } from "~/util/path";
 import * as AutoStart from "@tauri-apps/plugin-autostart";
 import { useEffect, useState } from "react";
 import { HOTKEY_MAINKEY, registerHotkey } from "~/main";
 import Config from "~/Config";
+import { useEffectAsync } from "~/util/react";
 
 export default function System() {
     const [autostart, setAutostart] = useState(false);

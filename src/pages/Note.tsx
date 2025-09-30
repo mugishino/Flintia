@@ -1,6 +1,7 @@
-import { getAppdataDirFile, notExists, useEffectAsync } from "~/util";
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { useState } from "react";
+import { getAppdataDirFile, notExists } from "~/util/path";
+import { useEffectAsync } from "~/util/react";
 
 const NOTE_PATH = await getAppdataDirFile("note.txt");
 

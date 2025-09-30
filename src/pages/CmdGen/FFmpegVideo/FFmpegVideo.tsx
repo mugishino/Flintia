@@ -2,7 +2,7 @@ import { open, save } from "@tauri-apps/plugin-dialog";
 import { useEffect, useState } from "react";
 import { WInvoke } from "~/InvokeWrapper";
 import { AudioCodec, BuildFFmpegCommand, Preset, QualityMode, VideoCodec } from "./CommandBuilder";
-import { copyText } from "~/util";
+import { copyText } from "~/util/clipboard";
 import { Setting } from "~/Components";
 
 /**

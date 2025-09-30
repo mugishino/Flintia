@@ -2,7 +2,9 @@ import { readTextFile } from "@tauri-apps/plugin-fs";
 import { TOTP } from "otpauth";
 import { useRef, useState } from "react";
 import Config from "~/Config";
-import { copyText, notExists, useEffectAsync } from "~/util";
+import { notExists } from "~/util/path";
+import { useEffectAsync } from "~/util/react";
+import { copyText } from "~/util/clipboard";
 
 function secretToNumber(secret: string) {
     const res = new TOTP({
