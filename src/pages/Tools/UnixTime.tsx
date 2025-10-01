@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Clipboards } from "~/util/clipboard";
 
 export default function UnixTime() {
     const [time, setTime] = useState(Date.now());
@@ -8,5 +9,5 @@ export default function UnixTime() {
         }, 100);
     }, []);
 
-    return <button onClick={() => navigator.clipboard.writeText(time.toString())}>{time.toString()}</button>;
+    return <button onClick={() => Clipboards.copyText(time.toString())}>{time.toString()}</button>;
 }

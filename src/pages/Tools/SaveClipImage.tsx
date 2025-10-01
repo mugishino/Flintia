@@ -2,7 +2,7 @@ import { desktopDir } from "@tauri-apps/api/path";
 import { save } from "@tauri-apps/plugin-dialog";
 import { writeFile } from "@tauri-apps/plugin-fs";
 import { useState } from "react";
-import { getClipboardImageBlob } from "~/util/clipboard";
+import { Clipboards } from "~/util/clipboard";
 
 export default function SaveClipImage() {
     const [errMsg, setErrMsgRaw] = useState<string|null>(null);
@@ -14,7 +14,7 @@ export default function SaveClipImage() {
     }
 
     async function onSaveButtonClick() {
-        const blob = await getClipboardImageBlob();
+        const blob = await Clipboards.getImageBlob();
         if (blob == null) return setErrorMessage("クリップボードが画像ではありません。");
 
         const desktopPath = await desktopDir();

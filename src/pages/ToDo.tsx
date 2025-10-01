@@ -1,11 +1,11 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { useState } from "react";
-import { getAppdataDirFile, notExists } from "~/util/path";
+import { getAppdataDirFile, Paths } from "~/util/path";
 import { useUpdateRender } from "~/util/react";
 
 const file = await getAppdataDirFile("todo.json");
 async function loadToDoList() {
-    if (await notExists(file)) return [];
+    if (await Paths.notExists(file)) return [];
     const read = await readTextFile(file);
     const list: string[] = JSON.parse(read);
     return list;

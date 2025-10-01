@@ -2,9 +2,9 @@ import { desktopDir } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
 import { useState } from "react";
 import { Setting } from "~/Components";
-import { getBasename, splitExt } from "~/util/path";
-import { copyText } from "~/util/clipboard";
+import { Clipboards } from "~/util/clipboard";
 import { Flintia } from "~/Flintia";
+import { Paths } from "~/util/path";
 
 const Model = {
     "GAN x4Plus Anime": "RealESRGAN-x4plus-anime",
@@ -49,7 +49,7 @@ export default function RealEsrgan() {
             {files.length == 0 ? null :
                 <details>
                     <summary className="text-left pl-2">Selected File List</summary>
-                    <div className="text-left min-h-1 wrap-break-word border-1">{files.map(f => getBasename(f)).join(", ")}</div>
+                    <div className="text-left min-h-1 wrap-break-word border-1">{files.map(f => Paths.getBasename(f)).join(", ")}</div>
                 </details>
             }
 
@@ -69,10 +69,10 @@ export default function RealEsrgan() {
 
             <button onClick={() => {
                 const cmd = files.map(f => {
-                    const outFileName = splitExt(getBasename(f)).name;
+                    const outFileName = Paths.splitExt(Paths.getBasename(f)).name;
                     return `realesrgan-ncnn-vulkan -i "${f}" -o "${outdir}/REG_${outFileName}.png" -n ${Model[model]}`;
                 }).join("&");
-                copyText(cmd);
+                Clipboards.copyText(cmd);
                 // コピー通知、コマンド長が8192を超えてれば長めに出す
                 const over8192 = cmd.length > 8191;
                 setCopied("Copied!" + (over8192 ? " Command length exceeds 8192" : String.empty));

@@ -12,6 +12,7 @@ import QRCode from "./pages/QRCode";
 import Auth from "./pages/Auth";
 import System from "./pages/System";
 import MemeStock from "./pages/MemeStock";
+import { Logger } from "./Logger";
 
 
 
@@ -64,6 +65,6 @@ export function useFlintiaNavigate() {
         const windowSize = data.size ?? Flintia.getDefaultWindowSize();
         if (windowSize) {
             await Flintia.setWindowSize(windowSize);
-        } else console.log("Failed: get page window size and flintia default window size");
+        } else Logger.failed("get page window size and flintia default window size");
     };
 }

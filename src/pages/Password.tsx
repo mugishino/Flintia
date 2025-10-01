@@ -1,9 +1,9 @@
 import { useState } from "react";
 import Config from "~/Config";
-import { copyText } from "~/util/clipboard";
+import { Clipboards } from "~/util/clipboard";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import yaml from "js-yaml";
-import { notExists } from "~/util/path";
+import { Paths } from "~/util/path";
 import { useEffectAsync } from "~/util/react";
 
 class PassRecord {
@@ -17,8 +17,8 @@ class PassRecord {
 
 async function getPassRecords() {
     const path = (await Config.load()).passfile;
-    if (path == String.empty || await notExists(path)) {
-        return [];
+    if (path == String.empty || await Paths.notExists(path)) {
+        return null;
     }
 
     const raw = await readTextFile(path);
@@ -42,6 +42,7 @@ export default function Password() {
         setErrMsg(String.empty);
         try {
             const data = await getPassRecords();
+            if (data == null) return setErrMsg("Password file not found");
             const sorted = data.sort((a, b) => a.title.localeCompare(b.title)) // A-Zでソート
             setView(sorted);
         } catch (err) {
@@ -50,7 +51,7 @@ export default function Password() {
     }, [search, showHide]);
 
     function PasswordPasteableData({value, label}: {value: string, label: string}) {
-        return !value || <div className="cursor-pointer duration-100 hover:bg-layerA active:bg-green-800" title="Click To Copy" onClick={() => copyText(value, paste)}>{label}</div>;
+        return !value || <div className="cursor-pointer duration-100 hover:bg-layerA active:bg-green-800" title="Click To Copy" onClick={() => Clipboards.copyText(value, paste)}>{label}</div>;
     }
 
     const result = view.map((v, i) => {

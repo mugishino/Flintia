@@ -2,9 +2,9 @@ import { readTextFile } from "@tauri-apps/plugin-fs";
 import { TOTP } from "otpauth";
 import { useRef, useState } from "react";
 import Config from "~/Config";
-import { notExists } from "~/util/path";
+import { Paths } from "~/util/path";
 import { useEffectAsync } from "~/util/react";
-import { copyText } from "~/util/clipboard";
+import { Clipboards } from "~/util/clipboard";
 
 function secretToNumber(secret: string) {
     const res = new TOTP({
@@ -50,10 +50,10 @@ export default function Auth() {
             onMouseLeave={() => isHover.current = false}
             onClick={() => {
                 if (code == null) return;
-                copyText(code, true);
+                Clipboards.copyText(code, true);
             }}>
                 <div className="flex items-center">{props.title}</div>
-                <div className="my-auto text-3xl">{(code ?? String.empty).inject(String.space, 3)}</div>
+                <div className="my-auto text-3xl">{(code ?? String.empty).insert(String.space, 3)}</div>
             </div>
         );
     }
@@ -65,7 +65,7 @@ export default function Auth() {
     useEffectAsync(async() => {
         setErrMsg(String.empty);
         const file = (await Config.load()).authfile;
-        if (await notExists(file)) return;
+        if (await Paths.notExists(file)) return setErrMsg("Auth file not found");
         const read = await readTextFile(file);
         try {
             const map = JSON.toMap<string, string>(read);

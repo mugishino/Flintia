@@ -2,8 +2,8 @@ import { desktopDir } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
 import { useState } from "react";
 import { Setting } from "~/Components";
-import { getBasename } from "~/util/path";
-import { copyText } from "~/util/clipboard";
+import { Paths } from "~/util/path";
+import { Clipboards } from "~/util/clipboard";
 import { Flintia } from "~/Flintia";
 
 const DESKTOP_DIR = await desktopDir();
@@ -30,7 +30,7 @@ export default function KeyFrameExtraction() {
                         await Flintia.show();
                         if (v != null) setVideo(v);
                     });
-                }}>{video ? getBasename(video) : "Browse..."}</button>
+                }}>{video ? Paths.getBasename(video) : "Browse..."}</button>
             </Setting>
 
             <Setting title="OutputDirectory">
@@ -47,7 +47,7 @@ export default function KeyFrameExtraction() {
             </Setting>
 
             <button disabled={!video || !outdir} onClick={() => {
-                copyText(`ffmpeg -i "${video}" -vf "select='eq(pict_type\,I)'" -vsync vfr -frame_pts true "${outdir}\\%03d.png"`);
+                Clipboards.copyText(`ffmpeg -i "${video}" -vf "select='eq(pict_type\,I)'" -vsync vfr -frame_pts true "${outdir}\\%03d.png"`);
                 setCopied(true);
                 setTimeout(() => setCopied(false), 1000);
             }}>{copied ? "コピーしました" : "クリックでコマンドをコピー"}</button>

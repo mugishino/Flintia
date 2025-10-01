@@ -1,11 +1,11 @@
-import { copyText } from "~/util/clipboard";
+import { Clipboards } from "~/util/clipboard";
 
 export default function MinMaxValue() {
     function CreateElem(props: {title: string, min: number, max: number}) {
         return <button
             title="LeftClick: Max, RightClick: MIN"
-            onClick   ={() => copyText(props.max.toString())}
-            onAuxClick={() => copyText(props.min.toString())}
+            onClick   ={() => Clipboards.copyText(props.max.toString())}
+            onAuxClick={() => Clipboards.copyText(props.min.toString())}
         >{props.title}</button>;
     }
     return (

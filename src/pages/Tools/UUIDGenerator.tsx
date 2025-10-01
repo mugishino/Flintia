@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { copyText } from "~/util/clipboard";
+import { Clipboards } from "~/util/clipboard";
 
 export default function UUIDGenerator() {
     const [uuidView, setUUID] = useState(crypto.randomUUID());
@@ -8,7 +8,7 @@ export default function UUIDGenerator() {
             title="左クリでコピー | 右クリでハイフンなしをコピー"
             onMouseDown={e => {
                 // 2 is mouse-right
-                copyText(e.button != 2 ? uuidView : uuidView.replace(/-/g, String.empty));
+                Clipboards.copyText(e.button != 2 ? uuidView : uuidView.replace(/-/g, String.empty));
                 setUUID(crypto.randomUUID());
             }}
         >{uuidView}</button>

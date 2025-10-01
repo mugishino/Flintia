@@ -1,7 +1,7 @@
 import { open, save } from "@tauri-apps/plugin-dialog";
 import { useEffect, useState } from "react";
 import { AudioCodec, BuildFFmpegCommand, Preset, QualityMode, VideoCodec } from "./CommandBuilder";
-import { copyText } from "~/util/clipboard";
+import { Clipboards } from "~/util/clipboard";
 import { Setting } from "~/Components";
 import { Flintia } from "~/Flintia";
 
@@ -104,7 +104,7 @@ export default function Video() {
                         sQualityValue,
                         sOutputFile ?? "o.",
                     );
-                    copyText(cmd);
+                    Clipboards.copyText(cmd);
                     setCopied(true);
                     setTimeout(() => setCopied(false), 1000);
                 }}>{copied ? "Copied!" : "Copy FFmpeg command"}</button>

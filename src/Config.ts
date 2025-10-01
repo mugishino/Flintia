@@ -1,5 +1,5 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
-import { getAppdataDirFile, notExists } from "~/util/path";
+import { getAppdataDirFile, Paths } from "~/util/path";
 import { HotkeyMainKey } from "./Flintia";
 
 export default class Config {
@@ -19,7 +19,7 @@ export default class Config {
 
     public static async load() {
         const path = await Config.getFile();
-        if (await notExists(path)) {
+        if (await Paths.notExists(path)) {
             await writeTextFile(path, JSON.stringify(new Config(), undefined, 4));
         }
         const raw = await readTextFile(path);

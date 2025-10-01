@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { copyText } from "~/util/clipboard";
+import { Clipboards } from "~/util/clipboard";
 
 export default function UnixToTime() {
     const [copied, setCopied] = useState(false);
@@ -32,7 +32,7 @@ export default function UnixToTime() {
                 </div>
             </div>
             <button onClick={() => {
-                copyText(text);
+                Clipboards.copyText(text);
                 setCopied(true);
                 setTimeout(() => setCopied(false), 1000);
             }}>{copied ? "Copied!" : text}</button>
