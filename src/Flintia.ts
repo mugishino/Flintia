@@ -3,6 +3,10 @@ import { getCurrentWindow, LogicalSize } from "@tauri-apps/api/window";
 
 export type HotkeyMainKey = "A"|"B"|"C"|"D"|"E"|"F"|"G"|"H"|"I"|"J"|"K"|"L"|"M"|"N"|"O"|"P"|"Q"|"R"|"S"|"T"|"U"|"V"|"W"|"X"|"Y"|"Z";
 
+const SessionDataKey = {
+    DefaultWindowSize: "DEFAULT_WINDOW_SIZE",
+};
+
 export namespace Flintia {
     export const mainWindow = getCurrentWindow();
 
@@ -47,6 +51,23 @@ export namespace Flintia {
         await mainWindow.setSize(size);
         await mainWindow.center();
     }
+
+    export function getDefaultWindowSize() {
+        const raw = sessionStorage.getItem(SessionDataKey.DefaultWindowSize);
+        if (raw == null) return null;
+        const data = JSON.parse(raw);
+        return new LogicalSize({
+            width: data.width,
+            height: data.height
+        });
+    }
 }
 
-export const DEFAULT_WINDOW_SIZE = await Flintia.getWindowSize();
+// SessionStorageに存在しないキーだったら情報を入れる
+Object.entries({
+    [SessionDataKey.DefaultWindowSize]: await Flintia.getWindowSize()
+}).forEach(([k, v]) => {
+    if (sessionStorage.getItem(k) == null) {
+        sessionStorage.setItem(k, JSON.stringify(v));
+    }
+})

@@ -5,6 +5,7 @@ import { HotkeyMainKey } from "./Flintia";
 export default class Config {
     passfile = "";
     authfile = "";
+    imagedir = "";
 
     hotkey_shift = true;
     hotkey_ctrl = true;

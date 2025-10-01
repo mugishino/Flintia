@@ -1,10 +1,10 @@
-import { Flintia } from "~/Flintia";
 import { WInvoke } from "../InvokeWrapper";
+import { invoke } from "@tauri-apps/api/core";
 
 export function copyText(text: string|number, paste: boolean=false) {
     navigator.clipboard.writeText(text.toString());
     if (paste) {
-        Flintia.hide();
+        invoke("hide");
         WInvoke.paste();
     }
 }
@@ -42,11 +42,14 @@ export async function getClipboardImageBlob() {
  * @returns 成功した場合true
  */
 export async function canvasToClipboard(canvas: HTMLCanvasElement) {
-    canvas.toBlob(async blob => {
-        if (blob == null) return false;
-        await navigator.clipboard.write([
-            new ClipboardItem({"image/png": blob})
-        ]);
+    // toBlobを待たずにclipboardを使おうとするとエラーが出ます
+    const blob: Blob|null = await new Promise(resolve => {
+        canvas.toBlob(async blob => resolve(blob));
     });
+
+    if (blob == null) return false;
+    await navigator.clipboard.write([
+        new ClipboardItem({"image/png": blob})
+    ]);
     return true;
 }

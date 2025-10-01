@@ -1,6 +1,6 @@
 import { LogicalSize } from "@tauri-apps/api/dpi";
 import { Route, Routes, useNavigate } from "react-router";
-import { DEFAULT_WINDOW_SIZE, Flintia } from "./Flintia";
+import { Flintia } from "./Flintia";
 import NotFoundPage from "./pages/404";
 import LandingPage from "./pages/Landing";
 import Tools from "./pages/Tools";
@@ -11,6 +11,7 @@ import ToDo from "./pages/ToDo";
 import QRCode from "./pages/QRCode";
 import Auth from "./pages/Auth";
 import System from "./pages/System";
+import MemeStock from "./pages/MemeStock";
 
 
 
@@ -30,16 +31,17 @@ export namespace Routing {
 
 
     export const Data: {[_:string]:Page} = {
-        "*"         :{element: <NotFoundPage/>},
-        "/"         :{element: <LandingPage />},
-        "/Password" :{element: <Password    />, sidebar: {pos: "Top", label: "Password"}},
-        "/Tools"    :{element: <Tools       />, sidebar: {pos: "Top", label: "Tools"}},
-        "/CmdGen"   :{element: <CmdGen      />, sidebar: {pos: "Top", label: "CmdGen"}},
-        "/Note"     :{element: <Note        />, sidebar: {pos: "Top", label: "Note"}},
-        "/ToDo"     :{element: <ToDo        />, sidebar: {pos: "Top", label: "ToDo"}},
-        "/QRCode"   :{element: <QRCode      />, sidebar: {pos: "Top", label: "QRCode"}},
-        "/Auth"     :{element: <Auth        />, sidebar: {pos: "Top", label: "Auth"}},
-        "/System"   :{element: <System      />, sidebar: {pos: "Bottom", label: "System"}},
+        "*"             :{element: <NotFoundPage/>},
+        "/"             :{element: <LandingPage />},
+        "/Password"     :{element: <Password    />, sidebar: {pos: "Top", label: "Password"}},
+        "/Tools"        :{element: <Tools       />, sidebar: {pos: "Top", label: "Tools"}},
+        "/CmdGen"       :{element: <CmdGen      />, sidebar: {pos: "Top", label: "CmdGen"}},
+        "/Note"         :{element: <Note        />, sidebar: {pos: "Top", label: "Note"}},
+        "/ToDo"         :{element: <ToDo        />, sidebar: {pos: "Top", label: "ToDo"}},
+        "/QRCode"       :{element: <QRCode      />, sidebar: {pos: "Top", label: "QRCode"}},
+        "/Auth"         :{element: <Auth        />, sidebar: {pos: "Top", label: "Auth"}},
+        "/MemeStock"    :{element: <MemeStock   />, sidebar: {pos: "Top", label: "MemeStock"}, size: new LogicalSize(1280, 720)},
+        "/System"       :{element: <System      />, sidebar: {pos: "Bottom", label: "System"}},
     };
 
     /**
@@ -59,6 +61,9 @@ export function useFlintiaNavigate() {
     return async (path: string) => {
         const data = Routing.Data[path];
         await navi(path);
-        await Flintia.setWindowSize(data.size ?? DEFAULT_WINDOW_SIZE);
+        const windowSize = data.size ?? Flintia.getDefaultWindowSize();
+        if (windowSize) {
+            await Flintia.setWindowSize(windowSize);
+        } else console.log("Failed: get page window size and flintia default window size");
     };
 }
