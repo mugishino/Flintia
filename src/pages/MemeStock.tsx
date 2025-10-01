@@ -5,6 +5,7 @@ import { WInvoke } from "~/InvokeWrapper";
 import { Logger } from "~/Logger";
 import { Clipboards } from "~/util/clipboard";
 import { Paths } from "~/util/path";
+import { useOverlay } from "~/util/react";
 
 const SUPPORT_EXTENSION = "avif,bmp,jpeg,jpg,png,webp".split(",");
 
@@ -18,6 +19,8 @@ const imagePathList: string[] = [];
 });
 
 export default function MemeStock() {
+    const [overlay, setOverlay] = useOverlay();
+
     return (
         <div className="overflow-y-scroll flex flex-wrap justify-center">
             {imagePathList.map(v => <img key={v} src={v} onClick={async() => {
@@ -35,7 +38,13 @@ export default function MemeStock() {
                 const success = await Clipboards.copyFromCanvas(canvas);
                 if (!success) return Logger.failed("copy image to clipboard");
                 await WInvoke.paste();
-            }} decoding="async" loading="lazy" className="h-32 w-auto cursor-pointer"/>)}
+            }} onAuxClick={() => {
+                setOverlay(<img className="m-auto h-4/5" src={v}/>);
+            }} decoding="async" loading="lazy" className={[
+                `cursor-pointer object-cover h-1/6 grow outline-red-600`,
+                `not-hover:opacity-80 hover:outline-2 hover:z-10 hover:object-contain`
+            ].join(String.space)}/>)}
+            {overlay}
         </div>
     );
 }
