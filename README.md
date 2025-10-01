@@ -6,17 +6,19 @@ Ctrl+Shift+ALT+Qで呼び出せる
 # ツールリスト
 - パスワード管理
 - 開発ツール(UUID生成など)
-- FFmpegコマンドジェネレーター(映像のみ, NVENC)
+- コマンドジェネレーター
 - メモ帳
 - ToDoリスト
-- QRCodeリーダー
+- QRCode読み取り・生成
 - OTP認証
+- 画像ペースト
 
 # 設定ファイル
 `%AppData%/Roaming/com.flintia.app/config.json`にデータを直で書き込んでください
 ```
 passfile: パスワードファイル
 authfile: OTP認証コードファイル
+imagedir: 画像ペーストの元画像ディレクトリ
 ```
 
 # パスワードファイル記述形式(yaml)
