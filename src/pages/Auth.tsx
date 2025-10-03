@@ -3,8 +3,8 @@ import { TOTP } from "otpauth";
 import { useRef, useState } from "react";
 import Config from "~/Config";
 import { Paths } from "~/util/path";
-import { useEffectAsync } from "~/util/react";
 import { Clipboards } from "~/util/clipboard";
+import { useEffectAsync } from "~/hooks/useEffectAsync";
 
 function secretToNumber(secret: string) {
     const res = new TOTP({

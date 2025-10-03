@@ -4,9 +4,9 @@ import { Clipboards } from "~/util/clipboard";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import yaml from "js-yaml";
 import { Paths } from "~/util/path";
-import { useEffectAsync } from "~/util/react";
-import useSearch from "~/components/useSearch";
+import useSearch from "~/hooks/useSearch";
 import ToggleSwitch from "~/components/ToggleSwitch";
+import { useEffectAsync } from "~/hooks/useEffectAsync";
 
 class PassRecord {
     title       = String.empty;
