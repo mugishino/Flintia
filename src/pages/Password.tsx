@@ -5,6 +5,7 @@ import { readTextFile } from "@tauri-apps/plugin-fs";
 import yaml from "js-yaml";
 import { Paths } from "~/util/path";
 import { useEffectAsync } from "~/util/react";
+import { ToggleSwitch } from "~/Components";
 
 class PassRecord {
     title       = String.empty;
@@ -85,8 +86,8 @@ export default function Password() {
                 {result}
             </div>
             <div className="border-t-1 flex flex-row [&>*]:border-0 [&>*]:not-last:border-r-1">
-                <button onClick={() => setShowHide(!showHide)} className={showHide ? "text-enable" : "text-disable"}>ShowHide</button>
-                <button onClick={() => setPaste   (!paste   )} className={paste    ? "text-enable" : "text-disable"}>Paste</button>
+                <ToggleSwitch label="ShowHide"  onChange={v => setShowHide(v)} value={showHide}/>
+                <ToggleSwitch label="Paste"     onChange={v => setPaste   (v)} value={paste   }/>
             </div>
         </>
     );
