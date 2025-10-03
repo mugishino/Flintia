@@ -5,7 +5,7 @@ import { readTextFile } from "@tauri-apps/plugin-fs";
 import yaml from "js-yaml";
 import { Paths } from "~/util/path";
 import { useEffectAsync } from "~/util/react";
-import { ToggleSwitch } from "~/Components";
+import { useSearch, ToggleSwitch } from "~/Components";
 
 class PassRecord {
     title       = String.empty;
@@ -30,7 +30,7 @@ async function getPassRecords() {
 
 export default function Password() {
     const [view, setView] = useState<PassRecord[]>([]);
-    const [search, setSearch] = useState(String.empty);
+    const [searchElem, search] = useSearch({className: "border-0 border-b-1", autofocus: true});
     const [errMsg, setErrMsg] = useState(String.empty);
 
     // setting
@@ -77,10 +77,7 @@ export default function Password() {
 
     return (
         <>
-            <div className="flex border-b-1">
-                <input autoFocus className="grow bg-layerA border-0 focus:bg-layerB" value={search} onChange={e=>setSearch(e.currentTarget.value)} type="text" placeholder="search"/>
-                <button className="border-0 border-l-1 w-1/8" onClick={() => setSearch(String.empty)}>削除</button>
-            </div>
+            {searchElem}
             <div className="grow overflow-x-hidden overflow-y-scroll">
                 <div className="text-fail">{errMsg}</div>
                 {result}

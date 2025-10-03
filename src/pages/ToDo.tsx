@@ -1,5 +1,6 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { useState } from "react";
+import { useSearch } from "~/Components";
 import { getAppdataDirFile, Paths } from "~/util/path";
 import { useUpdateRender } from "~/util/react";
 
@@ -53,7 +54,7 @@ function TodoColumn({
 
 const data = await loadToDoList();
 export default function ToDo() {
-    const [search, setSearch] = useState(String.empty);
+    const [searchElem, search] = useSearch({className: "border-0 border-b-1", autofocus: true});
 
     const [move, setMove] = useState<number|null>(null);
     const updateRendering = useUpdateRender();
@@ -92,10 +93,7 @@ export default function ToDo() {
 
     return (
         <>
-            <div className="flex flex-row">
-                <input className="grow border-0 border-b-1 bg-layerA focus:bg-layerB" placeholder="search" autoFocus value={search} onChange={e => setSearch(e.currentTarget.value)}/>
-                <button className="w-1/8 border-0 border-l-1 border-b-1" onClick={() => setSearch(String.empty)}>削除</button>
-            </div>
+            {searchElem}
             <div className="grow flex flex-col overflow-y-scroll">
                 {elems}
             </div>
