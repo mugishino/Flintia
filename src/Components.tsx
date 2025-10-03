@@ -33,11 +33,11 @@ export function Setting({
     );
 }
 
-export function ToggleSwitch({value, label, onChange}: {value: boolean, label?: string, onChange: (v: boolean) => void}) {
+export function ToggleSwitch({value, label, onChange, className}: {value: boolean, label?: string, onChange: (v: boolean) => void, className?: string}) {
     return (
         <button
             onClick={() => onChange(!value)}
-            className={`bg-layerB border-1 duration-0 ${value ? "text-enable" : "text-disable"}`}
+            className={`${value ? "text-enable" : "text-disable"} ${className ?? String.empty}`}
         >{label ?? (value ? "Enabled" : "Disabled")}</button>
     );
 }
