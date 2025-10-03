@@ -25,7 +25,7 @@ export default function MemeStock_Image({paste, search}: {paste: boolean, search
         <div className="overflow-y-scroll flex flex-wrap justify-center content-start h-full">
             {imageList.map(v => {
                 const fileSrc = convertFileSrc(v);
-                if (search.length != 0 && !Paths.getBasename(v).includes(search)) return;
+                if (search.length != 0 && !Paths.getBasename(v.toLowerCase()).includes(search.toLowerCase())) return;
                 return (
                     <img key={v} src={fileSrc} onClick={async() => {
                         const raw = await fetch(fileSrc);
