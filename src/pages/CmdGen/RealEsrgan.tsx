@@ -1,10 +1,10 @@
 import { desktopDir } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
 import { useState } from "react";
-import { Setting } from "~/Components";
 import { Clipboards } from "~/util/clipboard";
 import { Flintia } from "~/Flintia";
 import { Paths } from "~/util/path";
+import Setting from "~/components/Setting";
 
 const Model = {
     "GAN x4Plus Anime": "RealESRGAN-x4plus-anime",

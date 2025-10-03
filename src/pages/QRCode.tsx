@@ -2,8 +2,8 @@ import { useState } from "react";
 import { BrowserQRCodeReader } from "@zxing/browser";
 import jsQR from "jsqr";
 import { Clipboards } from "~/util/clipboard";
-import { EvenlyDividedRow } from "~/Components";
 import * as mkqr from "qrcode";
+import EvenlyDividedRow from "~/components/EvenlyDividedRow";
 
 async function tryZxing(blob: Blob) {
     const url = URL.createObjectURL(blob);

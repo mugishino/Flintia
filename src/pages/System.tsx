@@ -1,4 +1,3 @@
-import { Section, Setting, ToggleSwitch } from "~/Components";
 import { WInvoke } from "~/InvokeWrapper";
 import { getAppdataDirFile } from "~/util/path";
 import * as AutoStart from "@tauri-apps/plugin-autostart";
@@ -6,6 +5,9 @@ import { useEffect, useState } from "react";
 import Config from "~/Config";
 import { useEffectAsync } from "~/util/react";
 import { Flintia, HotkeyMainKey } from "~/Flintia";
+import Section from "~/components/Section";
+import Setting from "~/components/Setting";
+import ToggleSwitch from "~/components/ToggleSwitch";
 
 export default function System() {
     const [autostart, setAutostart] = useState(false);

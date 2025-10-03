@@ -1,7 +1,7 @@
-import { Section } from "~/Components";
 import KeyFrameExtraction from "./CmdGen/KeyFrameExtraction";
 import Video from "./CmdGen/FFmpegVideo/FFmpegVideo";
 import RealEsrgan from "./CmdGen/RealEsrgan";
+import Section from "~/components/Section";
 
 export default function CmdGen() {
     return (

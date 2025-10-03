@@ -3,9 +3,10 @@ import MinMaxValue from "./Tools/MinMaxValue";
 import UUIDGenerator from "./Tools/UUIDGenerator";
 import SaveClipImage from "./Tools/SaveClipImage";
 import HexConverter from "./Tools/HexConverter";
-import { Section, EvenlyDividedRow } from "~/Components";
 import AspectRatioCalc from "./Tools/AspectRatioCalc";
 import UnixToTime from "./Tools/UnixToTime";
+import EvenlyDividedRow from "~/components/EvenlyDividedRow";
+import Section from "~/components/Section";
 
 export default function Tools() {
     return (

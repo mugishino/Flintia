@@ -5,7 +5,8 @@ import { readTextFile } from "@tauri-apps/plugin-fs";
 import yaml from "js-yaml";
 import { Paths } from "~/util/path";
 import { useEffectAsync } from "~/util/react";
-import { useSearch, ToggleSwitch } from "~/Components";
+import useSearch from "~/components/useSearch";
+import ToggleSwitch from "~/components/ToggleSwitch";
 
 class PassRecord {
     title       = String.empty;

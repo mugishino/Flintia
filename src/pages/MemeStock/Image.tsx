@@ -5,7 +5,7 @@ import { WInvoke } from "~/InvokeWrapper";
 import { Logger } from "~/Logger";
 import { Clipboards } from "~/util/clipboard";
 import { Paths } from "~/util/path";
-import { useOverlay } from "~/util/react";
+import useOverlay from "~/components/useOverlay";
 
 const SUPPORT_EXTENSION = "avif,bmp,jpeg,jpg,png,webp".split(",");
 

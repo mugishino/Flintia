@@ -1,10 +1,10 @@
 import { desktopDir } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
 import { useState } from "react";
-import { Setting } from "~/Components";
 import { Paths } from "~/util/path";
 import { Clipboards } from "~/util/clipboard";
 import { Flintia } from "~/Flintia";
+import Setting from "~/components/Setting";
 
 const DESKTOP_DIR = await desktopDir();
 export default function KeyFrameExtraction() {

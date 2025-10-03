@@ -1,6 +1,6 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { useState } from "react";
-import { useSearch } from "~/Components";
+import useSearch from "~/components/useSearch";
 import { getAppdataDirFile, Paths } from "~/util/path";
 import { useUpdateRender } from "~/util/react";
 

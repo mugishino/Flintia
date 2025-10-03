@@ -2,8 +2,8 @@ import { open, save } from "@tauri-apps/plugin-dialog";
 import { useEffect, useState } from "react";
 import { AudioCodec, BuildFFmpegCommand, Preset, QualityMode, VideoCodec } from "./CommandBuilder";
 import { Clipboards } from "~/util/clipboard";
-import { Setting } from "~/Components";
 import { Flintia } from "~/Flintia";
+import Setting from "~/components/Setting";
 
 /**
  * EnumをOptionの配列で返します
