@@ -5,8 +5,8 @@ import { readTextFile } from "@tauri-apps/plugin-fs";
 import yaml from "js-yaml";
 import { Paths } from "~/util/path";
 import useSearch from "~/hooks/useSearch";
-import ToggleSwitch from "~/components/ToggleSwitch";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
+import useToggleSwitch from "~/hooks/useToggleSwitch";
 
 class PassRecord {
     title       = String.empty;
@@ -35,8 +35,8 @@ export default function Password() {
     const [errMsg, setErrMsg] = useState(String.empty);
 
     // setting
-    const [showHide, setShowHide] = useState(false);
-    const [paste, setPaste] = useState(true);
+    const [ShowHideSwitch, showHide] = useToggleSwitch(false);
+    const [PasteSwitch, paste] = useToggleSwitch(true);
 
 
 
@@ -84,8 +84,8 @@ export default function Password() {
                 {result}
             </div>
             <div className="border-t-1 flex flex-row [&>*]:border-0 [&>*]:not-last:border-r-1">
-                <ToggleSwitch label="ShowHide"  onChange={v => setShowHide(v)} value={showHide}/>
-                <ToggleSwitch label="Paste"     onChange={v => setPaste   (v)} value={paste   }/>
+                <ShowHideSwitch label="ShowHide"/>
+                <PasteSwitch label="Paste"/>
             </div>
         </>
     );

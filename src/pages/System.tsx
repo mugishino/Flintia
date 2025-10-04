@@ -6,16 +6,17 @@ import Config from "~/Config";
 import { Flintia, HotkeyMainKey } from "~/Flintia";
 import Section from "~/components/Section";
 import Setting from "~/components/Setting";
-import ToggleSwitch from "~/components/ToggleSwitch";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
+import useToggleSwitch from "~/hooks/useToggleSwitch";
 
 export default function System() {
-    const [autostart, setAutostart] = useState(false);
+    const [AutostartSwitch, _, setAutostart] = useToggleSwitch(false);
 
-    const [shift, setShift] = useState(true);
-    const [ctrl, setCtrl] = useState(true);
-    const [alt, setAlt] = useState(true);
-    const [win, setWin] = useState(false);
+    const [ShiftSwitch, shift, setShift] = useToggleSwitch(true);
+    const [CtrlSwitch, ctrl, setCtrl] = useToggleSwitch(true);
+    const [AltSwitch, alt, setAlt] = useToggleSwitch(true);
+    const [WinSwitch, win, setWin] = useToggleSwitch(false);
+
     const [waitKey, setWaitKey] = useState(false);
     const [key, setKey] = useState<string>("Q");
 
@@ -48,18 +49,15 @@ export default function System() {
         <>
             <Section title="Settings">
                 <Setting title="AutoLaunch">
-                    <ToggleSwitch value={autostart} onChange={async v => {
-                        await (v ? AutoStart.enable() : AutoStart.disable());
-                        setAutostart(v);
-                    }}/>
+                    <AutostartSwitch onChange={async v => await (v ? AutoStart.enable() : AutoStart.disable())}/>
                 </Setting>
                 {/* StrictMode時にのみ初回表示時にFailedが出ます */}
                 <Setting title={"Hotkey" + (hotkeyOk ? String.empty : " - Failed")}>
                     <div className="flex">
-                        <ToggleSwitch label="Shift" value={shift} onChange={() => setShift(!shift)}/>
-                        <ToggleSwitch label="Ctrl"  value={ctrl}  onChange={() => setCtrl (!ctrl )}/>
-                        <ToggleSwitch label="ALT"   value={alt}   onChange={() => setAlt  (!alt  )}/>
-                        <ToggleSwitch label="Win"   value={win}   onChange={() => setWin  (!win  )}/>
+                        <ShiftSwitch label="Shift"/>
+                        <CtrlSwitch label="Ctrl"/>
+                        <AltSwitch label="ALT"/>
+                        <WinSwitch label="Win"/>
                         <button onClick={() => {
                             setWaitKey(!waitKey);
                             if (!waitKey) {
