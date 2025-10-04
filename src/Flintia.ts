@@ -65,6 +65,7 @@ export namespace Flintia {
 
 // SessionStorageに存在しないキーだったら情報を入れる
 Object.entries({
+    // キー: 値
     [SessionDataKey.DefaultWindowSize]: await Flintia.getWindowSize()
 }).forEach(([k, v]) => {
     if (sessionStorage.getItem(k) == null) {

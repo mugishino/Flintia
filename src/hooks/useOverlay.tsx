@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 /**
- * オーバーレイを要素と、表示内容を変更する関数を返します。
+ * オーバーレイ要素と、表示内容を変更する関数を返します。
  * @returns [オーバーレイ要素, 内容変更関数]
  */
 export default function useOverlay(): [React.JSX.Element, (elem: React.JSX.Element)=>void] {

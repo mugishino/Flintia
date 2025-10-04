@@ -1,5 +1,10 @@
 import { useState } from "react";
 
+/**
+ * トグルスイッチを返します。
+ * @param defaultValue 初期値
+ * @returns [トグルスイッチ要素, 値, 値変更関数]
+ */
 export default function useToggleSwitch(defaultValue: boolean): [
     ({onChange, label, className}: {onChange?: (v: boolean) => void, label?: string, className?: string}) => React.JSX.Element,
     boolean,
