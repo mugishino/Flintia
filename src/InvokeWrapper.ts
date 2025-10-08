@@ -3,9 +3,10 @@ import { invoke } from "@tauri-apps/api/core";
 export const WInvoke = {
     /**
      * ウィンドウを閉じたのち、Ctrl+Vを押します。
+     * @param enter ペースト後にEnterを押すか
      */
-    async paste() {
-        await invoke("paste");
+    async paste(enter: boolean=false) {
+        await invoke("paste", {enter});
     },
 
     /**

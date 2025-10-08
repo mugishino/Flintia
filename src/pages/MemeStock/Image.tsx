@@ -18,7 +18,7 @@ const imageList: string[] = [];
     imageList.push(`${config.imagedir}/${v.name}`);
 });
 
-export default function MemeStock_Image({paste, search}: {paste: boolean, search: string}) {
+export default function MemeStock_Image({paste, enter, search}: {paste: boolean, enter: boolean, search: string}) {
     const [overlay, setOverlay] = useOverlay();
 
     return (
@@ -41,7 +41,7 @@ export default function MemeStock_Image({paste, search}: {paste: boolean, search
                         // copy and paste
                         const success = await Clipboards.copyFromCanvas(canvas);
                         if (!success) return Logger.failed("copy image to clipboard");
-                        if (paste) await WInvoke.paste();
+                        if (paste) await WInvoke.paste(enter);
                     }} onAuxClick={() => {
                         setOverlay(<img className="m-auto h-4/5" src={fileSrc}/>);
                     }} decoding="async" loading="lazy" className={[
