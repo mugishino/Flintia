@@ -8,8 +8,7 @@ import Section from "~/components/Section";
 import Setting from "~/components/Setting";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import useToggleSwitch from "~/hooks/useToggleSwitch";
-
-const UPTIME = await WInvoke.getSystemUptime();
+import { startInterval } from "~/util/util";
 
 export default function System() {
     const [AutostartSwitch, _, setAutostart] = useToggleSwitch(false);
@@ -24,6 +23,8 @@ export default function System() {
 
     const [hotkeyOk, setHotkeyOk] = useState(true);
 
+    const [uptime, setUptime] = useState(0);
+
     useEffectAsync(async () => {
         setAutostart(await AutoStart.isEnabled());
 
@@ -33,6 +34,8 @@ export default function System() {
         setAlt  (config.hotkey_alt  );
         setWin  (config.hotkey_win  );
         setKey  (config.hotkey_main );
+
+        startInterval(async () => WInvoke.getSystemUptime().then(v => setUptime(v)), 1000);
     }, []);
 
     useEffect(() => {
@@ -78,7 +81,7 @@ export default function System() {
                 </Setting>
             </Section>
             <Section title="System Info">
-                <Setting title="システム起動時間">{`${(UPTIME/86400).toInt()}:${(UPTIME%86400/3600).toInt().toStringZero(2)}:${(UPTIME%3600/60).toInt().toStringZero(2)}:${(UPTIME%60).toInt().toStringZero(2)}`}</Setting>
+                <Setting title="システム起動時間">{`${(uptime/86400).toInt()}:${(uptime%86400/3600).toInt().toStringZero(2)}:${(uptime%3600/60).toInt().toStringZero(2)}:${(uptime%60).toInt().toStringZero(2)}`}</Setting>
             </Section>
         </>
     );
