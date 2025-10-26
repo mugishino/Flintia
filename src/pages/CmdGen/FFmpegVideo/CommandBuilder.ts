@@ -1,36 +1,12 @@
-export enum VideoCodec {
-    h264 = "h264_nvenc",
-    hevc = "hevc_nvenc",
-    av1 = "av1_nvenc",
-    copy = "copy",
-}
-
-export enum AudioCodec {
-    auto = "auto",
-    aac = "aac",
-    opus = "libopus",
-    vorbis = "libvorbis",
-    flac = "flac",
-    mp3 = "libmp3lame",
-    copy = "copy",
-}
-
-export enum Preset {
-    auto = "auto",
-    ultraslow = "p1",
-    veryslow = "p2",
-    slow = "p3",
-    medium = "p4",
-    fast = "p5",
-    veryfast = "p6",
-    ultrafast = "p7",
-}
-
-export enum QualityMode {
-    CQP = "constqp", // 一定画質 15~28が推奨 値が小さくなるほど高品質
-    CBR = "cbr", // 固定ビットレート
-    CQVBR = "cq", // 品質優先可変ビットレート
-}
+export type VideoCodec = "h264_nvenc"|"hevc_nvenc"|"av1_nvenc"|"copy";
+export type AudioCodec = "auto"|"aac"|"libopus"|"libvorbis"|"flac"|"libmp3lame"|"copy";
+// p1になるほど高品質低速、p7になるほど低品質高速。p4が中間
+export type Preset = "auto"|"p1"|"p2"|"p3"|"p4"|"p5"|"p6"|"p7";
+export type QualityMode =
+    "constqp" // CQP 一定画質 15~28が推奨 値が小さくなるほど高品質
+    |"cbr" // CBR 固定ビットレート
+    |"cq" // CQVBR 品質優先可変ビットレート
+;
 
 export function BuildFFmpegCommand(
     i: string,
@@ -47,17 +23,17 @@ export function BuildFFmpegCommand(
     command.push("-i", packQuate(i)); // input file
     // video codec
     command.push("-c:v", videoCodec);
-    if (videoCodec == VideoCodec.hevc) {
+    if (videoCodec == "hevc_nvenc") {
         // iOS対応: https://zenn.dev/ysktake/articles/1f71c5df8e5f69
         command.push("-tag:v", "hvc1");
     }
 
-    if (audioCodec != AudioCodec.auto) {
+    if (audioCodec != "auto") {
         command.push("-c:a", audioCodec); // audio codec
     }
 
-    if (videoCodec != VideoCodec.copy) {
-        if (preset != Preset.auto) {
+    if (videoCodec != "copy") {
+        if (preset != "auto") {
             command.push("-preset", preset); // preset
         }
 
@@ -65,13 +41,13 @@ export function BuildFFmpegCommand(
         command.push("-rc", qualityMode);
         // qualityValue = 0 でビットレート固定を無効化
         switch (qualityMode) {
-            case QualityMode.CQP:
+            case "constqp":
                 command.push("-qp", qualityValue.toString());
                 break;
-            case QualityMode.CBR:
+            case "cbr":
                 command.push("-b:v", qualityValue+"K");
                 break;
-            case QualityMode.CQVBR:
+            case "cq":
                 command.push("-rc", "vbr");
                 command.push("-cq", qualityValue.toString());
                 command.push("-b:v", "0");

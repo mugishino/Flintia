@@ -5,21 +5,14 @@ import { Clipboards } from "~/util/clipboard";
 import { Flintia } from "~/Flintia";
 import Setting from "~/components/Setting";
 
-/**
- * EnumをOptionの配列で返します
- * @param arg 非型安全なので注意。Enumを渡してください
- * @returns Option要素の配列
- */
-function EnumToOptions<T extends object>(arg: T) {
-    return Object.entries(arg).map(([k, v], i) => <option key={i} value={v}>{k}</option>);
-}
+type Choices<T> = Record<string, T>;
 
 export default function Video() {
     const [sInputFile, setInputFile] = useState<string|null>(null);
-    const [sVideoCodec, setVideoCodec] = useState(VideoCodec.hevc);
-    const [sPreset, setPreset] = useState(Preset.auto);
-    const [sAudioCodec, setAudioCodec] = useState(AudioCodec.auto);
-    const [sQualityMode, setQualityMode] = useState(QualityMode.CBR);
+    const [sVideoCodec, setVideoCodec] = useState<VideoCodec>("hevc_nvenc");
+    const [sPreset, setPreset] = useState<Preset>("auto");
+    const [sAudioCodec, setAudioCodec] = useState<AudioCodec>("auto");
+    const [sQualityMode, setQualityMode] = useState<QualityMode>("cbr");
     const [sQualityValue, setQualityValue] = useState(0);
     const [sOutputFile, setOutputFile] = useState<string|null>(null);
 
@@ -33,13 +26,63 @@ export default function Video() {
         return (
             <Setting title={props.title} hide={props.hide}>
                 <select className="inline-block" defaultValue={props.defaultValue} onChange={v => props.onChange(v.target.value)}>
-                    {EnumToOptions(props.options)}
+                    {Object.entries(props.options).map(([k, v], i) => <option key={i} value={v}>{k}</option>)}
                 </select>
             </Setting>
         );
     }
 
-    useEffect(() => setQualityValue(sQualityMode == QualityMode.CBR ? 1024*16 : 20), [sQualityMode]);
+    useEffect(() => setQualityValue(sQualityMode == "cbr" ? 1024*16 : 20), [sQualityMode]);
+
+    // 選択肢用意
+    const oVideoCodec: Choices<VideoCodec> = {
+        h264: "h264_nvenc",
+        HEVC: "hevc_nvenc",
+        AV1: "av1_nvenc",
+        copy: "copy",
+    };
+
+    const oPreset: Choices<Preset> = {
+        auto: "auto",
+        ultraslow: "p1",
+        veryslow: "p2",
+        slow: "p3",
+        medium: "p4",
+        fast: "p5",
+        veryfast: "p6",
+        ultrafast: "p7",
+    }
+
+    const oAudioCodec: Choices<AudioCodec> = {
+        opus: "libopus",
+        vorbis: "libvorbis",
+    }
+    if (sVideoCodec != "av1_nvenc") {
+        Object.assign(oAudioCodec, {
+            auto: "auto",
+            copy: "copy",
+            aac: "aac",
+            flac: "flac",
+            mp3: "libmp3lame",
+        });
+    }
+
+    const oQualityMode: Choices<QualityMode> = {
+        CQP: "constqp",
+        CBR: "cbr",
+        CQVBR: "cq",
+    };
+
+
+
+    // 消えた選択肢を選択していた場合の処理
+    if (sVideoCodec == "av1_nvenc") {
+        if (!sAudioCodec.include("libopus", "libvorbis")) {
+            setAudioCodec("libopus");
+        }
+    }
+
+
 
     return (
         <>
@@ -61,17 +104,17 @@ export default function Video() {
                     }}>{sInputFile?.split("\\").slice(-1)[0] ?? "Browse..."}
                 </button>
             </Setting>
-            <Selector title="VideoCodec"    defaultValue={sVideoCodec   } onChange={v => setVideoCodec  (v as VideoCodec    )} options={VideoCodec  }/>
-            <Selector title="Preset"        defaultValue={sPreset       } onChange={v => setPreset      (v as Preset        )} options={Preset      } hide={sVideoCodec == VideoCodec.copy}/>
-            <Selector title="AudioCodec"    defaultValue={sAudioCodec   } onChange={v => setAudioCodec  (v as AudioCodec    )} options={AudioCodec  }/>
-            <Selector title="QualityMode"   defaultValue={sQualityMode  } onChange={v => setQualityMode (v as QualityMode   )} options={QualityMode } hide={sVideoCodec == VideoCodec.copy}/>
-            <Setting title={sQualityMode == QualityMode.CBR ? "Bitrate" : "QualityLevel"} hide={sVideoCodec == VideoCodec.copy}>
+            <Selector title="VideoCodec"    defaultValue={sVideoCodec   } onChange={v => setVideoCodec  (v as VideoCodec    )} options={oVideoCodec  }/>
+            <Selector title="Preset"        defaultValue={sPreset       } onChange={v => setPreset      (v as Preset        )} options={oPreset      } hide={sVideoCodec == "copy"}/>
+            <Selector title="AudioCodec"    defaultValue={sAudioCodec   } onChange={v => setAudioCodec  (v as AudioCodec    )} options={oAudioCodec  }/>
+            <Selector title="QualityMode"   defaultValue={sQualityMode  } onChange={v => setQualityMode (v as QualityMode   )} options={oQualityMode } hide={sVideoCodec == "copy"}/>
+            <Setting title={sQualityMode == "cbr" ? "Bitrate" : "QualityLevel"} hide={sVideoCodec == "copy"}>
                 <input type="number"
                     className="pl-1"
                     value={sQualityValue}
-                    step={sQualityMode == QualityMode.CBR ? 1024 : 1}
-                    min={sQualityMode == QualityMode.CBR ? 1024 : 15}
-                    max={sQualityMode == QualityMode.CBR ? 65536 : 30}
+                    step={sQualityMode == "cbr" ? 1024 : 1}
+                    min={sQualityMode == "cbr" ? 1024 : 15}
+                    max={sQualityMode == "cbr" ? 65536 : 30}
                     onChange={v => setQualityValue(v.target.valueAsNumber)}
                 />
             </Setting>
