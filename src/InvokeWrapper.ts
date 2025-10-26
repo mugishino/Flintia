@@ -25,4 +25,12 @@ export const WInvoke = {
     async runProcess(file: string, ...args: string[]) {
         await invoke("run_process", {file: file, args: args});
     },
+
+    /**
+     * PCの起動時間を取得します。
+     * @returns 秒
+     */
+    async getSystemUptime(): Promise<number> {
+        return await invoke("get_system_uptime");
+    }
 }

@@ -28,3 +28,8 @@ pub fn run_process(file: &str, args: Vec<String>) -> Result<String, String> {
         Err(e) => Err(format!("Failed to start: {}", e)),
     }
 }
+
+#[tauri::command]
+pub fn get_system_uptime() -> u64 {
+    sysinfo::System::uptime()
+}

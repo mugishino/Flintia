@@ -69,7 +69,8 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             commands::paste,
-            commands::run_process
+            commands::run_process,
+            commands::get_system_uptime
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
