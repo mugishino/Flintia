@@ -22,11 +22,14 @@ export default function Video() {
         onChange: (v: string) => void,
         options: Enum,
         hide?: boolean,
+        sort?: boolean,
     }) {
+        let data = Object.entries(props.options);
+        if (props.sort) data = data.sort();
         return (
             <Setting title={props.title} hide={props.hide}>
                 <select className="inline-block" defaultValue={props.defaultValue} onChange={v => props.onChange(v.target.value)}>
-                    {Object.entries(props.options).map(([k, v], i) => <option key={i} value={v}>{k}</option>)}
+                    {data.map(([k, v], i) => <option key={i} value={v}>{k}</option>)}
                 </select>
             </Setting>
         );
@@ -59,11 +62,11 @@ export default function Video() {
     }
     if (sVideoCodec != "av1_nvenc") {
         Object.assign(oAudioCodec, {
-            auto: "auto",
-            copy: "copy",
             aac: "aac",
             flac: "flac",
             mp3: "libmp3lame",
+            auto: "auto",
+            copy: "copy",
         });
     }
 
