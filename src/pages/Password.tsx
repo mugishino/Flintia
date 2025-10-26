@@ -57,7 +57,7 @@ export default function Password() {
     }
 
     const result = view.map((v, i) => {
-        if (v.hide && !showHide) return;
+        if (search == String.empty && v.hide && !showHide) return;
         if (search != String.empty && !v.title.toLowerCase().startsWith(search.toLowerCase())) return;
         return (
             <details className="cursor-pointer open:text-center open:border-y-1 not-open:hover:bg-layerA" key={i} tabIndex={-1}>
