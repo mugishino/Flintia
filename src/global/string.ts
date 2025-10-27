@@ -13,7 +13,7 @@ declare global {
          * @param pos 位置
          * @returns 文字列を差し込んだ文字列
          */
-        insert: (text: string, pos: number) => string;
+        insert(text: string, pos: number): string;
 
         /**
          * 値が含まれるか確認します。
@@ -21,14 +21,14 @@ declare global {
          * @param arg 確認リスト
          * @returns 含まれる場合true
          */
-        contains: <T extends string>(this: T, ...arg: ReadonlyArray<T>) => boolean;
+        contains<T extends string>(this: T, ...arg: ReadonlyArray<T>): boolean;
 
         /**
          * 条件式が全てtrueなら文字列をそのまま返し、違うならundefinedを返します。
          * @param v 条件式
          * @returns 文字列またはundefined
          */
-        where: <T extends string>(this: T, ...v: boolean[]) => T|undefined;
+        where<T extends string>(this: T, ...v: boolean[]): T|undefined;
     }
 }
 
