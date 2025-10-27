@@ -4,7 +4,11 @@ import { AudioCodec, BuildFFmpegCommand, Preset, QualityMode, VideoCodec } from 
 import { Clipboards } from "~/util/clipboard";
 import { Flintia } from "~/Flintia";
 import Setting from "~/components/Setting";
+import { Paths } from "~/util/path";
 
+const VIDEO_EXT = ["mp4", "mkv", "mov", "webm"] as const;
+
+type VideoExt = typeof VIDEO_EXT[number];
 type Choices<T> = Record<string, T>;
 
 export default function Video() {
@@ -29,7 +33,7 @@ export default function Video() {
         return (
             <Setting title={props.title} hide={props.hide}>
                 <select className="inline-block" defaultValue={props.defaultValue} onChange={v => props.onChange(v.target.value)}>
-                    {data.map(([k, v], i) => <option key={i} value={v}>{k}</option>)}
+                    {data.map(([k, v], i) => v&&k ? <option key={i} value={v}>{k}</option> : undefined)}
                 </select>
             </Setting>
         );
@@ -37,10 +41,13 @@ export default function Video() {
 
     useEffect(() => setQualityValue(sQualityMode == "cbr" ? 1024*16 : 20), [sQualityMode]);
 
+    const OUTPUT_FILE_EXT = Paths.splitExt(sOutputFile ?? String.empty).ext as VideoExt;
+
     // 選択肢用意
-    const oVideoCodec: Choices<VideoCodec> = {
-        h264: "h264_nvenc",
-        HEVC: "hevc_nvenc",
+    const isntWebm = OUTPUT_FILE_EXT != "webm";
+    const oVideoCodec: Choices<VideoCodec|undefined> = {
+        h264: "h264_nvenc".where(isntWebm),
+        HEVC: "hevc_nvenc".where(isntWebm),
         AV1: "av1_nvenc",
         copy: "copy",
     };
@@ -56,18 +63,14 @@ export default function Video() {
         ultrafast: "p7",
     }
 
-    const oAudioCodec: Choices<AudioCodec> = {
+    const oAudioCodec: Choices<AudioCodec|undefined> = {
+        aac: "aac".where(isntWebm),
         opus: "libopus",
         vorbis: "libvorbis",
-    }
-    if (sVideoCodec != "av1_nvenc") {
-        Object.assign(oAudioCodec, {
-            aac: "aac",
-            flac: "flac",
-            mp3: "libmp3lame",
-            auto: "auto",
-            copy: "copy",
-        });
+        flac: "flac".where(isntWebm),
+        mp3: "libmp3lame".where(isntWebm),
+        auto: "auto".where(isntWebm),
+        copy: "copy",
     }
 
     const oQualityMode: Choices<QualityMode> = {
@@ -76,11 +79,19 @@ export default function Video() {
         CQVBR: "cq",
     };
 
+    const oOutputExt: string[] = [...VIDEO_EXT];
+
 
 
     // 消えた選択肢を選択していた場合の処理
+    if (OUTPUT_FILE_EXT == "webm") {
+        if (!sVideoCodec.contains("av1_nvenc", "copy")) {
+            setVideoCodec("av1_nvenc");
+        }
+    }
+
     if (sVideoCodec == "av1_nvenc") {
-        if (!sAudioCodec.include("libopus", "libvorbis")) {
+        if (!sAudioCodec.contains("libopus", "libvorbis")) {
             setAudioCodec("libopus");
         }
     }
@@ -98,7 +109,7 @@ export default function Video() {
                             title: "Select input file",
                             filters: [{
                                 name: "movie file",
-                                extensions: ["mp4", "mkv", "mov", "webm"]
+                                extensions: [...VIDEO_EXT]
                             }]
                         }).then(f => {
                             if (f != null) setInputFile(f);
@@ -124,12 +135,7 @@ export default function Video() {
             <Setting title="OutputFile">
                 <button onClick={() => {
                     save({
-                        filters: [
-                            {name: String.empty, extensions: ["webm"]},
-                            {name: String.empty, extensions: ["mkv" ]},
-                            {name: String.empty, extensions: ["mp4" ]},
-                            {name: String.empty, extensions: ["mov" ]},
-                        ],
+                        filters: oOutputExt.map(v => ({name: String.empty, extensions: [v]})),
                         title: "Output file",
                     }).then(f => {
                         if (f != null) setOutputFile(f);
