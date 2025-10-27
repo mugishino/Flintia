@@ -7,14 +7,15 @@ import { Paths } from "~/util/path";
 import useSearch from "~/hooks/useSearch";
 import ToggleSwitch from "~/components/ToggleSwitch";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
+import { ReactSVG } from "react-svg";
 
-class PassRecord {
-    title       = String.empty;
-    username    = String.empty;
-    mail        = String.empty;
-    password    = String.empty;
-    note        = String.empty;
-    hide        = false;
+type PassRecord = {
+    title   : string;
+    username?: string;
+    mail    ?: string;
+    password?: string;
+    note    ?: string;
+    hide    ?: boolean;
 }
 
 async function getPassRecords() {
@@ -27,65 +28,67 @@ async function getPassRecords() {
     return yaml.load(raw) as PassRecord[];
 }
 
-
+const PASSWORD_DATA = await getPassRecords();
 
 export default function Password() {
-    const [view, setView] = useState<PassRecord[]>([]);
     const [searchElem, search] = useSearch({className: "border-0 border-b-1", autofocus: true});
-    const [errMsg, setErrMsg] = useState(String.empty);
-
-    // setting
     const [showHide, setShowHide] = useState(false);
     const [paste, setPaste] = useState(true);
+
+    const [view, setView] = useState<PassRecord[]>([]);
+    const [errorMessage, setErrorMessage] = useState<string|undefined>(undefined);
+
+
+
+    function DataRow({data}: {data: PassRecord}) {
+        const SVGButton = ({src, value}: {src: string, value?: string}) => {
+            return (
+                <button onClick={() => Clipboards.copyText(value??String.empty, paste)} className="w-auto p-0 border-0 border-l-1" disabled={!value}>
+                    <ReactSVG src={src} className={`h-full aspect-square ${value ? "fill-text" : "fill-transparent"}`}/>
+                </button>
+            );
+        }
+
+        return (
+            <div className="flex flex-row h-10 border-b-1 hover:[&>span]:bg-layerA">
+                <span className={`grow pl-1 flex items-center text-2xl ${"text-text-gray".where(!!data.hide)} ${"underline".where(!!data.note)}`} title={data.note}>{data.title}</span>
+                <SVGButton src="user.svg" value={data.username}/>
+                <SVGButton src="mail.svg" value={data.mail}/>
+                <SVGButton src="password.svg" value={data.password}/>
+            </div>
+        );
+    }
 
 
 
     useEffectAsync(async () => {
-        setErrMsg(String.empty);
-        try {
-            const data = await getPassRecords();
-            if (data == null) return setErrMsg("Password file not found");
-            const sorted = data.sort((a, b) => a.title.localeCompare(b.title)) // A-Zでソート
-            setView(sorted);
-        } catch (err) {
-            setErrMsg(String(err));
+        if (PASSWORD_DATA == null) {
+            setErrorMessage("Password file not found");
+            return;
         }
+
+        // 表示フィルタ
+        const result: PassRecord[] = [];
+        PASSWORD_DATA.forEach(v => {
+            if (v.hide && !showHide && search == String.empty) return;
+            if (search != String.empty && !v.title.toLowerCase().includes(search.toLowerCase())) return;
+            result.push(v);
+        });
+        setView(result);
     }, [search, showHide]);
-
-    function PasswordPasteableData({value, label}: {value: string, label: string}) {
-        return !value || <div className="cursor-pointer duration-100 hover:bg-layerA active:bg-green-800" title="Click To Copy" onClick={() => Clipboards.copyText(value, paste)}>{label}</div>;
-    }
-
-    const result = view.map((v, i) => {
-        if (search == String.empty && v.hide && !showHide) return;
-        if (search != String.empty && !v.title.toLowerCase().startsWith(search.toLowerCase())) return;
-        return (
-            <details className="cursor-pointer open:text-center open:border-y-1 not-open:hover:bg-layerA" key={i} tabIndex={-1}>
-                <summary className={`in-open:bg-layerA list-none ${v.hide ? "text-text-gray" : undefined}`}>{v.title}</summary>
-                <PasswordPasteableData value={v.username} label="UserName"/>
-                <PasswordPasteableData value={v.mail    } label="Mail Address"/>
-                <PasswordPasteableData value={v.password} label="Password"/>
-                {!v.note ||
-                <details className="cursor-pointer hover:bg-layerA open:border-t-1 [&:open_summary]:bg-layerA">
-                    <summary>[Note]</summary>
-                    <div className="select-text">{v.note}</div>
-                </details>}
-            </details>
-        );
-    });
 
 
 
     return (
         <>
             {searchElem}
-            <div className="grow overflow-x-hidden overflow-y-scroll">
-                <div className="text-fail">{errMsg}</div>
-                {result}
+            <div className="overflow-y-scroll grow">
+                <span className="text-fail">{errorMessage}</span>
+                {view.sort().map(v => <DataRow data={v} key={v.title}/>)}
             </div>
-            <div className="border-t-1 flex flex-row [&>*]:border-0 [&>*]:not-last:border-r-1">
-                <ToggleSwitch label="ShowHide"  onChange={v => setShowHide(v)} value={showHide}/>
-                <ToggleSwitch label="Paste"     onChange={v => setPaste   (v)} value={paste   }/>
+            <div className="flex flex-row">
+                <ToggleSwitch label="ShowHide" value={showHide} onChange={() => setShowHide(!showHide)} className="border-0 border-t-1 border-r-1"/>
+                <ToggleSwitch label="Paste" value={paste} onChange={() => setPaste(!paste)} className="border-0 border-t-1"/>
             </div>
         </>
     );
