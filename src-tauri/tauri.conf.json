@@ -16,7 +16,7 @@
         "width": 540,
         "height": 720,
         "center": true,
-        "alwaysOnTop": true,
+        "alwaysOnTop": false,
         "decorations": false,
         "skipTaskbar": true,
         "resizable": false,
