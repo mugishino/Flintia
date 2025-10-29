@@ -12,6 +12,7 @@ declare global {
         orDefault(default_: number): number;
         /**
          * 数値を文字列にゼロ埋めして変換します。
+         * @param size ゼロ埋め後の文字列長
          * @param includeMinus マイナスを文字数に含むか
          */
         toStringZero(size: number, includeMinus?: boolean): string;
@@ -29,12 +30,8 @@ Number.prototype.orDefault = function(default_) {
 
 Number.prototype.toStringZero = function(size, includeMinus=false) {
     const num = this.valueOf();
-    const minus = num < 0;
-    const abs = Math.abs(num).toString();
-    const numLength = abs.length;
-    return (
-        (minus?"-":String.empty)
-        + "0".repeat(size - numLength - (includeMinus&&minus?1:0))
-        + abs
-    );
+    const numStr = num.toString();
+    const isMinus = num < 0;
+    const zeroSize = size - numStr.length - (includeMinus&&isMinus?1:0);
+    return numStr.insert("0".repeat(zeroSize < 0 ? 0 : zeroSize), isMinus?1:0).slice(0, size + (!includeMinus&&isMinus?1:0));
 }

@@ -7,7 +7,7 @@ declare global {
          * @param value 切り捨て元の数字
          * @param digit 残す小数点桁数
          */
-        floorEx(value: number, digit: number): void;
+        floorEx(value: number, digit: number): number;
     }
 }
 
