@@ -70,7 +70,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::paste,
             commands::run_process,
-            commands::get_system_uptime
+            commands::get_system_uptime,
+            commands::command_exists
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

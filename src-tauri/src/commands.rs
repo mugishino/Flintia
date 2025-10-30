@@ -33,3 +33,8 @@ pub fn run_process(file: &str, args: Vec<String>) -> Result<String, String> {
 pub fn get_system_uptime() -> u64 {
     sysinfo::System::uptime()
 }
+
+#[tauri::command]
+pub fn command_exists(cmd: &str) -> bool {
+    Command::new("where").arg(cmd).output().map_or(false, |o| o.status.success())
+}

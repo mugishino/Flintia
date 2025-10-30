@@ -32,5 +32,14 @@ export const WInvoke = {
      */
     async getSystemUptime(): Promise<number> {
         return await invoke("get_system_uptime");
-    }
+    },
+
+    /**
+     * コマンドが存在するか確認します。
+     * @param cmd 存在を確認するコマンド
+     * @returns 存在すればtrue
+     */
+    async commandExists(cmd: string): Promise<boolean> {
+        return await invoke("command_exists", {cmd: cmd});
+    },
 }
