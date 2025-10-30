@@ -106,6 +106,31 @@ body {
     option {
         background-color: var(--color-neutral-900);
     }
+
+    input[type="range"] {
+        appearance: none;
+        background-color: transparent;
+        border: none;
+        &:active {
+            background-color: transparent;
+        }
+
+        &::-webkit-slider-runnable-track {
+            background-color: #333;
+            border: thin solid #444;
+            height: 4px;
+        }
+
+        &::-webkit-slider-thumb {
+            appearance: none;
+            border-radius: 0;
+            background-color: #555;
+            border: thin solid #666;
+            margin-top: -6px;
+            width: 6px;
+            height: 16px;
+        }
+    }
 }
 
 @layer utilities {
