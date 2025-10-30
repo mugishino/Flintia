@@ -19,6 +19,7 @@
     --color-enable: #4bf;
 
     --color-app-edge: #248;
+    --color-disable-svg: #333;
 }
 
 *:focus {

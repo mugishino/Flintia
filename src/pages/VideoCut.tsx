@@ -36,6 +36,12 @@ export default function VideoCut() {
 
 
 
+    function setCurrentTimeByController(time: number) {
+        if (videoRef.current == null) return;
+        setCurrentTime(time);
+        videoRef.current.currentTime = time;
+    }
+
     function onPlay() {
         if (videoRef.current == null) return;
         setCurrentTime(videoRef.current.currentTime);
@@ -43,9 +49,14 @@ export default function VideoCut() {
         if (!videoRef.current.paused) requestAnimationFrame(onPlay);
     }
 
+    function isVideoPlaying() {
+        if (videoRef.current == null) return false;
+        return !videoRef.current.paused;
+    }
+
     function playPauseToggle() {
         if (videoRef.current == null) return;
-        videoRef.current.paused ? videoRef.current.play() : videoRef.current.pause();
+        isVideoPlaying() ? videoRef.current.pause() : videoRef.current.play();
     }
 
 
@@ -74,18 +85,16 @@ export default function VideoCut() {
                     setEndTime(time);
                 }
             }/>
-            <div className="flex flex-row">
-                <SVGButton className="h-8" src="play_pause.svg" onClick={playPauseToggle}/>
+            <div className="flex flex-row h-8">
+                <SVGButton disabled={inputFile == null} src="play_pause.svg" onClick={playPauseToggle}/>
+                <SVGButton disabled={inputFile == null||isVideoPlaying()} src="arrow_left.svg" onClick={() => setCurrentTimeByController(currentTime-0.1)}/>
+                <SVGButton disabled={inputFile == null||isVideoPlaying()} src="arrow_right.svg" onClick={() => setCurrentTimeByController(currentTime+0.1)}/>
                 <span className="my-auto mx-1">{secondToTime(currentTime)}</span>
-                <input className="p-0 mx-1" type="range" min={0} max={duration} step={0.1} value={currentTime} onChange={v => {
-                    if (videoRef.current == null) return;
-                    setCurrentTime(v.currentTarget.valueAsNumber);
-                    videoRef.current.currentTime = v.currentTarget.valueAsNumber;
-                }}/>
+                <input className="p-0 mx-1" type="range" min={0} max={duration} step={0.1} value={currentTime} onChange={v => setCurrentTimeByController(v.currentTarget.valueAsNumber)}/>
             </div>
             <div className="flex flex-row">
-                <button disabled={endTime <= currentTime} onClick={() => setStartTime(currentTime)}>{`START - ${secondToTime(startTime)}`}</button>
-                <button disabled={startTime >= currentTime} onClick={() => setEndTime(currentTime)}>{`END - ${secondToTime(endTime)}`}</button>
+                <button disabled={endTime <= currentTime} onClick={() => setStartTime(currentTime)} onAuxClick={() => setCurrentTimeByController(startTime)}>{`START - ${secondToTime(startTime)}`}</button>
+                <button disabled={startTime >= currentTime} onClick={() => setEndTime(currentTime)} onAuxClick={() => setCurrentTimeByController(endTime)}>{`END - ${secondToTime(endTime)}`}</button>
                 <div className="grow min-w-1/10"/>
                 <button disabled={inputFile == null} onClick={() => showOverlay()}>Go to output</button>
             </div>
