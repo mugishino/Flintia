@@ -20,7 +20,7 @@ export const WInvoke = {
     /**
      * プロセスを起動します。終了を待ちません。
      * @param file 実行ファイル
-     * @param args 引数
+     * @param args 引数リスト(ファイルパス等のクオーテーション禁止)
      */
     async runProcess(file: string, ...args: string[]) {
         await invoke("run_process", {file: file, args: args});
