@@ -5,7 +5,7 @@ import { WInvoke } from "~/InvokeWrapper";
 import { Logger } from "~/Logger";
 import { Clipboards } from "~/util/clipboard";
 import { Paths } from "~/util/path";
-import useOverlay from "~/hooks/useOverlay";
+import { useStaticOverlay } from "~/hooks/useOverlay";
 
 const SUPPORT_EXTENSION = "avif,bmp,jpeg,jpg,png,webp".split(",");
 
@@ -23,7 +23,7 @@ if (!imagedirNotFound) {
 }
 
 export default function MemeStock_Image({paste, enter, search}: {paste: boolean, enter: boolean, search: string}) {
-    const [overlay, setOverlay] = useOverlay();
+    const [overlay, setOverlay] = useStaticOverlay();
 
     return (
         <div className="overflow-y-scroll flex flex-wrap justify-center content-start h-full">

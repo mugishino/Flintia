@@ -19,7 +19,7 @@ function commandBuild(inputfile: string, outputFile: string, startTime: number, 
 }
 
 export default function VideoCut() {
-    const [overlay, setOverlay] = useOverlay();
+    const [Overlay, showOverlay] = useOverlay();
 
     // core
     const [inputFile, setInputFile] = useState<string|null>(null);
@@ -78,37 +78,34 @@ export default function VideoCut() {
                 <button disabled={endTime <= currentTime} onClick={() => setStartTime(currentTime)}>{`START - ${secondToTime(startTime)}`}</button>
                 <button disabled={startTime >= currentTime} onClick={() => setEndTime(currentTime)}>{`END - ${secondToTime(endTime)}`}</button>
                 <div className="grow min-w-1/10"/>
-                <button disabled={inputFile == null} onClick={() => setOverlay(
-                    <>
-                        <div className="m-auto p-8 w-1/3 h-1/3 bg-bg border-1 justify-center border-app-edge flex flex-col gap-2" onClick={e => e.stopPropagation()}>
-                            <button className="" onClick={async () => {
-                                const result = await save({
-                                    title: "save",
-                                    filters: [{extensions: [Paths.splitExt(inputFile!).ext], name: ""}]
-                                });
-                                if (result != null) setOutputFile(result);
-                                await Flintia.show();
-                            }}>Browse output file</button>
-                            <span>{outputFile ?? "No output file selected"}</span>
-                            <hr className="mb-3"/>
-                            <button onClick={() => {
-                                const cmd = commandBuild(
-                                    inputFile ?? "i.",
-                                    outputFile ?? "o.",
-                                    Math.floorEx(startTime, 1),
-                                    Math.floorEx(endTime, 1)
-                                );
-                                Clipboards.copyText(cmd);
-                                setCopied(true);
-                                setTimeout(() => setCopied(false), 1000);
-                                // ↓ここが切り替わらないのはuseOverlayの問題なので、直すまで放置
-                            }}>{copied ? "Copied!" : "Copy FFmpeg Command"}</button>
-                            <button disabled>Run FFmpeg | 未実装</button>
-                        </div>
-                    </>
-                )}>Go to output</button>
+                <button disabled={inputFile == null} onClick={() => showOverlay()}>Go to output</button>
             </div>
-            {overlay}
+            <Overlay>
+                <div className="m-auto p-8 w-1/3 h-1/3 bg-bg border-1 justify-center border-app-edge flex flex-col gap-2" onClick={e => e.stopPropagation()}>
+                    <button onClick={async () => {
+                        const result = await save({
+                            title: "save",
+                            filters: [{extensions: [Paths.splitExt(inputFile!).ext], name: ""}]
+                        });
+                        if (result != null) setOutputFile(result);
+                        await Flintia.show();
+                    }}>Browse output file</button>
+                    <span>{outputFile ?? "No output file selected"}</span>
+                    <hr className="mb-3"/>
+                    <button onClick={() => {
+                        const cmd = commandBuild(
+                            inputFile ?? "i.",
+                            outputFile ?? "o.",
+                            Math.floorEx(startTime, 1),
+                            Math.floorEx(endTime, 1)
+                        );
+                        Clipboards.copyText(cmd);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 1000);
+                    }}>{copied ? "Copied!" : "Copy FFmpeg Command"}</button>
+                    <button disabled>Run FFmpeg | 未実装</button>
+                </div>
+            </Overlay>
         </div>
     );
 }
