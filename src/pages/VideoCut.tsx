@@ -43,6 +43,11 @@ export default function VideoCut() {
         if (!videoRef.current.paused) requestAnimationFrame(onPlay);
     }
 
+    function playPauseToggle() {
+        if (videoRef.current == null) return;
+        videoRef.current.paused ? videoRef.current.play() : videoRef.current.pause();
+    }
+
 
 
     return (
@@ -57,16 +62,20 @@ export default function VideoCut() {
                 await Flintia.show();
                 if (result) setInputFile(result);
             }}>{Paths.getBasename(inputFile ?? "Browse...")}</button>
-            <video ref={videoRef} className="min-h-0 grow" src={inputFile == null ? undefined : convertFileSrc(inputFile)} onPlay={onPlay} onLoadedMetadata={v => {
-                const time = v.currentTarget.duration;
-                setDuration(time);
-                setEndTime(time);
-            }}/>
+            <video
+                ref={videoRef}
+                className="min-h-0 grow"
+                src={inputFile == null ? undefined : convertFileSrc(inputFile)}
+                onClick={playPauseToggle}
+                onPlay={onPlay}
+                onLoadedMetadata={v => {
+                    const time = v.currentTarget.duration;
+                    setDuration(time);
+                    setEndTime(time);
+                }
+            }/>
             <div className="flex flex-row">
-                <SVGButton className="h-8" src="play_pause.svg" onClick={() => {
-                    if (videoRef.current == null) return;
-                    videoRef.current.paused ? videoRef.current.play() : videoRef.current.pause();
-                }}/>
+                <SVGButton className="h-8" src="play_pause.svg" onClick={playPauseToggle}/>
                 <span className="my-auto mx-1">{secondToTime(currentTime)}</span>
                 <input className="p-0 mx-1" type="range" min={0} max={duration} step={0.1} value={currentTime} onChange={v => {
                     if (videoRef.current == null) return;
