@@ -17,6 +17,8 @@
     --color-link: #48f;
     --color-disable: #d44;
     --color-enable: #4bf;
+
+    --color-app-edge: #248;
 }
 
 *:focus {
@@ -26,7 +28,7 @@
 body {
     font-family: "Arial";
     box-sizing: border-box;
-    border: thin solid #248;
+    border: thin solid var(--color-app-edge);
     background-color: var(--color-bg);
     color: var(--color-text);
     margin: 0;

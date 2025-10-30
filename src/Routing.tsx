@@ -13,6 +13,7 @@ import Auth from "./pages/Auth";
 import System from "./pages/System";
 import MemeStock from "./pages/MemeStock";
 import { Logger } from "./Logger";
+import VideoCut from "./pages/VideoCut";
 
 
 
@@ -42,6 +43,7 @@ export namespace Routing {
         "/QRCode"       :{element: <QRCode      />, sidebar: {pos: "Top", label: "QRCode"}},
         "/Auth"         :{element: <Auth        />, sidebar: {pos: "Top", label: "Auth"}},
         "/MemeStock"    :{element: <MemeStock   />, sidebar: {pos: "Top", label: "MemeStock"}, size: new LogicalSize(1280, 720)},
+        "/VideoCut"     :{element: <VideoCut    />, sidebar: {pos: "Top", label: "VideoCut"}, size: new LogicalSize(1280, 720)},
         "/System"       :{element: <System      />, sidebar: {pos: "Bottom", label: "System"}},
     };
 
