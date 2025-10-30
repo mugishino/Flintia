@@ -7,7 +7,7 @@ import { Paths } from "~/util/path";
 import useSearch from "~/hooks/useSearch";
 import ToggleSwitch from "~/components/ToggleSwitch";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
-import { ReactSVG } from "react-svg";
+import SVGButton from "~/components/SVGButton";
 
 type PassRecord = {
     title   : string;
@@ -41,20 +41,14 @@ export default function Password() {
 
 
     function DataRow({data}: {data: PassRecord}) {
-        const SVGButton = ({src, value}: {src: string, value?: string}) => {
-            return (
-                <button onClick={() => Clipboards.copyText(value??String.empty, paste)} className="w-auto p-0 border-0 border-l-1" disabled={!value}>
-                    <ReactSVG src={src} className={`h-full aspect-square ${value ? "fill-text" : "fill-transparent"}`}/>
-                </button>
-            );
-        }
+        const SVGButtonPW = ({src, value}: {src: string, value?: string}) => <SVGButton src={src} disabled={!value} onClick={() => Clipboards.copyText(value??String.empty, paste)}/>
 
         return (
             <div className="flex flex-row h-10 border-b-1 hover:[&>span]:bg-layerA">
                 <span className={`grow pl-1 flex items-center text-2xl ${"text-text-gray".where(!!data.hide)} ${"underline".where(!!data.note)}`} title={data.note}>{data.title}</span>
-                <SVGButton src="user.svg" value={data.username}/>
-                <SVGButton src="mail.svg" value={data.mail}/>
-                <SVGButton src="password.svg" value={data.password}/>
+                <SVGButtonPW src="user.svg" value={data.username}/>
+                <SVGButtonPW src="mail.svg" value={data.mail}/>
+                <SVGButtonPW src="password.svg" value={data.password}/>
             </div>
         );
     }
