@@ -161,7 +161,7 @@ export default function VideoCut() {
                                 <span className="m-auto text-4xl">処理中...</span>
                             </div>
                         );
-                        await WInvoke.runProcess(cmd.alias, [...cmd.args, "-y"], true);
+                        await WInvoke.runProcess(cmd.alias, ...cmd.args, "-y");
                         setStaticOverlay(undefined);
                     }}>Run FFmpeg</button>
                 </div>

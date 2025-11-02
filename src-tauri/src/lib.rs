@@ -70,6 +70,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::paste,
             commands::run_process,
+            commands::run_process_sync,
             commands::get_system_uptime,
             commands::command_exists,
             commands::get_all_disk_info
