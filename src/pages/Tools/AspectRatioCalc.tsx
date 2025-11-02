@@ -30,7 +30,7 @@ export default function AspectRatioCalc() {
     }
 
     function CopyButton({value}: {value: any}) {
-        return <button onClick={() => Clipboards.copyText(value)}>{String(value)}</button>
+        return <button className="truncate" onClick={() => Clipboards.copyText(value)}>{String(value)}</button>
     }
 
     function SwapInput() {

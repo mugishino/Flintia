@@ -10,6 +10,9 @@ import ToggleSwitch from "~/components/ToggleSwitch";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { startInterval } from "~/util/util";
 
+const ALL_DISK_INFO = await WInvoke.getAllDiskInfo();
+const GB = 1024*1024*1024;
+
 export default function System() {
     const [autostart, setAutostart] = useState(false);
 
@@ -84,6 +87,9 @@ export default function System() {
             </Section>
             <Section title="System Info">
                 <Setting title="システム起動時間">{`${(uptime/86400).toInt()}:${(uptime%86400/3600).toInt().toStringZero(2)}:${(uptime%3600/60).toInt().toStringZero(2)}:${(uptime%60).toInt().toStringZero(2)}`}</Setting>
+            </Section>
+            <Section title="Disk Halfway Status" toolTip="ディスク容量の半分まで残り何GBかを示します">
+                {ALL_DISK_INFO.map(disk => <Setting title={disk.name}>{Math.floorEx((disk.available_space*2 - disk.total_size)/GB, 1)}GB</Setting>)}
             </Section>
         </>
     );

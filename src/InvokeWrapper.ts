@@ -1,5 +1,11 @@
 import { invoke } from "@tauri-apps/api/core";
 
+type DiskInfo = {
+    name: string,
+    total_size: number,
+    available_space: number,
+}
+
 export const WInvoke = {
     /**
      * ウィンドウを閉じたのち、Ctrl+Vを押します。
@@ -42,5 +48,13 @@ export const WInvoke = {
      */
     async commandExists(cmd: string): Promise<boolean> {
         return await invoke("command_exists", {cmd: cmd});
+    },
+
+    /**
+     * 全てのディスクの情報を取得します。
+     * @returns 取得した全てのディスク情報
+     */
+    async getAllDiskInfo(): Promise<DiskInfo[]> {
+        return await invoke("get_all_disk_info");
     },
 }

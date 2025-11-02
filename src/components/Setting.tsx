@@ -1,16 +1,24 @@
+import { twMerge } from "tailwind-merge";
+
 export default function Setting({
     title,
     hide,
     children,
+    className,
+    titleClassName,
+    childClassName,
 }: {
     title: string,
     hide?: boolean,
     children: React.ReactNode,
+    className?: string
+    titleClassName?: string,
+    childClassName?: string,
 }) {
     return (
-        <div className={`flex flex-row justify-between ${hide == true ? "hidden" : "visible"}`}>
-            <span className="pl-1">{title}</span>
-            <div className="min-w-2/5 [&>*]:min-h-7">{children}</div>
+        <div className={twMerge(`flex flex-row justify-between`, "hidden".where(hide??false), className)}>
+            <span className={twMerge("pl-1", titleClassName)}>{title}</span>
+            <div className={twMerge("min-w-2/5 [&>*]:min-h-7", childClassName)}>{children}</div>
         </div>
     );
 }

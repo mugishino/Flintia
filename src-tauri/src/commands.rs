@@ -43,3 +43,20 @@ pub fn get_system_uptime() -> u64 {
 pub fn command_exists(cmd: &str) -> bool {
     Command::new("where").arg(cmd).output().map_or(false, |o| o.status.success())
 }
+
+#[derive(serde::Serialize)]
+pub struct DiskInfo {
+    name: String,
+    total_size: u64,
+    available_space: u64,
+}
+
+#[tauri::command]
+pub fn get_all_disk_info() -> Vec<DiskInfo> {
+    let disks = sysinfo::Disks::new_with_refreshed_list();
+    disks.iter().map(|disk| DiskInfo{
+        name: disk.mount_point().to_str().map(|s| s.to_string()).unwrap_or("?:".to_string()),
+        total_size: disk.total_space(),
+        available_space: disk.available_space()
+    }).collect()
+}
