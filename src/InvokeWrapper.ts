@@ -14,16 +14,17 @@ export const WInvoke = {
      * @param path 開くパス
      */
     async openExplorer(path: string) {
-        await this.runProcess("explorer", path);
+        await this.runProcess("explorer", [path]);
     },
 
     /**
      * プロセスを起動します。終了を待ちません。
      * @param file 実行ファイル
      * @param args 引数リスト(ファイルパス等のクオーテーション禁止)
+     * @param sync 同期的に実行するか(デフォルト: false)
      */
-    async runProcess(file: string, ...args: string[]) {
-        await invoke("run_process", {file: file, args: args});
+    async runProcess(file: string, args: string[], sync?: boolean) {
+        await invoke("run_process", {file: file, args: args, sync: sync ?? false});
     },
 
     /**

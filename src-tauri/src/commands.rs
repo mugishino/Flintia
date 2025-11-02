@@ -20,13 +20,18 @@ pub fn paste(enter: bool, win: tauri::WebviewWindow) {
 }
 
 #[tauri::command]
-pub fn run_process(file: &str, args: Vec<String>) -> Result<String, String> {
-    let output = Command::new(file).args(args).spawn();
-
-    match output {
-        Ok(_) => Ok("Process started successfully".to_string()),
-        Err(e) => Err(format!("Failed to start: {}", e)),
+pub fn run_process(file: &str, args: Vec<String>, sync: bool) -> Result<(), String> {
+    let mut cmd = Command::new(file);
+    cmd.args(args);
+    if sync {
+        let output = cmd.status().map_err(|e| e.to_string())?;
+        if !output.success() {
+            return Err(format!("Failed to start process: {:?}", output));
+        }
+    } else {
+        cmd.spawn().map_err(|e| e.to_string())?;
     }
+    Ok(())
 }
 
 #[tauri::command]

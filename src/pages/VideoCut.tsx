@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import SVGButton from "~/components/SVGButton";
 import { CommandExists, DefaultFileName } from "~/Data";
 import { Flintia } from "~/Flintia";
-import useOverlay from "~/hooks/useOverlay";
+import useOverlay, { useStaticOverlay } from "~/hooks/useOverlay";
 import { WInvoke } from "~/InvokeWrapper";
 import { Clipboards } from "~/util/clipboard";
 import { Paths } from "~/util/path";
@@ -52,6 +52,7 @@ function commandBuild(inputFile: Nullable<string>, outputFile: Nullable<string>,
 
 export default function VideoCut() {
     const [Overlay, showOverlay] = useOverlay();
+    const [staticOverlay, setStaticOverlay] = useStaticOverlay();
 
     // core
     const [inputFile, setInputFile] = useState<string|null>(null);
@@ -121,7 +122,7 @@ export default function VideoCut() {
                     setEndTime(time);
                 }
             }/>
-            <div className="flex flex-row h-8">
+            <div className="flex flex-row min-h-8">
                 <SVGButton disabled={inputFile == null} src="play_pause.svg" onClick={playPauseToggle}/>
                 <SVGButton disabled={inputFile == null||isVideoPlaying()} src="arrow_left.svg" onClick={() => setCurrentTimeByController(currentTime-0.1)}/>
                 <SVGButton disabled={inputFile == null||isVideoPlaying()} src="arrow_right.svg" onClick={() => setCurrentTimeByController(currentTime+0.1)}/>
@@ -154,11 +155,18 @@ export default function VideoCut() {
                     }}>{copied ? "Copied!" : "Copy FFmpeg Command"}</button>
                     <button disabled={!outputFile} className={"hidden".where(!CommandExists.FFmpeg)} title={"Please select output file".where(!outputFile)} onClick={async () => {
                         const cmd = commandBuild(inputFile, outputFile, startTime, endTime, false);
-                        await WInvoke.runProcess(cmd.alias, ...cmd.args);
                         showOverlay(false);
+                        setStaticOverlay(
+                            <div className="h-full w-full flex" onClick={e => e.stopPropagation()}>
+                                <span className="m-auto text-4xl">処理中...</span>
+                            </div>
+                        );
+                        await WInvoke.runProcess(cmd.alias, [...cmd.args, "-y"], true);
+                        setStaticOverlay(undefined);
                     }}>Run FFmpeg</button>
                 </div>
             </Overlay>
+            {staticOverlay}
         </div>
     );
 }

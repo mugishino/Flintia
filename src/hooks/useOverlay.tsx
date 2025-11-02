@@ -24,11 +24,11 @@ export default function useOverlay(): [
  * 内容の再レンダリングが発生しない、シンプルな表示に適しています。
  * @returns [オーバーレイ要素, 内容変更関数]
  */
-export function useStaticOverlay(): [React.JSX.Element, (elem: React.JSX.Element)=>void] {
-    const [value, setValue] = useState<React.JSX.Element|null>(null);
-    const view = <div className="absolute left-0 top-0 z-50 h-full w-full bg-[#000d] flex" onClick={() => setValue(null)}>{value}</div>;
+export function useStaticOverlay(): [React.JSX.Element, (elem: React.JSX.Element|undefined) => void] {
+    const [value, setValue] = useState<React.JSX.Element|undefined>(undefined);
+    const view = <div className="absolute left-0 top-0 z-50 h-full w-full bg-[#000d] flex" onClick={() => setValue(undefined)}>{value}</div>;
     return [
-        value == null ? <></> : view,
+        value == undefined ? <></> : view,
         elem => setValue(elem)
     ];
 }
