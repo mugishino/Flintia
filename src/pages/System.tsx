@@ -10,6 +10,7 @@ import ToggleSwitch from "~/components/ToggleSwitch";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { startInterval } from "~/util/util";
 import { Command } from "@tauri-apps/plugin-shell";
+import { openPath } from "@tauri-apps/plugin-opener";
 
 const ALL_DISK_INFO = await WInvoke.getAllDiskInfo();
 const GB = 1024*1024*1024;
@@ -86,7 +87,7 @@ export default function System() {
                     </div>
                 </Setting>
                 <Setting title="Appdata directory">
-                    <button onClick={() => getAppdataDirFile(String.empty).then(dir => WInvoke.openExplorer(dir))}>Open Explorer</button>
+                    <button onClick={() => getAppdataDirFile(String.empty).then(dir => openPath(dir))}>Open Explorer</button>
                 </Setting>
             </Section>
             <Section title="System Info">

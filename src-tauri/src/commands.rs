@@ -1,5 +1,3 @@
-use std::process::Command;
-
 use enigo::{Enigo, Key, Keyboard, Settings};
 
 #[tauri::command]
@@ -20,36 +18,8 @@ pub fn paste(enter: bool, win: tauri::WebviewWindow) {
 }
 
 #[tauri::command]
-pub fn run_process(file: &str, args: Vec<String>) -> Result<(), String> {
-    Command::new(file)
-        .args(args)
-        .spawn()
-        .map_err(|e| e.to_string())?;
-    Ok(())
-}
-
-#[tauri::command]
-pub fn run_process_sync(file: &str, args: Vec<String>) -> Result<String, String> {
-    let mut cmd = Command::new(file);
-    cmd.args(args);
-    let output = cmd.output().map_err(|e| e.to_string())?;
-    if !output.status.success() {
-        return Err(format!("Failed to start process: {:?}", output.status));
-    }
-    return Ok(String::from_utf8_lossy(&output.stdout).to_string());
-}
-
-#[tauri::command]
 pub fn get_system_uptime() -> u64 {
     sysinfo::System::uptime()
-}
-
-#[tauri::command]
-pub fn command_exists(cmd: &str) -> bool {
-    Command::new("where")
-        .arg(cmd)
-        .output()
-        .map_or(false, |o| o.status.success())
 }
 
 #[derive(serde::Serialize)]

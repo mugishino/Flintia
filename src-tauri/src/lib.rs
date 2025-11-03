@@ -70,10 +70,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             commands::paste,
-            commands::run_process,
-            commands::run_process_sync,
             commands::get_system_uptime,
-            commands::command_exists,
             commands::get_all_disk_info
         ])
         .run(tauri::generate_context!())

@@ -1,11 +1,11 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { open, save } from "@tauri-apps/plugin-dialog";
+import { Command } from "@tauri-apps/plugin-shell";
 import { useRef, useState } from "react";
 import SVGButton from "~/components/SVGButton";
 import { CommandExists, DefaultFileName } from "~/Data";
 import { Flintia } from "~/Flintia";
 import useOverlay, { useStaticOverlay } from "~/hooks/useOverlay";
-import { WInvoke } from "~/InvokeWrapper";
 import { Clipboards } from "~/util/clipboard";
 import { Paths } from "~/util/path";
 import { Nullable } from "~/util/type";
@@ -161,7 +161,7 @@ export default function VideoCut() {
                                 <span className="m-auto text-4xl">処理中...</span>
                             </div>
                         );
-                        await WInvoke.runProcess(cmd.alias, ...cmd.args, "-y");
+                        await Command.create(cmd.alias, [...cmd.args, "-y"]).execute();
                         setStaticOverlay(undefined);
                     }}>Run FFmpeg</button>
                 </div>
