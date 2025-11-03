@@ -17,6 +17,7 @@
     "@tauri-apps/plugin-fs": "^2.4.2",
     "@tauri-apps/plugin-global-shortcut": "^2.3.0",
     "@tauri-apps/plugin-opener": "^2.5.0",
+    "@tauri-apps/plugin-shell": "~2.3.3",
     "@types/qrcode": "^1.5.5",
     "@zxing/browser": "^0.1.5",
     "js-yaml": "^4.1.0",

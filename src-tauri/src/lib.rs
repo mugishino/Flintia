@@ -3,13 +3,14 @@ use tauri::{
     tray::TrayIconBuilder,
     Manager,
 };
-use tauri_plugin_autostart::{MacosLauncher};
+use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_dialog::DialogExt;
 mod commands;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_single_instance::init(|app, _, _| {
             let _ = app
@@ -37,13 +38,13 @@ pub fn run() {
                     }
                     "info" => {
                         app.dialog()
-                        .message(format!(
-                            "Flintia {}\n(C) 2025 sou",
-                            app.package_info().version.to_string()
-                        ))
-                        .kind(tauri_plugin_dialog::MessageDialogKind::Info)
-                        .title("Infomation")
-                        .blocking_show();
+                            .message(format!(
+                                "Flintia {}\n(C) 2025 sou",
+                                app.package_info().version.to_string()
+                            ))
+                            .kind(tauri_plugin_dialog::MessageDialogKind::Info)
+                            .title("Infomation")
+                            .blocking_show();
                     }
                     "show" => {
                         let win = app.get_webview_window("main").expect("no main window");

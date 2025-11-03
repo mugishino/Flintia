@@ -1,7 +1,7 @@
-import { WInvoke } from "~/InvokeWrapper";
+import { Command } from "@tauri-apps/plugin-shell";
 
 export const CommandExists = {
-    FFmpeg: await WInvoke.commandExists("ffmpeg"),
+    FFmpeg: await Command.create("where", ["ffmpeg"]).execute().then(v => v.code == 0 ? true : false),
 } as const;
 
 export const DefaultFileName = {

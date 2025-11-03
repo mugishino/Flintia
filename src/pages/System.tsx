@@ -9,12 +9,13 @@ import Setting from "~/components/Setting";
 import ToggleSwitch from "~/components/ToggleSwitch";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { startInterval } from "~/util/util";
+import { Command } from "@tauri-apps/plugin-shell";
 
 const ALL_DISK_INFO = await WInvoke.getAllDiskInfo();
 const GB = 1024*1024*1024;
 
-const NVIDIA = await WInvoke.runProcessSync("nvidia-smi", "--version").catch(() => undefined);
-const CUDA   = await WInvoke.runProcessSync("nvcc", "--version").catch(() => undefined);
+const NVIDIA = await Command.create("nvidia-smi", ["--query-gpu=driver_version", "--format=noheader"]).execute().then(v => v.stdout).catch(() => undefined);
+const CUDA   = await Command.create("nvcc", ["--version"]).execute().then(v => v.stdout).catch(() => undefined);
 
 export default function System() {
     const [autostart, setAutostart] = useState(false);
@@ -90,7 +91,7 @@ export default function System() {
             </Section>
             <Section title="System Info">
                 <Setting title="システム起動時間">{`${(uptime/86400).toInt()}:${(uptime%86400/3600).toInt().toStringZero(2)}:${(uptime%3600/60).toInt().toStringZero(2)}:${(uptime%60).toInt().toStringZero(2)}`}</Setting>
-                <Setting title="NVIDIA Driver Version">{NVIDIA?.split(/[\n:]/)[5]}</Setting>
+                <Setting title="NVIDIA Driver Version">{NVIDIA}</Setting>
                 <Setting title="CUDA Version">{CUDA?.split(/[\n,]/)[4]}</Setting>
             </Section>
             <Section title="Disk Halfway Status" toolTip="ディスク容量の半分まで残り何GBかを示します">
