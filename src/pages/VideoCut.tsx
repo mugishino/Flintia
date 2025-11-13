@@ -106,26 +106,31 @@ export default function VideoCut() {
                 await Flintia.show();
                 if (result) {
                     setInputFile(result);
+                    setOutputFile(null);
                     setStartTime(0);
                     setCurrentTimeByController(0);
                 }
             }}>{Paths.getBasename(inputFile ?? "Browse...")}</button>
-            <video
-                ref={videoRef}
-                className="min-h-0 grow"
-                src={inputFile == null ? undefined : convertFileSrc(inputFile)}
-                onClick={playPauseToggle}
-                onPlay={onPlay}
-                onLoadedMetadata={v => {
-                    const time = v.currentTarget.duration;
-                    setDuration(time);
-                    setEndTime(time);
-                }
-            }/>
+            <div className="flex grow shrink basis-auto overflow-hidden relative">
+                <div className={`absolute h-full w-1/6 z-10 ${"hover:bg-layerB".where(!!inputFile)}`} onClick={() => setCurrentTimeByController(Math.max(currentTime-5, 0))}></div>
+                <div className={`absolute h-full w-1/6 z-10 ${"hover:bg-layerB".where(!!inputFile)} right-0`} onClick={() => setCurrentTimeByController(Math.min(currentTime+5, duration))}></div>
+                <video
+                    ref={videoRef}
+                    className="object-contain mx-auto"
+                    src={inputFile == null ? undefined : convertFileSrc(inputFile)}
+                    onClick={playPauseToggle}
+                    onPlay={onPlay}
+                    onLoadedMetadata={v => {
+                        const time = v.currentTarget.duration;
+                        setDuration(time);
+                        setEndTime(time);
+                    }
+                }/>
+            </div>
             <div className="flex flex-row min-h-8">
                 <SVGButton disabled={inputFile == null} src="play_pause.svg" onClick={playPauseToggle}/>
-                <SVGButton disabled={inputFile == null||isVideoPlaying()} src="arrow_left.svg" onClick={() => setCurrentTimeByController(currentTime-0.1)}/>
-                <SVGButton disabled={inputFile == null||isVideoPlaying()} src="arrow_right.svg" onClick={() => setCurrentTimeByController(currentTime+0.1)}/>
+                <SVGButton disabled={inputFile == null||isVideoPlaying()||currentTime<=0} src="arrow_left.svg" onClick={() => setCurrentTimeByController(Math.max(currentTime-0.1, 0))}/>
+                <SVGButton disabled={inputFile == null||isVideoPlaying()||currentTime>=duration} src="arrow_right.svg" onClick={() => setCurrentTimeByController(currentTime+0.1)}/>
                 <span className="my-auto mx-1">{secondToTime(currentTime)}</span>
                 <input className="p-0 mx-1" type="range" min={0} max={duration} step={0.1} value={currentTime} onChange={v => setCurrentTimeByController(v.currentTarget.valueAsNumber)}/>
             </div>
