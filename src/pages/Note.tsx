@@ -29,6 +29,6 @@ export default function Note() {
         value={text}
         autoFocus={true}
         placeholder="Typing..."
-        className="scrollbar-default-cursor grow resize-none overflow-y-scroll pl-[0px]"
+        className="scrollbar-default-cursor grow resize-none overflow-y-scroll pl-0"
     />
 }

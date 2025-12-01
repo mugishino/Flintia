@@ -96,7 +96,7 @@ export default function VideoCut() {
 
     return (
         <div className="flex flex-col h-full">
-            <button className="border-0 border-b-1" onClick={async () => {
+            <button className="border-0 border-b" onClick={async () => {
                 const result = await open({
                     directory: false,
                     title: "Select Video",
@@ -141,7 +141,7 @@ export default function VideoCut() {
                 <button disabled={inputFile == null} onClick={() => showOverlay()}>Go to output</button>
             </div>
             <Overlay>
-                <div className="m-auto p-8 w-1/3 h-1/3 bg-bg border-1 justify-center border-app-edge flex flex-col gap-2" onClick={e => e.stopPropagation()}>
+                <div className="m-auto p-8 w-1/3 h-1/3 bg-bg border justify-center border-app-edge flex flex-col gap-2" onClick={e => e.stopPropagation()}>
                     <button onClick={async () => {
                         const result = await save({
                             title: "Save",

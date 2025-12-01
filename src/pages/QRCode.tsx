@@ -62,10 +62,10 @@ export default function QRCode() {
     return (
         <>
             <EvenlyDividedRow>
-                <button onClick={readFromClipboard} className="border-0 border-b-1">Read from clipboard</button>
-                <button onClick={createFromClipboard} className="border-0 border-b-1 border-l-1">Create from clipboard</button>
+                <button onClick={readFromClipboard} className="border-0 border-b">Read from clipboard</button>
+                <button onClick={createFromClipboard} className="border-0 border-b border-l">Create from clipboard</button>
             </EvenlyDividedRow>
-            <div className={`grow text-center select-text break-words ${success ? "text-white" : "text-fail"}`}>{(() => {
+            <div className={`grow text-center select-text wrap-break-words ${success ? "text-white" : "text-fail"}`}>{(() => {
                 if (result == null) return null;
                 if (URL.canParse(result)) {
                     return <a href={result} target="_blank" className="text-link underline">{result}</a>

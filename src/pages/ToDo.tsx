@@ -39,7 +39,7 @@ function TodoColumn({
     const [text, setText] = useState(defaultText);
     return (
         <textarea
-            className={`field-sizing-content border-b-1 resize-none overflow-clip ${className}`} value={text}
+            className={`field-sizing-content border-b resize-none overflow-clip ${className}`} value={text}
             onBlur={e => e.currentTarget.value == String.empty ? removeTodo() : null}
             onInput={e => {
                 setText(e.currentTarget.value);
@@ -54,7 +54,7 @@ function TodoColumn({
 
 const data = await loadToDoList();
 export default function ToDo() {
-    const [searchElem, search] = useSearch({className: "border-0 border-b-1", autofocus: true});
+    const [searchElem, search] = useSearch({className: "border-0 border-b", autofocus: true});
 
     const [move, setMove] = useState<number|null>(null);
     const updateRendering = useUpdateRender();
@@ -97,7 +97,7 @@ export default function ToDo() {
             <div className="grow flex flex-col overflow-y-scroll">
                 {elems}
             </div>
-            <button className="border-0 border-t-1" onClick={() => {
+            <button className="border-0 border-t" onClick={() => {
                 todoList.push(String.empty);
                 updateRendering();
             }}>New ToDo</button>

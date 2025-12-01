@@ -31,7 +31,7 @@ async function getPassRecords() {
 const PASSWORD_DATA = await getPassRecords();
 
 export default function Password() {
-    const [searchElem, search] = useSearch({className: "border-0 border-b-1", autofocus: true});
+    const [searchElem, search] = useSearch({className: "border-0 border-b", autofocus: true});
     const [showHide, setShowHide] = useState(false);
     const [paste, setPaste] = useState(true);
 
@@ -44,7 +44,7 @@ export default function Password() {
         const SVGButtonPW = ({src, value}: {src: string, value?: string}) => <SVGButton src={src} disabled={!value} onClick={() => Clipboards.copyText(value??String.empty, paste)}/>
 
         return (
-            <div className="flex flex-row h-10 border-b-1 hover:[&>span]:bg-layerA">
+            <div className="flex flex-row h-10 border-b hover:[&>span]:bg-layerA">
                 <span className={`grow pl-1 flex items-center text-2xl ${"text-text-gray".where(!!data.hide)} ${"underline".where(!!data.note)}`} title={data.note}>{data.title}</span>
                 <SVGButtonPW src="user.svg" value={data.username}/>
                 <SVGButtonPW src="mail.svg" value={data.mail}/>
@@ -81,8 +81,8 @@ export default function Password() {
                 {view.sort().map(v => <DataRow data={v} key={v.title}/>)}
             </div>
             <div className="flex flex-row">
-                <ToggleSwitch label="ShowHide" value={showHide} onChange={() => setShowHide(!showHide)} className="border-0 border-t-1 border-r-1"/>
-                <ToggleSwitch label="Paste" value={paste} onChange={() => setPaste(!paste)} className="border-0 border-t-1"/>
+                <ToggleSwitch label="ShowHide" value={showHide} onChange={() => setShowHide(!showHide)} className="border-0 border-t border-r"/>
+                <ToggleSwitch label="Paste" value={paste} onChange={() => setPaste(!paste)} className="border-0 border-t"/>
             </div>
         </>
     );

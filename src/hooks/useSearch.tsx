@@ -20,9 +20,9 @@ export default function useSearch(options: {
 ] {
     const [value, setValue] = useState(options.defaultValue ?? String.empty);
     return [
-        <div className={twMerge("flex flex-row border-1", options.className)}>
+        <div className={twMerge("flex flex-row border", options.className)}>
             <input placeholder="Search..." value={value} onChange={v => setValue(v.currentTarget.value)} className="border-0 bg-layerA focus:bg-layerB" autoFocus={options.autofocus}/>
-            <button onClick={() => setValue(String.empty)} className="w-16 border-0 border-l-1">削除</button>
+            <button onClick={() => setValue(String.empty)} className="w-16 border-0 border-l">削除</button>
         </div>,
         value,
         (v: string) => setValue(v),

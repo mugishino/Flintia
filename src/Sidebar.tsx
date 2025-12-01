@@ -30,7 +30,7 @@ export default function Sidebar() {
     });
 
     return (
-        <div className="flex flex-col justify-between bg-layerA border-r-1 w-24 shrink-0">
+        <div className="flex flex-col justify-between bg-layerA border-r w-24 shrink-0">
             <div className="flex flex-col">{AutoSideButton(sidebar_top, false)}</div>
             <div className="flex flex-col">{AutoSideButton(sidebar_bot, true )}</div>
         </div>
