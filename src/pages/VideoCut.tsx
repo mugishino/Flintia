@@ -162,12 +162,12 @@ export default function VideoCut() {
                         const cmd = commandBuild(inputFile, outputFile, startTime, endTime, false);
                         showOverlay(false);
                         setStaticOverlay(
-                            <div className="h-full w-full flex" onClick={e => e.stopPropagation()}>
+                            <div className="h-full w-full flex flex-col text-center" onClick={e => e.stopPropagation()}>
                                 <span className="m-auto text-4xl">処理中...</span>
+                                <button className="inline-block opacity-100" onClick={() => setStaticOverlay(undefined)}>バックグラウンドで実行</button>
                             </div>
                         );
-                        await Command.create(cmd.alias, [...cmd.args, "-y"]).execute();
-                        setStaticOverlay(undefined);
+                        await Command.create(cmd.alias, [...cmd.args, "-y"]).execute().finally(() => setStaticOverlay(undefined));
                     }}>Run FFmpeg</button>
                 </div>
             </Overlay>
