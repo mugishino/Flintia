@@ -84,7 +84,7 @@ body {
         }
 
         &:not(:disabled) {
-            &:active {
+            &:not([type="text"]):active {
                 transition: 0;
                 background-color: var(--color-teal-800);
             }

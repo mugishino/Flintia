@@ -14,6 +14,7 @@ import System from "./pages/System";
 import MemeStock from "./pages/MemeStock";
 import { Logger } from "./Logger";
 import VideoCut from "./pages/VideoCut";
+import Reminder from "./pages/Reminder";
 
 
 
@@ -44,6 +45,7 @@ export namespace Routing {
         "/Auth"         :{element: <Auth        />, sidebar: {pos: "Top", label: "Auth"}},
         "/MemeStock"    :{element: <MemeStock   />, sidebar: {pos: "Top", label: "MemeStock"}, size: new LogicalSize(1280, 720)},
         "/VideoCut"     :{element: <VideoCut    />, sidebar: {pos: "Top", label: "VideoCut"}, size: new LogicalSize(1280, 720)},
+        "/Reminder"     :{element: <Reminder    />, sidebar: {pos: "Top", label: "Reminder"}},
         "/System"       :{element: <System      />, sidebar: {pos: "Bottom", label: "System"}},
     };
 

@@ -7,3 +7,22 @@ export function startInterval(callback: () => void, delay?: number) {
     callback();
     setInterval(callback, delay);
 }
+
+/**
+ * 時刻をフォーマットして返します。
+ * @param unixtime Unix時間
+ * @param timezone タイムゾーン
+ * @param format フォーマット形式 (YYYY MM DD HH mm SS ss)
+ */
+export function formatDate(unixtime: number, format: string) {
+    const date = new Date(unixtime);
+    return format
+        .replace("YYYY", date.getFullYear().toString())
+        .replace("MM", (date.getMonth()+1).toStringZero(2))
+        .replace("DD", date.getDate().toStringZero(2))
+        .replace("HH", date.getHours().toStringZero(2))
+        .replace("mm", date.getMinutes().toStringZero(2))
+        .replace("SS", date.getSeconds().toStringZero(2))
+        .replace("ss", date.getMilliseconds().toStringZero(2))
+        ;
+}
