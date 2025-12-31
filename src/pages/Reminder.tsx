@@ -1,9 +1,10 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { getAppdataDirFile } from "~/util/path";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { formatDate } from "~/util/util";
-import { Overlay } from "~/hooks/useOverlay";
+import { Overlay, useStaticOverlay } from "~/hooks/useOverlay";
 import { isPermissionGranted, requestPermission, sendNotification } from "@tauri-apps/plugin-notification";
+import SVGButton from "~/components/SVGButton";
 
 type ReminderData = {
     time: number,
@@ -51,15 +52,26 @@ setInterval(() => {
 
 export default function Reminder() {
     const [showOverlay, setShowOverlay] = useState(false);
+    const [deleteOverlay, showDeleteOverlay] = useStaticOverlay();
 
     const [time, setTime] = useState(Date.now());
     const [title, setTitle] = useState(String.empty);
     const [description, setDescription] = useState<string|undefined>(String.empty);
 
-    function showRegister(time?: number, title?: string, description?: string) {
+    const refEditIndex = useRef<undefined|number>(undefined);
+
+    /**
+     * リマインダー登録画面を表示します。
+     * @param time 通知時刻(デフォルト:現在時刻)
+     * @param title タイトル
+     * @param description 説明
+     * @param editIndex リマインダー編集時のみ使用。編集するリマインダーの登録インデックス
+     */
+    function showRegister(time?: number, title?: string, description?: string, editIndex?: number) {
         setTime(time ?? Date.now());
         setTitle(title ?? String.empty);
         setDescription(description);
+        refEditIndex.current = editIndex;
         setShowOverlay(true);
     }
 
@@ -74,22 +86,46 @@ export default function Reminder() {
                         <button disabled={!title || time<Date.now()} onMouseEnter={v => {
                             v.currentTarget.disabled = time<Date.now();
                         }} onClick={() => {
+                            if (refEditIndex.current != undefined) {
+                                reminders.remove(refEditIndex.current);
+                            }
                             reminders = [...reminders, {time: time, title: title, description: description, notified: false} as ReminderData].sort((a, b) => a.time - b.time);
                             saveReminders();
                             setShowOverlay(false);
-                        }}>リマインダーを登録</button>
+                        }}>リマインダーを{refEditIndex.current == undefined ? "登録" : "編集"}</button>
                     </div>
                 </div>
             </Overlay>
+            {deleteOverlay}
             <button className="border-0 border-b" onClick={() => showRegister()}>リマインダーを作成</button>
             <div className="grow overflow-y-scroll">
-                {reminders.map(v =>
-                    <div key={v.time+v.title} className={`border-b p-1 ${"bg-red-950".where(Date.now() > v.time)}`} title={v.description}>
-                        <h1 className="text-2xl">{v.title}</h1>
-                        <div className="text-xs">{formatDate(v.time, "YYYY年MM月DD日 HH時mm分")}</div>
+                {reminders.map((v, i) =>
+                    <div key={v.time+v.title} className={`border-b flex flex-row h-1/12 justify-between ${"bg-red-950".where(Date.now() > v.time)}`} title={v.description}>
+                        <div className="flex flex-col p-1 min-w-0">
+                            <h1 className="text-2xl truncate">{v.title}</h1>
+                            <div className="text-xs">{formatDate(v.time, "YYYY年MM月DD日 HH時mm分")}</div>
+                        </div>
+                        <div className="flex flex-row">
+                            <SVGButton src="edit.svg" className="h-full border-0 border-l" onClick={() => {
+                                showRegister(v.time, v.title, v.description, i);
+                            }}/>
+                            <SVGButton src="trash_can.svg" className="h-full border-0 border-l" onClick={() => {
+                                showDeleteOverlay(
+                                    <div className="m-auto">
+                                        <div className="bg-neutral-900 p-1">
+                                            <h1 className="text-2xl">本当に削除しますか？</h1>
+                                            <button className="text-red-400" onClick={() => {
+                                                reminders.remove(i);
+                                                saveReminders();
+                                            }}>削除</button>
+                                        </div>
+                                    </div>
+                                );
+                            }}/>
+                        </div>
                     </div>
-                    // TODO: 編集・削除(確認画面あり)
                 )}
+                {reminders.length == 0 && <div className="text-center text-2xl text-neutral-600 pt-4">リマインダーはありません</div>}
             </div>
         </>
     );
