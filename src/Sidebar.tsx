@@ -7,7 +7,7 @@ export default function Sidebar() {
 
     function PageButton(props: {title: string, navi: string, borderTop: boolean}) {
         const border = props.borderTop ? "border-t-1": "border-b-1";
-        const active = props.navi == locate.pathname ? "bg-layerB" : "bg-layerA text-text-gray";
+        const active = props.navi == locate.pathname ? "bg-layerC" : "bg-layerB text-text-gray";
 
         return <button
             className={`cursor-pointer border-black border-0 ${border} ${active}`}

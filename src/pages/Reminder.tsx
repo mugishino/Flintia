@@ -79,7 +79,7 @@ export default function Reminder() {
         <>
             <Overlay show={showOverlay} setShow={setShowOverlay}>
                 <div className="m-auto w-3/4">
-                    <div className="bg-neutral-900 p-4 flex flex-col gap-1 max-h-100" onClick={e => e.stopPropagation()}>
+                    <div className="bg-layerA p-4 flex flex-col gap-1 max-h-100" onClick={e => e.stopPropagation()}>
                         <input type="datetime-local" min={time} value={formatDate(time, "YYYY-MM-DDTHH:mm")} onChange={v => setTime(new Date(v.currentTarget.value).getTime())}></input>
                         <input type="text" value={title} onChange={v => setTitle(v.currentTarget.value)} placeholder="タイトル"></input>
                         <textarea value={description} onChange={v => setDescription(v.currentTarget.value)} placeholder="説明" className="resize-none border bg-layerB p-1 min-h-[1.5lh] overflow-y-scroll field-sizing-content"></textarea>
@@ -112,7 +112,7 @@ export default function Reminder() {
                             <SVGButton src="trash_can.svg" className="h-full border-0 border-l" onClick={() => {
                                 showDeleteOverlay(
                                     <div className="m-auto">
-                                        <div className="bg-neutral-900 p-1">
+                                        <div className="bg-layerA p-1">
                                             <h1 className="text-2xl">本当に削除しますか？</h1>
                                             <button className="text-red-400" onClick={() => {
                                                 reminders.remove(i);
@@ -125,7 +125,7 @@ export default function Reminder() {
                         </div>
                     </div>
                 )}
-                {reminders.length == 0 && <div className="text-center text-2xl text-neutral-600 pt-4">リマインダーはありません</div>}
+                {reminders.length == 0 && <div className="text-center text-2xl text-text-gray pt-4">リマインダーはありません</div>}
             </div>
         </>
     );
