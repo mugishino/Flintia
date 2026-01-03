@@ -2,10 +2,11 @@ import { convertFileSrc } from "@tauri-apps/api/core";
 import { open, save } from "@tauri-apps/plugin-dialog";
 import { Command } from "@tauri-apps/plugin-shell";
 import { useRef, useState } from "react";
+import Overlay from "~/components/Overlay";
 import SVGButton from "~/components/SVGButton";
 import { CommandExists, DefaultFileName } from "~/Data";
 import { Flintia } from "~/Flintia";
-import useOverlay, { useStaticOverlay } from "~/hooks/useOverlay";
+import { useStaticOverlay } from "~/hooks/useOverlay";
 import { Clipboards } from "~/util/clipboard";
 import { Paths } from "~/util/path";
 import { Nullable } from "~/util/type";
@@ -51,7 +52,7 @@ function commandBuild(inputFile: Nullable<string>, outputFile: Nullable<string>,
 }
 
 export default function VideoCut() {
-    const [Overlay, showOverlay] = useOverlay();
+    const [overlay, showOverlay] = useState(false);
     const [staticOverlay, setStaticOverlay] = useStaticOverlay();
 
     // core
@@ -138,9 +139,9 @@ export default function VideoCut() {
                 <button disabled={endTime <= currentTime} onClick={() => setStartTime(currentTime)} onAuxClick={() => setCurrentTimeByController(startTime)}>{`START - ${secondToTime(startTime)}`}</button>
                 <button disabled={startTime >= currentTime} onClick={() => setEndTime(currentTime)} onAuxClick={() => setCurrentTimeByController(endTime)}>{`END - ${secondToTime(endTime)}`}</button>
                 <div className="grow min-w-1/10"/>
-                <button disabled={inputFile == null} onClick={() => showOverlay()}>Go to output</button>
+                <button disabled={inputFile == null} onClick={() => showOverlay(true)}>Go to output</button>
             </div>
-            <Overlay>
+            <Overlay show={overlay} setShow={showOverlay}>
                 <div className="m-auto p-8 w-1/3 h-1/3 bg-bg border justify-center border-app-edge flex flex-col gap-2" onClick={e => e.stopPropagation()}>
                     <button onClick={async () => {
                         const result = await save({

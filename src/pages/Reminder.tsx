@@ -2,9 +2,10 @@ import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { getAppdataDirFile } from "~/util/path";
 import { useRef, useState } from "react";
 import { formatDate } from "~/util/util";
-import { Overlay, useStaticOverlay } from "~/hooks/useOverlay";
+import { useStaticOverlay } from "~/hooks/useOverlay";
 import { isPermissionGranted, requestPermission, sendNotification } from "@tauri-apps/plugin-notification";
 import SVGButton from "~/components/SVGButton";
+import Overlay from "~/components/Overlay";
 
 type ReminderData = {
     time: number,
