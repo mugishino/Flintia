@@ -56,7 +56,7 @@ export default function VideoCut() {
     const [staticOverlay, setStaticOverlay] = useStaticOverlay();
 
     // core
-    const [inputFile, setInputFile] = useState<string|null>(null);
+    const [inputFile, setInputFile] = useState<string|undefined>(undefined);
     const videoRef = useRef<HTMLVideoElement>(null);
     // video data
     const [currentTime, setCurrentTime] = useState(0);
@@ -118,7 +118,7 @@ export default function VideoCut() {
                 <video
                     ref={videoRef}
                     className="object-contain mx-auto"
-                    src={inputFile == null ? undefined : convertFileSrc(inputFile)}
+                    src={!inputFile ? undefined : convertFileSrc(inputFile)}
                     onClick={playPauseToggle}
                     onPlay={onPlay}
                     onLoadedMetadata={v => {
@@ -129,9 +129,9 @@ export default function VideoCut() {
                 }/>
             </div>
             <div className="flex flex-row min-h-8">
-                <SVGButton disabled={inputFile == null} src="play_pause.svg" onClick={playPauseToggle}/>
-                <SVGButton disabled={inputFile == null||isVideoPlaying()||currentTime<=0} src="arrow_left.svg" onClick={() => setCurrentTimeByController(Math.max(currentTime-0.1, 0))}/>
-                <SVGButton disabled={inputFile == null||isVideoPlaying()||currentTime>=duration} src="arrow_right.svg" onClick={() => setCurrentTimeByController(currentTime+0.1)}/>
+                <SVGButton disabled={!inputFile} src="play_pause.svg" onClick={playPauseToggle}/>
+                <SVGButton disabled={!inputFile||isVideoPlaying()||currentTime<=0} src="arrow_left.svg" onClick={() => setCurrentTimeByController(Math.max(currentTime-0.1, 0))}/>
+                <SVGButton disabled={!inputFile||isVideoPlaying()||currentTime>=duration} src="arrow_right.svg" onClick={() => setCurrentTimeByController(currentTime+0.1)}/>
                 <span className="my-auto mx-1">{secondToTime(currentTime)}</span>
                 <input className="p-0 mx-1" type="range" min={0} max={duration} step={0.1} value={currentTime} onChange={v => setCurrentTimeByController(v.currentTarget.valueAsNumber)}/>
             </div>
@@ -139,7 +139,10 @@ export default function VideoCut() {
                 <button disabled={endTime <= currentTime} onClick={() => setStartTime(currentTime)} onAuxClick={() => setCurrentTimeByController(startTime)}>{`START - ${secondToTime(startTime)}`}</button>
                 <button disabled={startTime >= currentTime} onClick={() => setEndTime(currentTime)} onAuxClick={() => setCurrentTimeByController(endTime)}>{`END - ${secondToTime(endTime)}`}</button>
                 <div className="grow min-w-1/10"/>
-                <button disabled={inputFile == null} onClick={() => showOverlay(true)}>Go to output</button>
+                <button disabled={!inputFile} onClick={() => setStaticOverlay(
+                    <video src={!inputFile ? undefined : convertFileSrc(inputFile)+`#t=${startTime},${endTime}`} className="m-auto h-7/8 w-7/8" autoPlay onClick={e => e.stopPropagation()}/>
+                )}>プレビュー</button>
+                <button disabled={!inputFile} onClick={() => showOverlay(true)}>出力設定</button>
             </div>
             <Overlay show={overlay} setShow={showOverlay}>
                 <div className="m-auto p-8 w-1/3 h-1/3 bg-bg border justify-center border-app-edge flex flex-col gap-2" onClick={e => e.stopPropagation()}>
