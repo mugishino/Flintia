@@ -112,8 +112,8 @@ export default function VideoCut() {
                 }
             }}>{Paths.getBasename(inputFile ?? "Browse...")}</button>
             <div className="flex grow shrink basis-auto overflow-hidden relative">
-                <div className={`absolute h-full w-1/6 z-10 ${"hover:bg-layerB".where(!!inputFile)}`} onClick={() => setCurrentTimeByController(Math.max(currentTime-5, 0))}></div>
-                <div className={`absolute h-full w-1/6 z-10 ${"hover:bg-layerB".where(!!inputFile)} right-0`} onClick={() => setCurrentTimeByController(Math.min(currentTime+5, duration))}></div>
+                <div className={`absolute h-full w-1/6 z-10 ${"hover:bg-hover".where(!!inputFile)}`} onClick={() => setCurrentTimeByController(Math.max(currentTime-5, 0))}></div>
+                <div className={`absolute h-full w-1/6 z-10 ${"hover:bg-hover".where(!!inputFile)} right-0`} onClick={() => setCurrentTimeByController(Math.min(currentTime+5, duration))}></div>
                 <video
                     ref={videoRef}
                     className="object-contain mx-auto"

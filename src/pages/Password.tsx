@@ -45,7 +45,7 @@ export default function Password() {
 
         return (
             <div className="flex flex-row h-10 border-b hover:[&>span]:bg-layerA">
-                <span className={`grow pl-1 flex items-center text-2xl ${"text-text-gray".where(!!data.hide)} ${"underline".where(!!data.note)}`} title={data.note}>{data.title}</span>
+                <span className={`grow my-auto pl-1 text-2xl truncate ${"text-text-gray".where(!!data.hide)} ${"underline".where(!!data.note)}`} title={data.note}>{data.title}</span>
                 <SVGButtonPW src="user.svg" value={data.username}/>
                 <SVGButtonPW src="mail.svg" value={data.mail}/>
                 <SVGButtonPW src="password.svg" value={data.password}/>

@@ -92,7 +92,7 @@ export default function Reminder() {
                             reminders = [...reminders, {time: time, title: title, description: description, notified: false} as ReminderData].sort((a, b) => a.time - b.time);
                             saveReminders();
                             setShowOverlay(false);
-                        }}>リマインダーを{refEditIndex.current == undefined ? "登録" : "編集"}</button>
+                        }}>リマインダーを{refEditIndex.current == undefined ? "作成" : "編集"}</button>
                     </div>
                 </div>
             </Overlay>
