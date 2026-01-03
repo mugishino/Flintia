@@ -1,5 +1,5 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import useSearch from "~/hooks/useSearch";
 import { useUpdateRender } from "~/hooks/useUpdateRender";
 import { getAppdataDirFile, Paths } from "~/util/path";
@@ -56,6 +56,8 @@ const data = await loadToDoList();
 export default function ToDo() {
     const [searchElem, search] = useSearch({className: "border-0 border-b", autofocus: true});
 
+    const todoParentElem = useRef<HTMLDivElement>(null);
+
     const [move, setMove] = useState<number|null>(null);
     const updateRendering = useUpdateRender();
     let todoList = data;
@@ -94,12 +96,20 @@ export default function ToDo() {
     return (
         <>
             {searchElem}
-            <div className="grow flex flex-col overflow-y-scroll">
+            <div className="grow flex flex-col overflow-y-scroll" ref={todoParentElem}>
                 {elems}
             </div>
             <button className="border-0 border-t" onClick={() => {
                 todoList.push(String.empty);
-                updateRendering();
+                updateRendering(() => {
+                    if (todoParentElem.current == null) return;
+                    todoParentElem.current.scrollTo({
+                        top: todoParentElem.current.scrollHeight,
+                    });
+
+                    const newTodoElem = todoParentElem.current.lastElementChild;
+                    if (newTodoElem != null && newTodoElem instanceof HTMLTextAreaElement) newTodoElem.focus();
+                });
             }}>New ToDo</button>
         </>
     );

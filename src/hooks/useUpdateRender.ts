@@ -6,5 +6,8 @@ import { useState } from "react";
  */
 export function useUpdateRender() {
     const [value, setValue] = useState(false);
-    return () => setValue(!value);
+    return (callback?: () => void) => {
+        setValue(!value);
+        if (callback) setTimeout(callback, 1);
+    };
 }
