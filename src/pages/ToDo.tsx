@@ -89,7 +89,7 @@ export default function ToDo() {
             }}
             onClick   ={() => moveProcess(i, false)}
             onAuxClick={() => moveProcess(i, true )}
-            className={move == null ? "focus:bg-layerA" : `cursor-pointer ${move == i ? "bg-red-950" : "bg-green-950"}`}
+            className={move == null ? "focus:bg-layerA" : `cursor-pointer ${move == i ? "bg-todo-sort-before" : "bg-todo-sort-after"}`}
         />
     });
 

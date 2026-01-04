@@ -39,12 +39,12 @@ export default function Auth() {
             }
         }, 10);
 
-        const colorLeft  = isHover.current ? "#08f5" : "#08f3";
-        const colorRight = isHover.current ? "#fff1" : "#0000";
+        const colorLeft  = isHover.current ? "var(--color-auth-accent-hover)" : "var(--color-auth-accent)";
+        const colorRight = isHover.current ? "var(--color-auth-hover)" : "var(--color-auth)";
 
         return (
             <div
-            className="flex flex-row h-10 border-b-1 px-2 justify-between cursor-pointer"
+            className="flex flex-row h-10 border-b px-2 justify-between cursor-pointer"
             style={{background: `linear-gradient(to right, ${colorLeft} ${time / 300}%, ${colorRight} 0)`}}
             onMouseOver ={() => isHover.current = true }
             onMouseLeave={() => isHover.current = false}
@@ -77,7 +77,7 @@ export default function Auth() {
 
     return (
         <>
-            <div className="text-center text-2xl border-b-1">Authentication</div>
+            <div className="text-center text-2xl border-b">Authentication</div>
             <div className="h-full overflow-y-scroll">
                 <div className="text-fail">{errMsg}</div>
                 {loadData.map((k, v) => <CodeView key={k} secret={v} title={k}/>)}

@@ -101,7 +101,7 @@ export default function Reminder() {
             <button className="border-0 border-b" onClick={() => showRegister()}>リマインダーを作成</button>
             <div className="grow overflow-y-scroll">
                 {reminders.map((v, i) =>
-                    <div key={v.time+v.title} className={`border-b flex flex-row h-1/12 justify-between ${"bg-red-950".where(Date.now() > v.time)}`} title={v.description}>
+                    <div key={v.time+v.title} className={`border-b flex flex-row h-1/12 justify-between ${"bg-reminder-notified".where(Date.now() > v.time)}`} title={v.description}>
                         <div className="flex flex-col p-1 min-w-0">
                             <h1 className="text-2xl truncate">{v.title}</h1>
                             <div className="text-xs">{formatDate(v.time, "YYYY年MM月DD日 HH時mm分")}</div>

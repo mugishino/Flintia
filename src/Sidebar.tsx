@@ -7,10 +7,10 @@ export default function Sidebar() {
 
     function PageButton(props: {title: string, navi: string, borderTop: boolean}) {
         const border = props.borderTop ? "border-t-1": "border-b-1";
-        const active = props.navi == locate.pathname ? "bg-layerC" : "bg-layerB text-text-gray";
+        const active = props.navi == locate.pathname ? "bg-sidebar-tab-active text-sidebar-tab-text-active" : "bg-sidebar-tab text-sidebar-tab-text";
 
         return <button
-            className={`cursor-pointer border-black border-0 ${border} ${active}`}
+            className={`cursor-pointer border-sidebar-border-tab border-0 ${border} ${active}`}
             onClick={async () => {
                 await navigate(props.navi);
             }}
@@ -30,7 +30,7 @@ export default function Sidebar() {
     });
 
     return (
-        <div className="flex flex-col justify-between bg-layerA border-r w-24 shrink-0">
+        <div className="flex flex-col justify-between bg-sidebar-bg border-r w-24 shrink-0 border-sidebar-border">
             <div className="flex flex-col">{AutoSideButton(sidebar_top, false)}</div>
             <div className="flex flex-col">{AutoSideButton(sidebar_bot, true )}</div>
         </div>

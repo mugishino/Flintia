@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+    /* core colors */
     --color-text: white;
     --color-text-gray: #777;
 
@@ -13,14 +14,50 @@
     --color-layerF: #606060;
     --color-hover: #fff2;
 
+    --color-button-hover: var(--color-hover);
+    --color-button-active: var(--color-teal-800);
+    --color-button-border: var(--color-border);
+
     --color-border: #383838;
+    --color-warn: #db0;
     --color-fail: #c44;
     --color-link: #48f;
     --color-disable: #d44;
     --color-enable: #4bf;
 
     --color-app-edge: #248;
-    --color-disable-svg: #333;
+
+    --color-svg: var(--color-text);
+    --color-svg-disable: #333;
+
+    /* core styles */
+    --radius-button: 0;
+
+    --radius-scrollbar-thumb: 0;
+    --color-scrollbar: var(--color-layerB);
+    --color-scrollbar-thumb: var(--color-layerC);
+    --scrollbar-size: 8px;
+
+    /* page styles */
+    --color-sidebar-border: var(--color-border);
+    --color-sidebar-border-tab: var(--color-border);
+    --color-sidebar-bg: var(--color-bg);
+    --color-sidebar-tab-active: var(--color-layerC);
+    --color-sidebar-tab-text-active: var(--color-text);
+    --color-sidebar-tab: var(--color-layerB);
+    --color-sidebar-tab-text: var(--color-text-gray);
+
+    --color-auth-accent: #08f3;
+    --color-auth-accent-hover: #08f5;
+    --color-auth: #0000;
+    --color-auth-hover: #fff1;
+
+    --color-memestock-hover-image-outline: red;
+
+    --color-reminder-notified: var(--color-red-950);
+
+    --color-todo-sort-before: var(--color-red-950);
+    --color-todo-sort-after: var(--color-green-950);
 }
 
 *:focus {
@@ -47,13 +84,14 @@ body {
 }
 
 ::-webkit-scrollbar {
-    background-color: #fff1;
-    width: 8px;
-    height: 8px;
+    background-color: var(--color-scrollbar);
+    width: var(--scrollbar-size);
+    height: var(--scrollbar-size);
+    border-radius: var(--radius-scrollbar-thumb);
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: #fff1;
+    background-color: var(--color-scrollbar-thumb);
 }
 
 @layer base {
@@ -62,11 +100,12 @@ body {
     }
 
     button {
+        border-radius: var(--radius-button);
         text-align: center;
         cursor: pointer;
 
         &:not(:disabled):hover {
-            background-color: var(--color-hover);
+            background-color: var(--color-button-hover);
         }
     }
 
@@ -76,7 +115,7 @@ body {
         color: var(--color-text);
         width: 100%;
 
-        border: thin solid var(--color-border);
+        border: thin solid var(--color-button-border);
         background-color: var(--color-layerB);
         transition: 100ms;
 
@@ -90,7 +129,7 @@ body {
         &:not(:disabled) {
             &:active {
                 transition: 0;
-                background-color: var(--color-teal-800);
+                background-color: var(--color-button-active);
             }
         }
     }
@@ -109,7 +148,7 @@ body {
     }
 
     option {
-        background-color: var(--color-neutral-900);
+        background-color: var(--color-layerB);
     }
 
     input[type="range"] {

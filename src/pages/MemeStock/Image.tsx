@@ -50,7 +50,7 @@ export default function MemeStock_Image({paste, enter, search}: {paste: boolean,
                     }} onAuxClick={() => {
                         setOverlay(<img className="m-auto h-4/5" src={fileSrc}/>);
                     }} decoding="async" loading="lazy" className={[
-                        `cursor-pointer object-cover min-h-1/6 max-h-1/6 grow outline-red-600`,
+                        `cursor-pointer object-cover min-h-1/6 max-h-1/6 grow outline-memestock-hover-image-outline`,
                         `not-hover:opacity-80 hover:outline-2 hover:z-10 hover:object-contain`
                     ].join(String.space)}/>
                 );
