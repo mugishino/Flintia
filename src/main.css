@@ -14,6 +14,7 @@
     --color-layerF: #606060;
     --color-hover: #fff2;
 
+    --color-button-bg: var(--color-layerB);
     --color-button-hover: var(--color-hover);
     --color-button-active: var(--color-teal-800);
     --color-button-border: var(--color-border);
@@ -116,7 +117,7 @@ body {
         width: 100%;
 
         border: thin solid var(--color-button-border);
-        background-color: var(--color-layerB);
+        background-color: var(--color-button-bg);
         transition: 100ms;
 
         &:disabled {
