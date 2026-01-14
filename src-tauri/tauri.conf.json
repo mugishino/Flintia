@@ -22,7 +22,8 @@
         "resizable": false,
         "shadow": false,
         "visible": false,
-        "dragDropEnabled": false
+        "dragDropEnabled": false,
+        "transparent": true
       }
     ],
     "security": {

@@ -13,6 +13,8 @@ export default class Config {
     hotkey_win = false;
     hotkey_main = "Q" as HotkeyMainKey;
 
+    theme: string = "Default_Dark";
+
     private static async getFile() {
         return await getAppdataDirFile("config.json");
     }

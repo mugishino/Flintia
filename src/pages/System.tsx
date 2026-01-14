@@ -1,5 +1,5 @@
 import { WInvoke } from "~/InvokeWrapper";
-import { getAppdataDirFile } from "~/util/path";
+import { getAppdataDirFile, Paths } from "~/util/path";
 import * as AutoStart from "@tauri-apps/plugin-autostart";
 import { useEffect, useState } from "react";
 import Config from "~/Config";
@@ -11,12 +11,16 @@ import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { startInterval } from "~/util/util";
 import { Command } from "@tauri-apps/plugin-shell";
 import { openPath } from "@tauri-apps/plugin-opener";
+import { readDir } from "@tauri-apps/plugin-fs";
+import ReloadTheme from "~/Theme";
 
 const ALL_DISK_INFO = await WInvoke.getAllDiskInfo();
 const GB = 1024*1024*1024;
 
 const NVIDIA = await Command.create("nvidia-smi", ["--query-gpu=driver_version", "--format=noheader"]).execute().then(v => v.stdout).catch(() => undefined);
 const CUDA   = await Command.create("nvcc", ["--version"]).execute().then(v => v.stdout).catch(() => undefined);
+
+const THEMES = await readDir(await getAppdataDirFile("themes/"));
 
 export default function System() {
     const [autostart, setAutostart] = useState(false);
@@ -30,6 +34,8 @@ export default function System() {
 
     const [hotkeyOk, setHotkeyOk] = useState(true);
 
+    const [theme, setTheme] = useState<string>("Default_Dark");
+
     const [uptime, setUptime] = useState(0);
 
     useEffectAsync(async () => {
@@ -41,6 +47,8 @@ export default function System() {
         setAlt  (config.hotkey_alt  );
         setWin  (config.hotkey_win  );
         setKey  (config.hotkey_main );
+
+        setTheme(config.theme);
 
         startInterval(async () => WInvoke.getSystemUptime().then(v => setUptime(v)), 1000);
     }, []);
@@ -88,6 +96,29 @@ export default function System() {
                 </Setting>
                 <Setting title="Appdata directory">
                     <button onClick={() => getAppdataDirFile(String.empty).then(dir => openPath(dir))}>Open Explorer</button>
+                </Setting>
+                <Setting title="Theme">
+                    <select value={theme} onChange={async v => {
+                        // useEffectで書くとページ表示時にテーマが再読み込みされるのを回避するためにこちらに記述
+                        const value = v.currentTarget.value;
+                        setTheme(value);
+
+                        const config = await Config.load();
+                        config.theme = value;
+                        await config.save();
+                        ReloadTheme();
+                    }}>
+                        <option value={"Default_Dark"}>Default</option>
+                        {
+                            THEMES.map(v => {
+                                if (!v.isFile) return;
+                                const basename = Paths.getBasename(v.name);
+                                const splitExt = Paths.splitExt(basename);
+                                if (splitExt.ext != "css") return;
+                                return <option key={basename} value={basename}>{splitExt.name}</option>;
+                            })
+                        }
+                    </select>
                 </Setting>
             </Section>
             <Section title="System Info">

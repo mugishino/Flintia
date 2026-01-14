@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@theme {
+@theme default {
     /* core colors */
     --color-text: white;
     --color-text-gray: #777;
