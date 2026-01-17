@@ -3,6 +3,7 @@ import { open, save } from "@tauri-apps/plugin-dialog";
 import { Command } from "@tauri-apps/plugin-shell";
 import { useRef, useState } from "react";
 import Overlay from "~/components/Overlay";
+import Setting from "~/components/Setting";
 import SVGButton from "~/components/SVGButton";
 import { CommandExists, DefaultFileName } from "~/Data";
 import { Flintia } from "~/Flintia";
@@ -18,6 +19,8 @@ function secondToTime(sec: number) {
     return `${h}:${m}:${s}`;
 }
 
+type VideoCodec = "h264_nvenc" | "hevc_nvenc" | "av1_nvenc";
+
 /**
  * FFmpegのコマンドを生成します。
  * @param inputFile 入力ファイル. undefinedの場合デフォルトのファイル名
@@ -25,20 +28,32 @@ function secondToTime(sec: number) {
  * @param startTime 開始時間(自動で小数第一位以下切り捨て)
  * @param endTime 終了時間(自動で小数第一位以下切り捨て)
  * @param escape ファイル名をエスケープするか(コマンドコピー用)
+ * @param videoCodec 動画のエンコード形式
+ * @param bitrate 動画のビットレート
  * @returns 生成されたコマンドのデータ
  */
-function commandBuild(inputFile: Nullable<string>, outputFile: Nullable<string>, startTime: number, endTime: number, escape: boolean) {
+function commandBuild(
+    inputFile: Nullable<string>,
+    outputFile: Nullable<string>,
+    startTime: number,
+    endTime: number,
+    videoCodec: VideoCodec,
+    bitrate: number,
+    escape: boolean,
+) {
     const i = inputFile ?? DefaultFileName.Input;
-    const o = outputFile ?? DefaultFileName.Output;
+    const o = (outputFile ?? DefaultFileName.Output) + (videoCodec == "av1_nvenc" ? ".webm" : ".mp4");
     const ss = Math.floorEx(startTime, 1).toString();
     const to = Math.floorEx(endTime, 1).toString();
 
     const alias = "ffmpeg";
     const args = [
         "-i", escape ? `"${i}"` : i,
-        "-c", "copy",
         "-ss", ss,
         "-to", to,
+        "-c:a", "libopus",
+        "-c:v", videoCodec,
+        "-b:v", bitrate+"K",
         escape ? `"${o}"` : o
     ];
     return {
@@ -66,6 +81,8 @@ export default function VideoCut() {
     const [endTime, setEndTime] = useState(0);
     // overlay
     const [outputFile, setOutputFile] = useState<string|null>(null);
+    const [bitrate, setBitrate] = useState(4096);
+    const [videoCodec, setVideoCodec] = useState<VideoCodec>("av1_nvenc");
     const [copied, setCopied] = useState(false);
 
 
@@ -145,25 +162,38 @@ export default function VideoCut() {
                 <button disabled={!inputFile} onClick={() => showOverlay(true)}>出力設定</button>
             </div>
             <Overlay show={overlay} setShow={showOverlay}>
-                <div className="m-auto p-8 w-1/3 h-1/3 bg-bg border justify-center border-app-edge flex flex-col gap-2" onClick={e => e.stopPropagation()}>
+                <div className="m-auto p-8 w-2/5 bg-bg border justify-center border-app-edge flex flex-col gap-2" onClick={e => e.stopPropagation()}>
                     <button onClick={async () => {
-                        const result = await save({
-                            title: "Save",
-                            filters: [{extensions: [Paths.splitExt(inputFile!).ext], name: ""}]
-                        });
+                        const result = await save({title: "Save"});
                         if (result != null) setOutputFile(result);
                         await Flintia.show();
                     }}>Browse output file</button>
-                    <span>{outputFile ?? "No output file selected"}</span>
+                    <span>{outputFile ?? "No output file selected"}{videoCodec == "av1_nvenc" ? ".webm" : ".mp4"}</span>
+                    <hr className="mb-3"></hr>
+                    <Setting title="Codec">
+                        <select value={videoCodec} onChange={v => setVideoCodec(v.currentTarget.value as VideoCodec)}>
+                            <option value={"h264_nvenc"}>h264</option>
+                            <option value={"hevc_nvenc"}>HEVC</option>
+                            <option value={"av1_nvenc"}>AV1</option>
+                        </select>
+                    </Setting>
+                    <Setting title="Bitrate">
+                        <select value={bitrate} onChange={v => setBitrate(parseInt(v.currentTarget.value))}>
+                            <option>1024</option>
+                            <option>2048</option>
+                            <option>4096</option>
+                            <option>8192</option>
+                        </select>
+                    </Setting>
                     <hr className="mb-3"/>
                     <button onClick={() => {
-                        const cmd = commandBuild(inputFile, outputFile, startTime, endTime, true);
+                        const cmd = commandBuild(inputFile, outputFile, startTime, endTime, videoCodec, bitrate, true);
                         Clipboards.copyText(cmd.full);
                         setCopied(true);
                         setTimeout(() => setCopied(false), 1000);
                     }}>{copied ? "Copied!" : "Copy FFmpeg Command"}</button>
                     <button disabled={!outputFile} className={"hidden".where(!CommandExists.FFmpeg)} title={"Please select output file".where(!outputFile)} onClick={async () => {
-                        const cmd = commandBuild(inputFile, outputFile, startTime, endTime, false);
+                        const cmd = commandBuild(inputFile, outputFile, startTime, endTime, videoCodec, bitrate, false);
                         showOverlay(false);
                         setStaticOverlay(
                             <div className="h-full w-full flex flex-col text-center" onClick={e => e.stopPropagation()}>
