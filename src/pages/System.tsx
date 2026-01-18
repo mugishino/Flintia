@@ -127,7 +127,7 @@ export default function System() {
                 <Setting title="CUDA Version">{CUDA?.split(/[\n,]/)[4]}</Setting>
             </Section>
             <Section title="Disk Halfway Status" toolTip="ディスク容量の半分まで残り何GBかを示します">
-                {ALL_DISK_INFO.map(disk => <Setting title={disk.name} key={disk.name}>{Math.floorEx((disk.available_space*2 - disk.total_size)/GB, 1)}GB</Setting>)}
+                {ALL_DISK_INFO.map(disk => <Setting title={disk.name} key={disk.name}>{Math.floorEx((disk.available_space - (disk.total_size/2))/GB, 1)}GB</Setting>)}
             </Section>
         </>
     );
