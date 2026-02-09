@@ -7,7 +7,7 @@ import { isPermissionGranted, requestPermission, sendNotification } from "@tauri
 import SVGButton from "~/components/SVGButton";
 import Overlay from "~/components/Overlay";
 
-type ReminderData = {
+interface ReminderData {
     time: number,
     title: string,
     description?: string,

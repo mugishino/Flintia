@@ -9,7 +9,7 @@ import ToggleSwitch from "~/components/ToggleSwitch";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import SVGButton from "~/components/SVGButton";
 
-type PassRecord = {
+interface PassRecord {
     title   : string;
     username?: string;
     mail    ?: string;

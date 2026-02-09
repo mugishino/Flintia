@@ -22,14 +22,14 @@ export namespace Routing {
     export const DEFAULT_PAGE = "/Password";
 
     type SidebarPosition = "Top"|"Bottom";
-    type Page = {
-        element: JSX.Element,
-        size?: LogicalSize,
+    interface Page {
+        element: JSX.Element;
+        size?: LogicalSize;
         sidebar?: {
-            label: string,
-            pos: SidebarPosition,
+            label: string;
+            pos: SidebarPosition;
         },
-    };
+    }
 
 
 

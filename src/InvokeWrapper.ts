@@ -1,9 +1,9 @@
 import { invoke } from "@tauri-apps/api/core";
 
-type DiskInfo = {
-    name: string,
-    total_size: number,
-    available_space: number,
+interface DiskInfo {
+    name: string;
+    total_size: number;
+    available_space: number;
 }
 
 export const WInvoke = {
