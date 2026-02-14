@@ -97,7 +97,7 @@ export default function System() {
                 <Setting title="Appdata directory">
                     <button onClick={() => getAppdataDirFile(String.empty).then(dir => openPath(dir))}>Open Explorer</button>
                 </Setting>
-                <Setting title="Theme">
+                <Setting title="Theme" hide={true/* テーマ設定を無効化 */}>
                     <select value={theme} onChange={async v => {
                         // useEffectで書くとページ表示時にテーマが再読み込みされるのを回避するためにこちらに記述
                         const value = v.currentTarget.value;

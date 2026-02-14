@@ -48,7 +48,12 @@ export namespace Flintia {
     }
 
     export async function setWindowSize(size: LogicalSize) {
-        await mainWindow.setSize(size);
+        // FHDの画面サイズを基本とし、その他の画面サイズとの差異を補正する
+        const fhdHeightGap = window.screen.height / 1080;
+        const fhdWidthGap = window.screen.width / 1920;
+        const fixSize = new LogicalSize(size.width * fhdWidthGap, size.height * fhdHeightGap);
+
+        await mainWindow.setSize(fixSize);
         await mainWindow.center();
     }
 
