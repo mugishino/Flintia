@@ -2,24 +2,24 @@
 
 @theme default {
     /* core colors */
-    --color-text: white;
-    --color-text-gray: #777;
+    --color-text: var(--color-neutral-50);
+    --color-text-gray: var(--color-neutral-400);
 
-    --color-bg: #101010;
-    --color-layerA: #101010;
-    --color-layerB: #202020;
-    --color-layerC: #303030;
-    --color-layerD: #404040;
-    --color-layerE: #505050;
-    --color-layerF: #606060;
-    --color-hover: #fff2;
+    --color-bg: var(--color-neutral-950);
+    --color-layerA: var(--color-neutral-950);
+    --color-layerB: var(--color-neutral-900);
+    --color-layerC: var(--color-neutral-800);
+    --color-layerD: var(--color-neutral-700);
+    --color-layerE: var(--color-neutral-600);
+    --color-layerF: var(--color-neutral-500);
+    --color-hover: var(--color-layerC);
 
     --color-button-bg: var(--color-layerB);
     --color-button-hover: var(--color-hover);
-    --color-button-active: var(--color-teal-800);
+    --color-button-active: var(--color-layerC);
     --color-button-border: var(--color-border);
 
-    --color-border: #383838;
+    --color-border: var(--color-layerC);
     --color-warn: #db0;
     --color-fail: #c44;
     --color-link: #48f;
@@ -29,7 +29,7 @@
     --color-app-edge: #248;
 
     --color-svg: var(--color-text);
-    --color-svg-disable: #333;
+    --color-svg-disable: var(--color-layerC);
 
     /* core styles */
     --radius-button: 0;
@@ -65,6 +65,12 @@
     outline: none;
 }
 
+html {
+    font-size: 2vh;
+    height: 100vh;
+    width: 100vw;
+}
+
 body {
     font-family: "Arial";
     box-sizing: border-box;
@@ -72,8 +78,8 @@ body {
     background-color: var(--color-bg);
     color: var(--color-text);
     margin: 0;
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
     user-select: none;
 }
 

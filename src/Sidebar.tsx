@@ -6,11 +6,10 @@ export default function Sidebar() {
     const locate = useLocation();
 
     function PageButton(props: {title: string, navi: string, borderTop: boolean}) {
-        const border = props.borderTop ? "border-t-1": "border-b-1";
-        const active = props.navi == locate.pathname ? "bg-sidebar-tab-active text-sidebar-tab-text-active" : "bg-sidebar-tab text-sidebar-tab-text";
+        const active = props.navi == locate.pathname ? "bg-sidebar-tab-active text-sidebar-tab-text-active" : "not-hover:bg-transparent text-sidebar-tab-text";
 
         return <button
-            className={`cursor-pointer border-sidebar-border-tab border-0 ${border} ${active}`}
+            className={`cursor-pointer border-sidebar-border-tab p-1 border-0 rounded ${active}`}
             onClick={async () => {
                 await navigate(props.navi);
             }}
@@ -30,9 +29,9 @@ export default function Sidebar() {
     });
 
     return (
-        <div className="flex flex-col justify-between bg-sidebar-bg border-r w-24 shrink-0 border-sidebar-border">
-            <div className="flex flex-col">{AutoSideButton(sidebar_top, false)}</div>
-            <div className="flex flex-col">{AutoSideButton(sidebar_bot, true )}</div>
+        <div className="flex flex-col justify-between bg-sidebar-bg border-r w-28 shrink-0 border-sidebar-border">
+            <div className="flex flex-col m-1 gap-1">{AutoSideButton(sidebar_top, false)}</div>
+            <div className="flex flex-col m-1 gap-1">{AutoSideButton(sidebar_bot, true )}</div>
         </div>
     );
 }
