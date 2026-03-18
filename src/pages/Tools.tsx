@@ -8,10 +8,11 @@ import UnixToTime from "./Tools/UnixToTime";
 import EvenlyDividedRow from "~/components/EvenlyDividedRow";
 import Section from "~/components/Section";
 import BitrateCalc from "./Tools/BitrateCalc";
+import CmToInch from "./Tools/CmToInch";
 
 export default function Tools() {
     return (
-        <div className="overflow-y-scroll">
+        <div className="overflow-y-scroll h-full">
             <EvenlyDividedRow>
                 <Section title="Save Clipboard Image" children={<SaveClipImage/>}/>
                 <Section title="UnixTime" children={<UnixTime/>}/>
@@ -22,6 +23,7 @@ export default function Tools() {
             <Section title="HexConverter" children={<HexConverter/>}/>
             <Section title="Aspect Ratio Calc" children={<AspectRatioCalc/>}/>
             <Section title="BitrateCalc" children={<BitrateCalc/>}/>
+            <Section title="cm to inch" children={<CmToInch/>}/>
         </div>
     );
 }
