@@ -59,6 +59,8 @@
 
     --color-todo-sort-before: var(--color-red-950);
     --color-todo-sort-after: var(--color-green-950);
+
+    --color-videocut-skip-hover: #fff3;
 }
 
 *:focus {
