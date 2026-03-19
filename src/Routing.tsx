@@ -10,7 +10,7 @@ import Note from "./pages/Note";
 import ToDo from "./pages/ToDo";
 import QRCode from "./pages/QRCode";
 import Auth from "./pages/Auth";
-import System from "./pages/System";
+import System from "./pages/System/System";
 import MemeStock from "./pages/MemeStock";
 import { Logger } from "./Logger";
 import VideoCut from "./pages/VideoCut";
