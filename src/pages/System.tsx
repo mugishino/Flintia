@@ -1,7 +1,7 @@
 import { WInvoke } from "~/InvokeWrapper";
 import { getAppdataDirFile, Paths } from "~/util/path";
 import * as AutoStart from "@tauri-apps/plugin-autostart";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import Config from "~/Config";
 import { Flintia, HotkeyMainKey } from "~/Flintia";
 import Section from "~/components/Section";
@@ -10,9 +10,10 @@ import ToggleSwitch from "~/components/ToggleSwitch";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { startInterval } from "~/util/util";
 import { Command } from "@tauri-apps/plugin-shell";
-import { openPath } from "@tauri-apps/plugin-opener";
+import { openPath, openUrl } from "@tauri-apps/plugin-opener";
 import { readDir } from "@tauri-apps/plugin-fs";
 import ReloadTheme from "~/Theme";
+import Overlay from "~/components/Overlay";
 
 const ALL_DISK_INFO = await WInvoke.getAllDiskInfo();
 const GB = 1024*1024*1024;
@@ -37,6 +38,9 @@ export default function System() {
     const [theme, setTheme] = useState<string>("Default_Dark");
 
     const [uptime, setUptime] = useState(0);
+
+    const [hotfixOverlay, setHotfixOverlay] = useState(false);
+    const [hotfixData, setHotfixData] = useState<ReactNode>(undefined);
 
     useEffectAsync(async () => {
         setAutostart(await AutoStart.isEnabled());
@@ -128,6 +132,24 @@ export default function System() {
             </Section>
             <Section title="Disk Halfway Status" toolTip="ディスク容量の半分まで残り何GBかを示します">
                 {ALL_DISK_INFO.map(disk => <Setting title={disk.name} key={disk.name}>{Math.floorEx((disk.available_space - (disk.total_size/2))/GB, 1)}GB</Setting>)}
+            </Section>
+            <Section title="Other">
+                <button onClick={async() => {
+                    setHotfixOverlay(true);
+                    // 読み込み済みだったらReturn
+                    if (hotfixData != null) return;
+                    const hotfix = await WInvoke.getWindowsHotfix()
+                    setHotfixData(
+                        hotfix.map(q =>
+                            <button onClick={async() => await openUrl(`https://www.google.com/search?q=${q.HotFixID}`)}>{q.HotFixID}</button>
+                        )
+                    );
+                }}>Show Windows Hotfix List</button>
+                <Overlay show={hotfixOverlay} setShow={setHotfixOverlay}>
+                    <div className="flex flex-col w-1/2 mx-auto my-auto" onClick={e => e.stopPropagation()}>
+                        {hotfixData ?? "読み込み中..."}
+                    </div>
+                </Overlay>
             </Section>
         </>
     );

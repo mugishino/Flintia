@@ -30,4 +30,9 @@ export const WInvoke = {
     async getAllDiskInfo(): Promise<DiskInfo[]> {
         return await invoke("get_all_disk_info");
     },
+
+    async getWindowsHotfix(): Promise<{HotFixID: string}[]> {
+        const data = await invoke("get_windows_hotfix");
+        return JSON.parse(data as string);
+    }
 }

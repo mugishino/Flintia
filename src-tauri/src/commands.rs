@@ -45,3 +45,14 @@ pub fn get_all_disk_info() -> Vec<DiskInfo> {
         })
         .collect()
 }
+
+#[tauri::command]
+pub async fn get_windows_hotfix() -> Result<String, String> {
+    let out = tokio::process::Command::new("powershell")
+        .arg("-Command")
+        .arg("Get-Hotfix | ConvertTo-Json")
+        .output()
+        .await
+        .expect("failed to Get-Hotfix");
+    Ok(String::from_utf8_lossy(&out.stdout).to_string())
+}

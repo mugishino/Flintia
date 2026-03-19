@@ -72,7 +72,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::paste,
             commands::get_system_uptime,
-            commands::get_all_disk_info
+            commands::get_all_disk_info,
+            commands::get_windows_hotfix
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
