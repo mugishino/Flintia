@@ -1,6 +1,6 @@
 import { LogicalSize } from "@tauri-apps/api/dpi";
 import { Route, Routes, useNavigate } from "react-router";
-import { Flintia } from "./Flintia";
+import { FlintiaWindow } from "./Flintia";
 import NotFoundPage from "./pages/404";
 import LandingPage from "./pages/Landing";
 import Tools from "./pages/Tools";
@@ -64,11 +64,12 @@ export namespace Routing {
 export function useFlintiaNavigate() {
     const navi = useNavigate();
     return async (path: string) => {
+        const win = await FlintiaWindow.getCurrentWindow();
         const data = Routing.Data[path];
         await navi(path);
-        const windowSize = data.size ?? Flintia.getDefaultWindowSize();
+        const windowSize = data.size ?? win.getDefaultWindowSize();
         if (windowSize) {
-            await Flintia.setWindowSize(windowSize);
+            await win.setWindowSize(windowSize);
         } else Logger.failed("get page window size and flintia default window size");
     };
 }
