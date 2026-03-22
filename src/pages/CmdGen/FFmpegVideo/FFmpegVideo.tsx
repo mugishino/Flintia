@@ -2,7 +2,7 @@ import { open, save } from "@tauri-apps/plugin-dialog";
 import { useEffect, useState } from "react";
 import { AudioCodec, BuildFFmpegCommand, Preset, QualityMode, VideoCodec } from "./CommandBuilder";
 import { Clipboards } from "~/util/clipboard";
-import { Flintia } from "~/Flintia";
+import { FlintiaWindow } from "~/Flintia";
 import Setting from "~/components/Setting";
 import { Paths } from "~/util/path";
 
@@ -113,7 +113,7 @@ export default function Video() {
                             }]
                         }).then(f => {
                             if (f != null) setInputFile(f);
-                            Flintia.show();
+                            FlintiaWindow.getCurrentWindow().then(v => v.show())
                         });
                     }}>{sInputFile?.split("\\").slice(-1)[0] ?? "Browse..."}
                 </button>
@@ -139,7 +139,7 @@ export default function Video() {
                         title: "Output file",
                     }).then(f => {
                         if (f != null) setOutputFile(f);
-                        Flintia.show();
+                        FlintiaWindow.getCurrentWindow().then(v => v.show());
                     });
                 }}>{sOutputFile?.split("\\").slice(-1)[0] ?? "Browse..."}</button>
             </Setting>

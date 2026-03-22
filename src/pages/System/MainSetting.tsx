@@ -1,10 +1,10 @@
 import { readDir } from "@tauri-apps/plugin-fs";
 import * as AutoStart from "@tauri-apps/plugin-autostart";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Setting from "~/components/Setting";
 import ToggleSwitch from "~/components/ToggleSwitch";
 import Config from "~/Config";
-import { Flintia, HotkeyMainKey } from "~/Flintia";
+import { FlintiaWindow, HotkeyMainKey } from "~/Flintia";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { getAppdataDirFile, Paths } from "~/util/path";
 import ReloadTheme from "~/Theme";
@@ -40,8 +40,9 @@ export default function MainSetting() {
         setTheme(config.theme);
     }, []);
 
-    useEffect(() => {
-        Flintia.registerHotkey(shift, ctrl, alt, win, key as HotkeyMainKey).then(isError => setHotkeyOk(isError));
+    useEffectAsync(async() => {
+        const flintia = await FlintiaWindow.getCurrentWindow();
+        flintia.registerHotkey(shift, ctrl, alt, win, key as HotkeyMainKey, () => flintia.toggleVisible()).then(isError => setHotkeyOk(isError));
         Config.load().then(config => {
             config.hotkey_shift = shift;
             config.hotkey_ctrl  = ctrl ;

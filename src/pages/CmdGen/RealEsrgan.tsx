@@ -2,7 +2,7 @@ import { desktopDir } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
 import { useState } from "react";
 import { Clipboards } from "~/util/clipboard";
-import { Flintia } from "~/Flintia";
+import { FlintiaWindow } from "~/Flintia";
 import { Paths } from "~/util/path";
 import Setting from "~/components/Setting";
 
@@ -41,7 +41,7 @@ export default function RealEsrgan() {
                         title: "Select Images",
                         multiple: true,
                     }).then(async v => {
-                        await Flintia.show();
+                        FlintiaWindow.getCurrentWindow().then(v => v.show());
                         if (v != null) setFiles(v);
                     });
                 }}>Browse...</button>
@@ -61,7 +61,7 @@ export default function RealEsrgan() {
                         multiple: false,
                         title: "Select Output Directory"
                     }).then(async v => {
-                        await Flintia.show();
+                        FlintiaWindow.getCurrentWindow().then(v => v.show());
                         if (v != null) setOutdir(v);
                     });
                 }}>{outdir ?? "Browse..."}</button>

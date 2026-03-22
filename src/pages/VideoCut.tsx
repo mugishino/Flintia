@@ -6,7 +6,7 @@ import Overlay from "~/components/Overlay";
 import Setting from "~/components/Setting";
 import SVGButton from "~/components/SVGButton";
 import { CommandExists, DefaultFileName } from "~/Data";
-import { Flintia } from "~/Flintia";
+import { FlintiaWindow } from "~/Flintia";
 import { useStaticOverlay } from "~/hooks/useOverlay";
 import { Clipboards } from "~/util/clipboard";
 import { Paths } from "~/util/path";
@@ -121,7 +121,7 @@ export default function VideoCut() {
                     multiple: false,
                     filters: [{extensions: ["mp4", "webm", "mov", "mkv"], name: String.empty}],
                 });
-                await Flintia.show();
+                FlintiaWindow.getCurrentWindow().then(v => v.show());
                 if (result) {
                     setInputFile(result);
                     setOutputFile(null);
@@ -166,7 +166,7 @@ export default function VideoCut() {
                     <button onClick={async () => {
                         const result = await save({title: "Save"});
                         if (result != null) setOutputFile(result);
-                        await Flintia.show();
+                        FlintiaWindow.getCurrentWindow().then(v => v.show());
                     }}>Browse output file</button>
                     <span>{outputFile ?? "No output file selected"}{videoCodec == "av1_nvenc" ? ".webm" : ".mp4"}</span>
                     <hr className="mb-3"></hr>

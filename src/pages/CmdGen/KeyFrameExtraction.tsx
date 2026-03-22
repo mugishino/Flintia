@@ -3,7 +3,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { useState } from "react";
 import { Paths } from "~/util/path";
 import { Clipboards } from "~/util/clipboard";
-import { Flintia } from "~/Flintia";
+import { FlintiaWindow } from "~/Flintia";
 import Setting from "~/components/Setting";
 
 const DESKTOP_DIR = await desktopDir();
@@ -26,8 +26,8 @@ export default function KeyFrameExtraction() {
                             name: "Video",
                             extensions: ["mp4", "webm", "mkv", "mov"]
                         }],
-                    }).then(async v => {
-                        await Flintia.show();
+                    }).then(v => {
+                        FlintiaWindow.getCurrentWindow().then(v => v.show());
                         if (v != null) setVideo(v);
                     });
                 }}>{video ? Paths.getBasename(video) : "Browse..."}</button>
@@ -39,8 +39,8 @@ export default function KeyFrameExtraction() {
                         defaultPath: DESKTOP_DIR,
                         directory: true,
                         title: "Output Directory"
-                    }).then(async v => {
-                        await Flintia.show();
+                    }).then(v => {
+                        FlintiaWindow.getCurrentWindow().then(v => v.show());
                         if (v != null) setOutdir(v);
                     });
                 }}>{outdir ? outdir : "Browse..."}</button>
