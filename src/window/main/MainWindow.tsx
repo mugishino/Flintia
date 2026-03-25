@@ -2,7 +2,7 @@ import Config from "~/Config";
 import { FlintiaWindow } from "~/Flintia";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { Routing } from "~/Routing";
-import Sidebar from "~/Sidebar";
+import Sidebar from "~/window/main/Sidebar";
 
 export default function MainWindow() {
     useEffectAsync(async() => {

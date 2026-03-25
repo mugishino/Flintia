@@ -11,7 +11,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router";
 // Flintia
-import MainWindow from "./window/MainWindow";
+import MainWindow from "./window/main/MainWindow";
 
 if (process.env.NODE_ENV == "development") {
     document.body.style.border = "thin solid #800";

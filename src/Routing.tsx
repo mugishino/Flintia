@@ -1,20 +1,20 @@
 import { LogicalSize } from "@tauri-apps/api/dpi";
 import { Route, Routes, useNavigate } from "react-router";
 import { FlintiaWindow } from "./Flintia";
-import NotFoundPage from "./pages/404";
-import LandingPage from "./pages/Landing";
-import Tools from "./pages/Tools";
-import Password from "./pages/Password";
-import CmdGen from "./pages/CmdGen";
-import Note from "./pages/Note";
-import ToDo from "./pages/ToDo";
-import QRCode from "./pages/QRCode";
-import Auth from "./pages/Auth";
-import System from "./pages/System/System";
-import MemeStock from "./pages/MemeStock";
+import NotFoundPage from "./window/main/pages/404";
+import LandingPage from "./window/main/pages/Landing";
+import Tools from "./window/main/pages/Tools";
+import Password from "./window/main/pages/Password";
+import CmdGen from "./window/main/pages/CmdGen";
+import Note from "./window/main/pages/Note";
+import ToDo from "./window/main/pages/ToDo";
+import QRCode from "./window/main/pages/QRCode";
+import Auth from "./window/main/pages/Auth";
+import System from "./window/main/pages/System/System";
+import MemeStock from "./window/main/pages/MemeStock";
 import { Logger } from "./Logger";
-import VideoCut from "./pages/VideoCut";
-import Reminder from "./pages/Reminder";
+import VideoCut from "./window/main/pages/VideoCut";
+import Reminder from "./window/main/pages/Reminder";
 
 
 

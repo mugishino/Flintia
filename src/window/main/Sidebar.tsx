@@ -1,5 +1,5 @@
 import { useLocation } from "react-router";
-import { Routing, useFlintiaNavigate } from "./Routing";
+import { Routing, useFlintiaNavigate } from "../../Routing";
 
 export default function Sidebar() {
     const navigate = useFlintiaNavigate();
