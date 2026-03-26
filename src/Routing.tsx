@@ -15,6 +15,7 @@ import MemeStock from "./window/main/pages/MemeStock";
 import { Logger } from "./Logger";
 import VideoCut from "./window/main/pages/VideoCut";
 import Reminder from "./window/main/pages/Reminder";
+import Launcher from "./window/launcher/Launcher";
 
 
 
@@ -47,6 +48,8 @@ export namespace Routing {
         "/VideoCut"     :{element: <VideoCut    />, sidebar: {pos: "Top", label: "VideoCut"}, size: new LogicalSize(1280, 720)},
         "/Reminder"     :{element: <Reminder    />, sidebar: {pos: "Top", label: "Reminder"}},
         "/System"       :{element: <System      />, sidebar: {pos: "Bottom", label: "System"}},
+
+        "/Launcher"     :{element: <Launcher    />},
     };
 
     /**

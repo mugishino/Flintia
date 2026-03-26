@@ -1,0 +1,33 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "global",
+  "description": "Global Capability",
+  "windows": ["*"],
+  "permissions": [
+    "core:default",
+    "opener:default",
+    "global-shortcut:default",
+    "autostart:default",
+
+    "core:window:allow-is-visible",
+    "core:window:allow-inner-size",
+    "core:window:allow-outer-size",
+    "core:window:allow-set-focus",
+    "core:window:allow-set-size",
+    "core:window:allow-set-position",
+    "core:window:allow-center",
+    "core:window:allow-hide",
+    "core:window:allow-show",
+
+    "global-shortcut:allow-unregister-all",
+    "global-shortcut:allow-is-registered",
+    "global-shortcut:allow-unregister",
+    "global-shortcut:allow-register",
+
+    {"allow": [{"path": "$APPDATA"}], "identifier": "fs:allow-mkdir"},
+    {"allow": [{"path": "$APPDATA/**"}], "identifier": "fs:allow-mkdir"},
+    {"allow": [{"path": "$APPDATA/**"}], "identifier": "fs:allow-exists"},
+    {"allow": [{"path": "$APPDATA/**"}], "identifier": "fs:allow-write-text-file"},
+    {"allow": [{"path": "$APPDATA/**"}], "identifier": "fs:allow-read-text-file"}
+  ]
+}

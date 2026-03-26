@@ -1,0 +1,10 @@
+/* bodyにはウィンドウラベルのクラスが付与されます */
+
+body.main {
+    background-color: var(--color-bg);
+    border-width: thin;
+}
+
+body.launcher {
+    background-color: #0008;
+}

@@ -1,6 +1,7 @@
-import { register, unregisterAll } from "@tauri-apps/plugin-global-shortcut";
-import { getCurrentWindow, LogicalPosition, LogicalSize, Window } from "@tauri-apps/api/window";
+import { register, unregister } from "@tauri-apps/plugin-global-shortcut";
+import { getCurrentWindow, LogicalPosition, LogicalSize, Window, WindowOptions } from "@tauri-apps/api/window";
 import { SessionData } from "./util/session";
+import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 export type HotkeyMainKey = "A"|"B"|"C"|"D"|"E"|"F"|"G"|"H"|"I"|"J"|"K"|"L"|"M"|"N"|"O"|"P"|"Q"|"R"|"S"|"T"|"U"|"V"|"W"|"X"|"Y"|"Z";
 
@@ -52,10 +53,43 @@ export class FlintiaWindow {
         return await this.init(getCurrentWindow());
     }
 
-
-
     /**
-     * このウィンドウにホットキーを設定します。
+     * ウィンドウを取得または作成します。
+     * @param label ウィンドウのラベル
+     * @param url ウィンドウの初期URL
+     * @param created ウィンドウ作成時のコールバック
+     * @param error ウィンドウエラー時のコールバック
+     * @returns 取得または作成したウィンドウ
+     */
+    public static async getOrCreateWindow(
+        label: string,
+        url: string,
+        option?: WindowOptions,
+        created?: (win: WebviewWindow) => void,
+        error?: (win: WebviewWindow) => void
+    ) {
+        let win = await WebviewWindow.getByLabel(label);
+        if (win) return win;
+
+        win = new WebviewWindow(label, {...option, url: url});
+
+        win.once("tauri://created", () => {
+            if (created) created(win);
+        });
+
+        win.once("tauri://error", () => {
+            if (error) error(win);
+        });
+
+        return win;
+    }
+
+
+
+    /** WindowLabel: Hotkey */
+    private static activeHotkey: Map<string, string> = new Map();
+    /**
+     * このウィンドウにホットキーを設定します。前のホットキーは自動的に解除されます。
      * @param shift Shiftが必要か
      * @param ctrl Ctrlが必要か
      * @param alt Altが必要か
@@ -65,23 +99,38 @@ export class FlintiaWindow {
      * @returns 登録に成功した場合true
      */
     public async registerHotkey(shift: boolean, ctrl: boolean, alt: boolean, win: boolean, main: HotkeyMainKey, callback: () => Promise<void> | void): Promise<boolean> {
-        await unregisterAll();
+        // ホットキー文字列の作成
+        const keyArray: string[] = [];
+        if (shift) keyArray.push("Shift");
+        if (ctrl ) keyArray.push("Ctrl" );
+        if (alt  ) keyArray.push("Alt"  );
+        if (win  ) keyArray.push("Super");
+        keyArray.push(main);
+        const hotkey = keyArray.join("+");
 
-        const key: string[] = [];
-        if (shift) key.push("Shift");
-        if (ctrl ) key.push("Ctrl" );
-        if (alt  ) key.push("Alt"  );
-        if (win  ) key.push("Super");
-        key.push(main);
+        // 今と同じホットキーであればキャンセル
+        const old = FlintiaWindow.activeHotkey.get(this.rawWindow.label);
+        if (old == hotkey) return false;
 
-        return new Promise(resolve => {
-            // 成功時はtrueが返る
-            register(key.join("+"), async e => {
+        // 既に存在するホットキーであればキャンセル
+        const alreadyHotkeys = Array.from(FlintiaWindow.activeHotkey.values()).includes(hotkey);
+        if (alreadyHotkeys) return false;
+
+        return await new Promise(async resolve => {
+            // Rust側のコールバックIDと合わせるため、F5前に登録済みの物を消す。catchは握り潰しではなく本当に必要ないので
+            await unregister(hotkey).catch(() => {});
+            // 新しいホットキーを登録
+            await register(hotkey, async e => {
                 if (e.state != "Pressed") return;
                 callback();
-            })
-            .then (() => resolve(true ))
-            .catch(() => resolve(false));
+            }).then(async () => {
+                // ホットキーの状態管理を更新し、前のホットキーを解除
+                FlintiaWindow.activeHotkey.set(this.rawWindow.label, hotkey);
+                if (old) await unregister(old).catch(() => {});
+                resolve(true);
+            }).catch(() => {
+                resolve(false);
+            });
         });
     }
 
@@ -127,9 +176,9 @@ export class FlintiaWindow {
      * @returns 未指定の場合undefinedが返ります。
      */
     public async getDefaultPosition() {
-        const data = SessionData.get<{width: number, height: number}>(this.windowPositionKey);
+        const data = SessionData.get<{x: number, y: number}>(this.windowPositionKey);
         if (!data) return;
-        return new LogicalPosition(data.width, data.height);
+        return new LogicalPosition(data.x, data.y);
     }
 
     /**

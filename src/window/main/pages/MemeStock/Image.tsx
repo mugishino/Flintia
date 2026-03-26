@@ -6,28 +6,32 @@ import { Logger } from "~/Logger";
 import { Clipboards } from "~/util/clipboard";
 import { Paths } from "~/util/path";
 import { useStaticOverlay } from "~/hooks/useOverlay";
+import { useState } from "react";
+import { useEffectAsync } from "~/hooks/useEffectAsync";
 
 const SUPPORT_EXTENSION = "avif,bmp,jpeg,jpg,png,webp".split(",");
 
-const config = await Config.load();
-const imagedirNotFound = await Paths.notExists(config.imagedir);
-
-const imageList: string[] = [];
-if (!imagedirNotFound) {
-    const imagedirAllFiles = await readDir(config.imagedir);
-    imagedirAllFiles.forEach(v => {
-        if (!v.isFile) return;
-        if (!SUPPORT_EXTENSION.includes(Paths.splitExt(v.name).ext)) return;
-        imageList.push(`${config.imagedir}/${v.name}`);
-    });
-}
-
 export default function MemeStock_Image({paste, enter, search}: {paste: boolean, enter: boolean, search: string}) {
+    const [imageList, setImageList] = useState<string[]>([]);
+
     const [overlay, setOverlay] = useStaticOverlay();
+
+    useEffectAsync(async() => {
+        const config = await Config.load();
+        const imagedirNotFound = await Paths.notExists(config.imagedir);
+        if (imagedirNotFound) return;
+
+        const data = (await readDir(config.imagedir)).map(v => {
+            if (!v.isFile) return;
+            if (!SUPPORT_EXTENSION.includes(Paths.splitExt(v.name).ext)) return;
+            return `${config.imagedir}/${v.name}`;
+        });
+        setImageList(data.filter(v => v != undefined));
+    });
 
     return (
         <div className="overflow-y-scroll flex flex-wrap justify-center content-start h-full">
-            <span className="text-2xl text-fail">{"Image directory not found".where(imagedirNotFound)}</span>
+            <span className="text-2xl text-fail">{"Image directory not found".where(!imageList)}</span>
             {imageList.map(v => {
                 const fileSrc = convertFileSrc(v);
                 if (search.length != 0 && !Paths.getBasename(v.toLowerCase()).includes(search.toLowerCase())) return;

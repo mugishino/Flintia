@@ -24,6 +24,10 @@ pub fn run() {
             None,
         ))
         .setup(|app| {
+            // 開発用 - DevToolsを自動で開く
+//            app.get_webview_window("main").unwrap().open_devtools();
+
+            // タスクトレイ
             let _ = TrayIconBuilder::new()
                 .menu(&Menu::with_items(
                     app,

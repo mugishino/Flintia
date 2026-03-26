@@ -1,0 +1,10 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "launcher",
+  "description": "Capability for the laucher window",
+  "windows": ["launcher"],
+  "permissions": [
+    "dialog:allow-open",
+    {"allow": [{"path": "**"}], "identifier": "fs:allow-exists"}
+  ]
+}

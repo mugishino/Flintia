@@ -28,9 +28,8 @@ async function getPassRecords() {
     return yaml.load(raw) as PassRecord[];
 }
 
-const PASSWORD_DATA = await getPassRecords();
-
 export default function Password() {
+    const [PASSWORD_DATA, setPasswordData] = useState<PassRecord[]|null>();
     const [searchElem, search] = useSearch({className: "border-0 border-b", autofocus: true});
     const [showHide, setShowHide] = useState(false);
     const [paste, setPaste] = useState(true);
@@ -55,7 +54,14 @@ export default function Password() {
 
 
 
+    useEffectAsync(async() => {
+        setPasswordData(await getPassRecords());
+    }, []);
+
+
+
     useEffectAsync(async () => {
+        setErrorMessage(undefined);
         if (PASSWORD_DATA == null) {
             setErrorMessage("Password file not found");
             return;
@@ -69,7 +75,7 @@ export default function Password() {
             result.push(v);
         });
         setView(result);
-    }, [search, showHide]);
+    }, [search, showHide, PASSWORD_DATA]);
 
 
 
