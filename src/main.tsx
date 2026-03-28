@@ -35,6 +35,7 @@ FlintiaWindow.getOrCreateWindow("launcher", "/Launcher", {
     shadow: false,
     transparent: true,
     focus: false,
+    skipTaskbar: true,
 });
 
 

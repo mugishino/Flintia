@@ -3,6 +3,8 @@ import { FlintiaWindow } from "~/Flintia";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import LaunchPanel from "./LaunchPanel";
 
+const FULLSCREEN = false;
+
 export default function Launcher() {
     useEffectAsync(async() => {
         const win = await FlintiaWindow.get("launcher");
@@ -10,12 +12,13 @@ export default function Launcher() {
 
         // ウィンドウ設定
         await win.setDefaultPosition(new LogicalPosition(0, 0));
-        await win.rawWindow.setSize(new PhysicalSize(screen.width, screen.height));
+        const phySize = FULLSCREEN ? new PhysicalSize(screen.width, screen.height) : new PhysicalSize(screen.availWidth, screen.availHeight);
+        await win.rawWindow.setSize(phySize);
         await win.rawWindow.setPosition(await win.getDefaultPosition() ?? new LogicalPosition(100, 100));
 
         await win.registerHotkey(true, true, true, false, "A", async() => await win.toggleVisible());
         win.rawWindow.onFocusChanged(({payload}) => {
-//            if (!payload) win.hide();
+            if (!payload) win.hide();
         });
     }, []);
 

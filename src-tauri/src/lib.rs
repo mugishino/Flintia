@@ -77,7 +77,10 @@ pub fn run() {
             commands::paste,
             commands::get_system_uptime,
             commands::get_all_disk_info,
-            commands::get_windows_hotfix
+            commands::get_windows_hotfix,
+            commands::get_file_icon_base64,
+            commands::is_directory,
+            commands::run_exe
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

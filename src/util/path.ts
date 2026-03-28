@@ -1,5 +1,6 @@
 import { appDataDir } from "@tauri-apps/api/path";
 import { exists, mkdir } from "@tauri-apps/plugin-fs";
+import { WInvoke } from "~/InvokeWrapper";
 
 
 export async function getAppdataDirFile(filename: string) {
@@ -23,9 +24,9 @@ export namespace Paths {
         const split = filename.split(".");
         const ext = split.splice(-1)[0];
         const name = split.join(".");
-        return {
-            name: name,
-            ext: ext,
-        };
+        // nameが0文字であればextとスワップ
+        return name.length == 0 ? {name: ext, ext: name} : {name, ext};
     }
+
+    export const isDirectory = WInvoke.isDirectory;
 }

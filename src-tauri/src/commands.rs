@@ -1,4 +1,9 @@
+use std::{io::Cursor, path, process::Command};
+
+use base64::{Engine, engine::general_purpose};
 use enigo::{Enigo, Key, Keyboard, Settings};
+use file_icon_provider::get_file_icon;
+use image::{DynamicImage, RgbaImage};
 
 #[tauri::command]
 pub fn paste(enter: bool, win: tauri::WebviewWindow) {
@@ -53,6 +58,52 @@ pub async fn get_windows_hotfix() -> Result<String, String> {
         .arg("Get-Hotfix | ConvertTo-Json")
         .output()
         .await
-        .expect("failed to Get-Hotfix");
+        .map_err(|_| "Failed to Get-Hotfix")?;
     Ok(String::from_utf8_lossy(&out.stdout).to_string())
+}
+
+#[tauri::command]
+pub fn get_file_icon_base64(path: &str, size: u16) -> Result<String, String> {
+    let icon = get_file_icon(path, size).map_err(|_| "Failed to get file icon")?;
+
+    // Icon -> DynamicImage
+    let image = RgbaImage::from_raw(icon.width, icon.height, icon.pixels)
+        .map(DynamicImage::ImageRgba8)
+        .ok_or("Failed to convert Icon to Image")?;
+
+    // create buffer
+    let mut buffer = Cursor::new(Vec::new());
+    image
+        .write_to(&mut buffer, image::ImageFormat::Png)
+        .map_err(|e| format!("Failed to encode image: {}", e))?;
+    let bytes = buffer.into_inner();
+
+    // 2. Base64エンコード
+    let b64 = general_purpose::STANDARD.encode(bytes);
+    Ok(b64)
+}
+
+#[tauri::command]
+pub fn is_directory(path: &str) -> bool {
+    let target = path::PathBuf::from(path);
+    target.is_dir()
+}
+
+#[tauri::command]
+pub fn run_exe(path: &str, args: &str) -> Result<(), String> {
+    if path.trim().is_empty() {
+        return Err("path is empty".into());
+    }
+
+    // argsを分割
+    let args_vec = shell_words::split(args)
+        .map_err(|e| e.to_string())?;
+
+    Command::new("cmd")
+        .args(["/C", "start", "", path])
+        .args(args_vec)
+        .spawn()
+        .map_err(|e| e.to_string())?;
+
+    Ok(())
 }
