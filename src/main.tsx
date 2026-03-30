@@ -20,7 +20,7 @@ import { FlintiaWindow } from "./Flintia";
 const windowLabel = getCurrentWindow().label;
 
 // ウィンドウラベルごとにスタイルを与える
-document.body.classList += windowLabel
+document.body.classList.add(windowLabel);
 
 // デバッグ時にわかりやすいようにスタイル設定
 if (process.env.NODE_ENV == "development") {
@@ -31,11 +31,12 @@ if (process.env.NODE_ENV == "development") {
 
 FlintiaWindow.getOrCreateWindow("launcher", "/Launcher", {
     decorations: false,
+    skipTaskbar: true,
     resizable: false,
     shadow: false,
-    transparent: true,
+    visible: false,
     focus: false,
-    skipTaskbar: true,
+    transparent: true,
 });
 
 

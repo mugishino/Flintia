@@ -1,7 +1,5 @@
 use tauri::{
-    menu::{Menu, MenuItem},
-    tray::TrayIconBuilder,
-    Manager,
+    Manager, WindowEvent, menu::{Menu, MenuItem}, tray::TrayIconBuilder
 };
 use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_dialog::DialogExt;
@@ -39,7 +37,21 @@ pub fn run() {
                 )?)
                 .on_menu_event(|app, event| match event.id.as_ref() {
                     "quit" => {
-                        app.exit(0);
+                        // ウィンドウが全て閉じたらapp.exitするように設定
+                        for win in app.webview_windows().into_values() {
+                            let app_handle = app.app_handle().clone();
+                            win.on_window_event(move |event| {
+                                if let WindowEvent::Destroyed = event {
+                                    if app_handle.webview_windows().is_empty() {
+                                        app_handle.exit(0);
+                                    }
+                                }
+                            });
+                        }
+                        // ウィンドウを全て閉じる
+                        for win in app.webview_windows().into_values() {
+                            let _ = win.close();
+                        }
                     }
                     "info" => {
                         app.dialog()
