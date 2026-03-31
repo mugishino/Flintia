@@ -1,4 +1,4 @@
-use std::{io::Cursor, path, process::Command};
+use std::{io::Cursor, os::windows::process::CommandExt, path, process::{Command, Stdio}};
 
 use base64::{Engine, engine::general_purpose};
 use enigo::{Enigo, Key, Keyboard, Settings};
@@ -99,9 +99,17 @@ pub fn run_exe(path: &str, args: &str) -> Result<(), String> {
     let args_vec = shell_words::split(args)
         .map_err(|e| e.to_string())?;
 
+    // flags
+    const CREATE_NO_WINDOW: u32 = 0x08000000;
+    const DETACHED_PROCESS: u32 = 0x00000008;
+
     Command::new("cmd")
         .args(["/C", "start", "", path])
         .args(args_vec)
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .creation_flags(CREATE_NO_WINDOW | DETACHED_PROCESS)
         .spawn()
         .map_err(|e| e.to_string())?;
 

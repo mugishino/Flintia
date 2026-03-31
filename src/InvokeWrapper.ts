@@ -42,11 +42,12 @@ export const WInvoke = {
 
     /**
      * ファイルのアイコンをBase64で取得します。
+     * @param mime mineタイプを先頭につける
      * @returns base64
      */
-    async getFileIconBase64(path: string, size=32): Promise<string> {
-        const data = await invoke("get_file_icon_base64", {path: path, size: size});
-        return data as string;
+    async getFileIconBase64(path: string, size=32, mime: boolean=true): Promise<string> {
+        const base64 = await invoke("get_file_icon_base64", {path: path, size: size}) as string;
+        return (mime ? "data:image/png;base64," : String.empty) + base64;
     },
 
     /**

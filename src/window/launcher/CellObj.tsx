@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-const GRID_SIZE = screen.width / 36;
-const MARGIN_SIZE = GRID_SIZE / 12;
+export const GRID_SIZE = screen.width / 43;
+export const MARGIN_SIZE = GRID_SIZE / 12;
 
 export type CellData = {
     x: number;
@@ -35,32 +35,33 @@ export function CellObj(props: CellData & CellObjProps) {
     const [moveing, setMoveing] = useState(false);
     const [gridX, setGridX] = useState(props.x);
     const [gridY, setGridY] = useState(props.y);
-    const [x, setX] = useState(0);
-    const [y, setY] = useState(0);
+    const [moveX, setMoveX] = useState(0);
+    const [moveY, setMoveY] = useState(0);
 
     const {onMoved, locked, isOverlapping, onRightClick, ...rest} = props;
 
     useEffect(() => {
-        if (locked) return;
+        if (locked || moveing) return;
         // snap
         const size = GRID_SIZE + MARGIN_SIZE;
-        const rx = Math.round((x+size*gridX)/size);
-        const ry = Math.round((y+size*gridY)/size);
-        if (
-            // マイナス座標であればキャンセル
-            rx >= 0 && ry >= 0
-            // 重なっていればキャンセル
-            && isOverlapping ? !isOverlapping({x: rx, y: ry, w: props.w, h: props.h}) : true
-        ) {
+        const rx = Math.round((moveX+size*gridX)/size);
+        const ry = Math.round((moveY+size*gridY)/size);
+
+        const isMinus = rx < 0 || ry < 0;
+        const isOverlap = isOverlapping ? isOverlapping({x: rx, y: ry, w: props.w, h: props.h}) : true;
+        if (!isMinus && !isOverlap) {
             setGridX(rx);
             setGridY(ry);
         }
         // reset
-        setX(0);
-        setY(0);
+        setMoveX(0);
+        setMoveY(0);
 
         if (onMoved) onMoved(rx, ry);
     }, [moveing]);
+
+    const cellX = gridX * (GRID_SIZE + MARGIN_SIZE);
+    const cellY = gridY * (GRID_SIZE + MARGIN_SIZE);
 
     return (
         <div
@@ -70,23 +71,29 @@ export function CellObj(props: CellData & CellObjProps) {
                 if (e.button == 1 && !locked) {
                     setMoveing(!moveing);
                     e.preventDefault();
+
+                    if (!moveing) {
+                        // セル中央をマウスに持っていく
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const centerX = rect.left + rect.width/2;
+                        const centerY = rect.top  + rect.height/2;
+                        setMoveX(e.clientX - centerX);
+                        setMoveY(e.clientY - centerY);
+                    }
                 }
-            }}
-            onMouseLeave={() => {
-                if (moveing) setMoveing(false);
             }}
             onMouseMove={e => {
                 if (!moveing) return;
-                setX(x + e.movementX);
-                setY(y + e.movementY);
+                setMoveX(moveX + e.movementX);
+                setMoveY(moveY + e.movementY);
             }}
             onAuxClick={e => {
                 if (e.button != 2) return;
                 if (onRightClick) onRightClick(e);
             }}
             style={{
-                left: gridX*(GRID_SIZE+MARGIN_SIZE) + x,
-                top: gridY*(GRID_SIZE+MARGIN_SIZE) + y,
+                left: cellX + moveX,
+                top: cellY + moveY,
                 width: (GRID_SIZE*props.w) + (MARGIN_SIZE*(props.w-1)) + "px",
                 height: (GRID_SIZE*props.h) + (MARGIN_SIZE*(props.h-1)) + "px",
             }}

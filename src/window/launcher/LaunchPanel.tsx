@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { CellData, CellObj, CellObjProps } from "./CellObj";
+import { useEffect, useRef, useState } from "react";
+import { CellData, CellObj, CellObjProps, GRID_SIZE, MARGIN_SIZE } from "./CellObj";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { getAppdataDirFile, Paths } from "~/util/path";
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
@@ -9,6 +9,11 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { FlintiaWindow } from "~/Flintia";
 import { WInvoke } from "~/InvokeWrapper";
 import { useStaticOverlay } from "~/hooks/useOverlay";
+import { useKVState } from "~/hooks/useKVState";
+import SVGButton from "~/components/SVGButton";
+import { Line } from "~/components/Line";
+import { ifPresent } from "~/util/util";
+import { convertFileSrc } from "@tauri-apps/api/core";
 
 type CellType = "tile" | "label";
 type SaveData = Map<string, TileData>;
@@ -16,7 +21,9 @@ type TileData = {
     type: CellType;
     label: string;
     exe?: string;
+    exe_icon?: string;
     args?: string;
+    custom_icon?: string;
 } & CellData;
 
 
@@ -25,19 +32,19 @@ type TileData = {
 function Tile(props: CellObjProps & TileData) {
     const [img, setImg] = useState<string|undefined>(undefined);
 
-    useEffectAsync(async() => {
-        if (!props.exe) return;
-        const b64 = await WInvoke.getFileIconBase64(props.exe, 64);
-        setImg(b64);
-    }, [props.exe]);
+    useEffect(() => {
+        if (props.custom_icon) return setImg(props.custom_icon);
+        if (props.exe_icon) return setImg(props.exe_icon);
+        setImg(undefined);
+    }, [props.exe_icon, props.custom_icon]);
 
     return (
-        <CellObj {...props}>
-            <div className="bg-blue-500 h-full w-full relative active:bg-blue-600 hover:outline-3 outline-blue-400 active:outline-0 -outline-offset-3">
+        <CellObj {...props} title={props.label.where(props.w <= 1)}>
+            <div className="bg-blue-500 h-full w-full relative active:bg-blue-600 hover:outline-3 outline-launcher-tile-hover-outline active:outline-0 -outline-offset-3">
                 <div className="flex justify-center items-center h-full w-full">
-                    {img && <img className="h-full w-full max-w-14 p-1 object-contain" src={"data:image/png;base64," + img}/>}
+                    {img && <img className={`h-full w-full max-w-8 p-1 object-contain ${"pt-0".where(props.w > 1)}`} src={img}/>}
                 </div>
-                {props.w > 1 && <span className="absolute bottom-0 text-[75%] pl-0.5">{props.label}</span>}
+                {props.w > 1 && <span className="absolute bottom-0 text-[50%] pl-1 pb-0.5 wrap-anywhere">{props.label}</span>}
             </div>
         </CellObj>
     );
@@ -47,10 +54,10 @@ function Label(props: {center?: boolean} & CellObjProps & TileData) {
     const {center, ...rest} = props;
     return (
         <CellObj {...rest}>
-            <div className="bg-auth-hover hover:bg-auth-accent-hover h-full w-full">
-                <span className="h-full flex items-center" style={{
+            <div className={`duration-200 h-full w-full border-neutral-800 hover:border-blue-300 ${"border-b".where(!center)} ${"bg-auth-hover".where(props.locked ?? false)} ${"hover:bg-auth-accent-hover".where(props.locked ?? false)}`}>
+                <span className="h-full flex text-[75%]" style={{
                     justifyContent: "center".where(!!center),
-                    marginLeft: "0.3rem".where(!center),
+                    alignItems: center ? "center" : "end",
                 }}>{props.label}</span>
             </div>
         </CellObj>
@@ -67,22 +74,50 @@ function NumberSelector(props: {min: number, max: number, value: number, label: 
     );
 }
 
+/**
+ * 画像をリサイズし、base64で返します。先頭にMIMEタイプ付き。
+ * @param src 画像ソース(convert済みを渡してください)
+ * @param width エンコード後の画像幅
+ * @param height エンコード後の画像高
+ * @returns Base64の画像
+ */
+async function resizeImageToBase64(src: string, width: number=64, height: number=64): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "Anonymous";
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = width;
+            canvas.height = height;
+            ctx?.drawImage(img, 0, 0, width, height);
+            const base64 = canvas.toDataURL("image/png");
+            resolve("data:image/png;base64," + base64);
+        };
+        img.onerror = e => reject(new Error("Failed to load image: " + e.toString()));
+        img.src = src;
+    });
+}
+
 
 
 const datafile = await getAppdataDirFile("launcher.json");
 
 export default function LaunchPanel() {
-    const [loaded, setLoaded] = useState(false);
+    const loaded = useRef(false);
     const [data, setData] = useState<SaveData>(new Map());
     const [overlay, showOverlay] = useState(false);
-    const [deleteOverlay, setDeleteOverlay] = useStaticOverlay();
+    const [staticOverlay, setStaticOverlay] = useStaticOverlay();
     // settings
     const [settingKey, setSettingKey] = useState(String.empty);
-    const [height, setHeight] = useState(0);
-    const [width, setWidth] = useState(0);
-    const [label, setLabel] = useState(String.empty);
-    const [exe, setExe] = useState<string|undefined>(undefined);
-    const [args, setArgs] = useState<string|undefined>(undefined);
+    const [editData, setEditData, overwriteEditData] = useKVState<TileData>({
+        h: 1,
+        w: 1,
+        label: "NULL",
+        type: "tile",
+        x: 0,
+        y: 0,
+    });
     const [isDir, setIsDir] = useState(false);
 
     useEffectAsync(async() => {
@@ -93,11 +128,11 @@ export default function LaunchPanel() {
         // set
         const map: SaveData = new Map(Object.entries(rawData));
         setData(map);
-        setLoaded(true);
+        loaded.current = true;
     }, []);
 
     useEffectAsync(async() => {
-        if (!loaded) return;
+        if (!loaded.current) return;
         // 保存
         const json = JSON.stringify(Object.fromEntries(data));
         await writeTextFile(datafile, json);
@@ -176,11 +211,7 @@ export default function LaunchPanel() {
         if (!v) return;
         // 設定画面を更新
         setSettingKey(k);
-        setLabel(v.label);
-        setHeight(v.h);
-        setWidth(v.w);
-        setExe(v.exe);
-        setArgs(v.args);
+        overwriteEditData(v);
         setIsDir(v.exe ? await WInvoke.isDirectory(v.exe) : false);
         // 表示
         showOverlay(true);
@@ -200,7 +231,18 @@ export default function LaunchPanel() {
         win.show();
 
         if (select == null) return;
-        setExe(select);
+        setEditData("exe", select);
+    }
+
+    function openDeleteOverlay(label: string, callback: () => void) {
+        setStaticOverlay(
+            <div className="flex justify-center items-center h-full w-full">
+                <div className="bg-layerA p-4 border border-fail">
+                    <h1 className="text-2xl">本当に{ifPresent(label, it => it+"を")}削除しますか？</h1>
+                    <button className="text-fail" onClick={callback}>削除</button>
+                </div>
+            </div>
+        );
     }
 
 
@@ -208,15 +250,15 @@ export default function LaunchPanel() {
     const settingOpenCellData = data.get(settingKey);
 
     return (
-        <div className="h-full w-full overflow-x-hidden overflow-y-scroll p-12">
-            <Label
-                {...{type: "label", label: "+", x: 0.1, y: 0.1, w: 1, h: 1}}
-                locked={true}
-                center={true}
-                onClick={() => addObject("tile")}
-                onRightClick={() => addObject("label")}
-            />
+        <div className="h-full w-full overflow-x-scroll overflow-y-scroll" style={{padding: GRID_SIZE+(MARGIN_SIZE*3) + "px"}}>
             <div className="w-full h-full relative">
+                <Label
+                    {...{type: "label", label: "+", x: -1, y: -1, w: 1, h: 1}}
+                    locked={true}
+                    center={true}
+                    onClick={() => addObject("tile")}
+                    onRightClick={() => addObject("label")}
+                />
                 {data && data.map((k, v) => {
                     switch (v.type) {
                         case "tile":
@@ -237,53 +279,81 @@ export default function LaunchPanel() {
             </div>
             <Overlay show={overlay} setShow={showOverlay} grayBackground={false}>
                 <div className="h-full w-full flex items-center justify-center">
-                    <div className="bg-layerA p-4 gap-1 flex flex-col w-1/4 text-[0.75rem]" onClick={e => e.stopPropagation()}>
-                        <input placeholder="Label" type="text" value={label} onChange={e => setLabel(e.currentTarget.value)}/>
-                        <NumberSelector min={1} max={8} value={height} label="Height" onChange={v => setHeight(v)}/>
-                        <NumberSelector min={1} max={8} value={width} label="Width" onChange={v => setWidth(v)}/>
-                        <hr/>
-                        {settingOpenCellData?.type == "tile" && <>
-                            <Setting title="Oepn">
+                    <div className="flex flex-row bg-layerA p-4 gap-1 w-1/4 text-[0.75rem] border border-app-edge" onClick={e => e.stopPropagation()}>
+                        <div className="flex flex-col grow">
+                            <input placeholder="Label" type="text" value={editData.label} onChange={e => setEditData("label", e.currentTarget.value)}/>
+                            <NumberSelector min={1} max={8} value={editData.h} label="Height" onChange={v => setEditData("h", v)}/>
+                            <NumberSelector min={1} max={8} value={editData.w} label="Width" onChange={v => setEditData("w", v)}/>
+                            <Line/>
+                            {settingOpenCellData?.type == "tile" && <>
+                                <Setting title="Oepn">
+                                    <div className="flex flex-row">
+                                        <button onClick={async() => selectExe(false)}>file</button>
+                                        <button onClick={async() => selectExe(true)}>directory</button>
+                                    </div>
+                                </Setting>
+                                {editData.exe}
+                                {editData.exe && !isDir && <input placeholder="Arguments" value={editData.args} onChange={e => setEditData("args", e.currentTarget.value)}/>}
+                                <Line/>
+                            </>}
+                            <div className="flex flex-row justify-between">
                                 <div className="flex flex-row">
-                                    <button onClick={async() => selectExe(false)}>file</button>
-                                    <button onClick={async() => selectExe(true)}>directory</button>
+                                    <span>Custom-Icon</span>
+                                    {editData.custom_icon && <img src={editData.custom_icon} className="aspect-square h-5"/>}
                                 </div>
-                            </Setting>
-                            {exe}
-                            {exe && !isDir && <input placeholder="Arguments" value={args} onChange={e => setArgs(e.currentTarget.value)}/>}
-                            <hr/>
-                        </>}
-                        <button onClick={() => {
-                            const v = data.get(settingKey);
-                            if (!v) return;
-                            // 設定更新
-                            v.label = label;
-                            v.h = height;
-                            v.w = width;
-                            v.exe = exe;
-                            v.args = args;
-                            // 保存
-                            const newData = new Map(data);
-                            newData.set(settingKey, v);
-                            setData(newData);
-                            showOverlay(false);
-                        }}>SAVE</button>
-                        <hr className="my-4"/>
-                        <button className="text-fail" onClick={() => setDeleteOverlay(
-                            <div className="flex justify-center items-center h-full w-full">
-                                <div className="bg-layerA p-4">
-                                    <h1 className="text-2xl">本当に？</h1>
-                                    <button className="text-fail" onClick={() => {
-                                        deleteObject(settingKey);
-                                        showOverlay(false);
-                                    }}>削除</button>
+                                <div className="flex flex-row w-2/5">
+                                    {editData.custom_icon && <button className="grow" onClick={() => openDeleteOverlay("カスタムアイコン", () => setEditData("custom_icon", undefined))}>Reset</button>}
+                                    <button className="grow" onClick={async() => {
+                                        const imageExtension = ["png", "jpg", "jpeg", "webp"];
+                                        const selectPath = await open({
+                                            filters: [{
+                                                extensions: ["*"],
+                                                name: "any",
+                                            }],
+                                            title: "Select custom icon",
+                                        });
+                                        if (selectPath == null) return;
+                                        const ext = Paths.splitExt(selectPath).ext;
+                                        const base64 = await (async() => {
+                                            // 画像ファイルならそのまま取得、非画像ファイルはファイルアイコンを取得
+                                            if (imageExtension.includes(ext)) {
+                                                // base64化
+                                                const src = convertFileSrc(selectPath);
+                                                return await resizeImageToBase64(src);
+                                            }
+                                            return await WInvoke.getFileIconBase64(selectPath, 32);
+                                        })();
+                                        setEditData("custom_icon", base64);
+                                    }}>File</button>
                                 </div>
                             </div>
-                        )}>Delete</button>
+                        </div>
+                        <Line vertical/>
+                        <div className="flex flex-col justify-between">
+                            <SVGButton src="trash_can.svg" className="w-8 fill-fail" onClick={() => openDeleteOverlay(editData.label, () => {
+                                deleteObject(settingKey);
+                                showOverlay(false);
+                            })}/>
+                            <SVGButton src="refresh.svg" title="Clear Cache" onClick={() => {
+                                editData.exe_icon = undefined;
+                            }}/>
+                            <SVGButton src="save.svg" onClick={async() => {
+                                // exeアイコンのキャッシュを作成
+                                if (editData.exe_icon == undefined && editData.exe) {
+                                    const base64 = await WInvoke.getFileIconBase64(editData.exe, 32);
+                                    editData.exe_icon = base64;
+                                }
+                                // 保存
+                                const newData = new Map(data);
+                                newData.set(settingKey, editData);
+                                setData(newData);
+                                showOverlay(false);
+                            }}/>
+                        </div>
                     </div>
                 </div>
             </Overlay>
-            {deleteOverlay}
+            {staticOverlay}
         </div>
     );
 }

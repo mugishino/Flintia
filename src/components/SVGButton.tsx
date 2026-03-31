@@ -1,10 +1,12 @@
 import { ReactSVG } from "react-svg";
 import { twMerge } from "tailwind-merge";
 
-export default function SVGButton({src, disabled, onClick, className}: {src: string, disabled?: boolean, onClick?: () => void, className?: string}) {
+export default function SVGButton(props: {src: string, disabled?: boolean, className?: string} & React.ComponentPropsWithoutRef<"button">) {
+    const {disabled, className, src, ...rest} = props;
+
     return (
-        <button onClick={onClick} className={twMerge("w-auto p-0", className)} disabled={disabled}>
-            <ReactSVG src={src} className={`h-full aspect-square ${disabled ? "fill-svg-disable" : "fill-svg"}`}/>
+        <button className={twMerge(`w-auto p-0 ${disabled ? "fill-svg-disable" : "fill-svg"}`, className)} disabled={disabled} {...rest}>
+            <ReactSVG src={src} className={`h-full aspect-square fill-inherit`}/>
         </button>
     );
 }

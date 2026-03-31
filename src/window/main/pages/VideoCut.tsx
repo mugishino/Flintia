@@ -11,6 +11,7 @@ import { useStaticOverlay } from "~/hooks/useOverlay";
 import { Clipboards } from "~/util/clipboard";
 import { Paths } from "~/util/path";
 import { Nullable } from "~/util/type";
+import BitrateCalc from "./Tools/BitrateCalc";
 
 function secondToTime(sec: number) {
     const h = (sec/3600).toInt().toStringZero(2);
@@ -162,47 +163,52 @@ export default function VideoCut() {
                 <button disabled={!inputFile} onClick={() => showOverlay(true)}>出力設定</button>
             </div>
             <Overlay show={overlay} setShow={showOverlay}>
-                <div className="m-auto p-8 w-2/5 bg-bg border justify-center border-app-edge flex flex-col gap-2" onClick={e => e.stopPropagation()}>
-                    <button onClick={async () => {
-                        const result = await save({title: "Save"});
-                        if (result != null) setOutputFile(result);
-                        FlintiaWindow.getCurrentWindow().then(v => v.show());
-                    }}>Browse output file</button>
-                    <span>{outputFile ?? "No output file selected"}{videoCodec == "av1_nvenc" ? ".webm" : ".mp4"}</span>
-                    <hr className="mb-3"></hr>
-                    <Setting title="Codec">
-                        <select value={videoCodec} onChange={v => setVideoCodec(v.currentTarget.value as VideoCodec)}>
-                            <option value={"h264_nvenc"}>h264</option>
-                            <option value={"hevc_nvenc"}>HEVC</option>
-                            <option value={"av1_nvenc"}>AV1</option>
-                        </select>
-                    </Setting>
-                    <Setting title="Bitrate">
-                        <select value={bitrate} onChange={v => setBitrate(parseInt(v.currentTarget.value))}>
-                            <option>1024</option>
-                            <option>2048</option>
-                            <option>4096</option>
-                            <option>8192</option>
-                        </select>
-                    </Setting>
-                    <hr className="mb-3"/>
-                    <button onClick={() => {
-                        const cmd = commandBuild(inputFile, outputFile, startTime, endTime, videoCodec, bitrate, true);
-                        Clipboards.copyText(cmd.full);
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 1000);
-                    }}>{copied ? "Copied!" : "Copy FFmpeg Command"}</button>
-                    <button disabled={!outputFile} className={"hidden".where(!CommandExists.FFmpeg)} title={"Please select output file".where(!outputFile)} onClick={async () => {
-                        const cmd = commandBuild(inputFile, outputFile, startTime, endTime, videoCodec, bitrate, false);
-                        showOverlay(false);
-                        setStaticOverlay(
-                            <div className="h-full w-full flex flex-col text-center" onClick={e => e.stopPropagation()}>
-                                <span className="m-auto text-4xl">処理中...</span>
-                                <button className="inline-block opacity-100" onClick={() => setStaticOverlay(undefined)}>バックグラウンドで実行</button>
-                            </div>
-                        );
-                        await Command.create(cmd.alias, [...cmd.args, "-y"]).execute().finally(() => setStaticOverlay(undefined));
-                    }}>Run FFmpeg</button>
+                <div className="h-full w-full flex flex-col gap-4 justify-center items-center">
+                    <div className="p-8 w-1/3 bg-bg border justify-center border-app-edge flex flex-col gap-2" onClick={e => e.stopPropagation()}>
+                        <button onClick={async () => {
+                            const result = await save({title: "Save"});
+                            if (result != null) setOutputFile(result);
+                            FlintiaWindow.getCurrentWindow().then(v => v.show());
+                        }}>Browse output file</button>
+                        <span>{outputFile ?? "No output file selected"}{videoCodec == "av1_nvenc" ? ".webm" : ".mp4"}</span>
+                        <hr className="mb-3"></hr>
+                        <Setting title="Codec">
+                            <select value={videoCodec} onChange={v => setVideoCodec(v.currentTarget.value as VideoCodec)}>
+                                <option value={"h264_nvenc"}>h264</option>
+                                <option value={"hevc_nvenc"}>HEVC</option>
+                                <option value={"av1_nvenc"}>AV1</option>
+                            </select>
+                        </Setting>
+                        <Setting title="Bitrate">
+                            <select value={bitrate} onChange={v => setBitrate(parseInt(v.currentTarget.value))}>
+                                <option>1024</option>
+                                <option>2048</option>
+                                <option>4096</option>
+                                <option>8192</option>
+                            </select>
+                        </Setting>
+                        <hr className="mb-3"/>
+                        <button onClick={() => {
+                            const cmd = commandBuild(inputFile, outputFile, startTime, endTime, videoCodec, bitrate, true);
+                            Clipboards.copyText(cmd.full);
+                            setCopied(true);
+                            setTimeout(() => setCopied(false), 1000);
+                        }}>{copied ? "Copied!" : "Copy FFmpeg Command"}</button>
+                        <button disabled={!outputFile} className={"hidden".where(!CommandExists.FFmpeg)} title={"Please select output file".where(!outputFile)} onClick={async () => {
+                            const cmd = commandBuild(inputFile, outputFile, startTime, endTime, videoCodec, bitrate, false);
+                            showOverlay(false);
+                            setStaticOverlay(
+                                <div className="h-full w-full flex flex-col text-center" onClick={e => e.stopPropagation()}>
+                                    <span className="m-auto text-4xl">処理中...</span>
+                                    <button className="inline-block opacity-100" onClick={() => setStaticOverlay(undefined)}>バックグラウンドで実行</button>
+                                </div>
+                            );
+                            await Command.create(cmd.alias, [...cmd.args, "-y"]).execute().finally(() => setStaticOverlay(undefined));
+                        }}>Run FFmpeg</button>
+                    </div>
+                    <div className="bg-bg p-4 border border-app-edge w-1/3">
+                        <BitrateCalc/>
+                    </div>
                 </div>
             </Overlay>
             {staticOverlay}
