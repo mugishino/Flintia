@@ -29,6 +29,13 @@ declare global {
          * @returns 文字列またはundefined
          */
         where<T extends string>(this: T, ...v: boolean[]): T|undefined;
+
+        /**
+         * 大文字小文字を区別せずに文字列を比較します。
+         * @param text 比較する文字列
+         * @returns 一致していればtrue
+         */
+        equalsIgnoreCase<T extends string>(this: T, text: string): boolean;
     }
 }
 
@@ -47,4 +54,8 @@ String.prototype.contains = function(this, ...arg) {
 
 String.prototype.where = function(this, ...v) {
     return !v.includes(false) ? this : undefined;
+}
+
+String.prototype.equalsIgnoreCase = function(text) {
+    return this.toLowerCase() == text.toLowerCase();
 }

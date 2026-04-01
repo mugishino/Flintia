@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Setting from "~/components/Setting";
 import ToggleSwitch from "~/components/ToggleSwitch";
 import Config from "~/Config";
-import { FlintiaWindow, HotkeyMainKey } from "~/Flintia";
+import { FlintiaWindow, HOTKEY_MAINKEYS, HotkeyMainKeys } from "~/Flintia";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { getAppdataDirFile, Paths } from "~/util/path";
 import ReloadTheme from "~/Theme";
@@ -49,13 +49,13 @@ export default function MainSetting() {
     useEffectAsync(async() => {
         if (config == undefined) return;
         const flintia = await FlintiaWindow.getCurrentWindow();
-        flintia.registerHotkey(shift, ctrl, alt, win, key as HotkeyMainKey, () => flintia.toggleVisible()).then(isError => setHotkeyOk(isError));
+        flintia.registerHotkey(shift, ctrl, alt, win, key as HotkeyMainKeys, () => flintia.toggleVisible()).then(isError => setHotkeyOk(isError));
         Config.load().then(config => {
             config.hotkey_shift = shift;
             config.hotkey_ctrl  = ctrl ;
             config.hotkey_alt   = alt  ;
             config.hotkey_win   = win  ;
-            config.hotkey_main  = key as HotkeyMainKey;
+            config.hotkey_main  = key as HotkeyMainKeys;
             config.save();
         });
     }, [shift, ctrl, alt, win, key]);
@@ -75,17 +75,20 @@ export default function MainSetting() {
                     <ToggleSwitch label="Ctrl"  value={ctrl}  onChange={() => setCtrl (!ctrl )}/>
                     <ToggleSwitch label="ALT"   value={alt}   onChange={() => setAlt  (!alt  )}/>
                     <ToggleSwitch label="Win"   value={win}   onChange={() => setWin  (!win  )}/>
-                    <button onClick={() => {
+                    <button className="min-w-18" onKeyDown={e => e.preventDefault()} onClick={() => {
                         setWaitKey(!waitKey);
                         if (!waitKey) {
                             document.addEventListener("keydown", (e: KeyboardEvent) => {
-                                const key = e.key.toUpperCase();
-                                if (!"ABCDEFGHIJKLMNOPQRSTUVWXYZ".includes(key)) return;
-                                setKey(key);
+                                const key = e.key
+                                    .replace(String.space, "Space")
+                                    .replace("Arrow", String.empty);
+                                if (HOTKEY_MAINKEYS.map(v => v.equalsIgnoreCase(key)).includes(true)) {
+                                    setKey(key);
+                                }
                                 setWaitKey(false);
                             }, {once: true});
                         }
-                    }}>{waitKey ? "..." : key}</button>
+                    }}>{waitKey ? "..." : key.toUpperCase()}</button>
                 </div>
             </Setting>
             <Setting title="Appdata directory">

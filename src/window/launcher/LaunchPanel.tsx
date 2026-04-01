@@ -43,9 +43,9 @@ function Tile(props: CellObjProps & TileData) {
         <CellObj {...props} title={props.label.where(props.w <= 1)}>
             <div className="bg-launcher-tile-bg h-full w-full relative active:bg-launcher-tile-bg-active hover:outline-3 outline-launcher-tile-hover-outline active:outline-0 -outline-offset-3">
                 <div className="flex justify-center items-center h-full w-full">
-                    {img && <img className={`h-full w-full max-w-8 p-1 object-contain ${"pt-0".where(props.w > 1)}`} src={img}/>}
+                    {img && <img className={`h-full w-full max-w-12 p-1 object-contain ${"pt-0".where(props.w > 1)}`} src={img}/>}
                 </div>
-                {props.w > 1 && <span className="absolute bottom-0 text-[50%] pl-1 pb-0.5 wrap-anywhere">{props.label}</span>}
+                {props.w > 1 && <span className="absolute bottom-0 text-[75%] pl-1 pb-0.5 wrap-anywhere">{props.label}</span>}
             </div>
         </CellObj>
     );
@@ -309,8 +309,8 @@ export default function LaunchPanel() {
                             </>}
                             <div className="flex flex-row justify-between">
                                 <div className="flex flex-row">
-                                    <span>Custom-Icon</span>
-                                    {editData.custom_icon && <img src={editData.custom_icon} className="aspect-square h-5"/>}
+                                    <span className="pl-1">Custom-Icon</span>
+                                    {editData.custom_icon && <img src={editData.custom_icon} className="aspect-square ml-2 h-5"/>}
                                 </div>
                                 <div className="flex flex-row w-2/5">
                                     {editData.custom_icon && <button className="grow" onClick={() => openDeleteOverlay("カスタムアイコン", () => setEditData("custom_icon", undefined))}>Reset</button>}

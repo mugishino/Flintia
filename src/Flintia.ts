@@ -3,13 +3,15 @@ import { currentMonitor, getCurrentWindow, LogicalPosition, LogicalSize, Window,
 import { SessionData } from "./util/session";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 
-export type HotkeyMainKey =
-    "A"|"B"|"C"|"D"|"E"|"F"|"G"|"H"|"I"|"J"|"K"|"L"|"M"|"N"|"O"|"P"|"Q"|"R"|"S"|"T"|"U"|"V"|"W"|"X"|"Y"|"Z"|
-    "1"|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"|"0"|
-    "F1"|"F2"|"F3"|"F4"|"F5"|"F6"|"F7"|"F8"|"F9"|"F10"|"F11"|"F12"|
-    "PageUp"|"PageDown"|"Home"|"End"|"Delete"|"Insert"|
-    "Up"|"Down"|"Left"|"Right"|
-    "Space"|"-"|"["|"]"|","|"."|"/";
+export type HotkeyMainKeys = (typeof HOTKEY_MAINKEYS)[number];
+export const HOTKEY_MAINKEYS = [
+    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+    "1", "2", "3", "4", "5", "6", "7", "8", "9", "0",
+    "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
+    "PageUp", "PageDown", "Home", "End", "Delete", "Insert",
+    "Up", "Down", "Left", "Right",
+    "Space", "-", "[", "]", ",", ".", "/",
+] as const;
 
 export type TaskbarDirection = "Left"|"Top"|"Right"|"Bottom";
 
@@ -106,7 +108,7 @@ export class FlintiaWindow {
      * @param callback 押された場合に実行する関数
      * @returns 登録に成功した場合true
      */
-    public async registerHotkey(shift: boolean, ctrl: boolean, alt: boolean, win: boolean, main: HotkeyMainKey, callback: () => Promise<void> | void): Promise<boolean> {
+    public async registerHotkey(shift: boolean, ctrl: boolean, alt: boolean, win: boolean, main: HotkeyMainKeys, callback: () => Promise<void> | void): Promise<boolean> {
         // ホットキー文字列の作成
         const keyArray: string[] = [];
         if (shift) keyArray.push("Shift");

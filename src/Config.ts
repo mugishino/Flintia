@@ -1,6 +1,6 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { getAppdataDirFile, Paths } from "~/util/path";
-import { HotkeyMainKey } from "./Flintia";
+import { HotkeyMainKeys } from "./Flintia";
 
 export default class Config {
     passfile = "";
@@ -11,7 +11,7 @@ export default class Config {
     hotkey_ctrl = true;
     hotkey_alt = true;
     hotkey_win = false;
-    hotkey_main = "Q" as HotkeyMainKey;
+    hotkey_main = "Q" as HotkeyMainKeys;
 
     theme: string = "Default_Dark";
 
