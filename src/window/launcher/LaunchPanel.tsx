@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { CellData, CellObj, CellObjProps, GRID_SIZE, MARGIN_SIZE } from "./CellObj";
+import { CellData, CellObj, CellObjProps, getCellSize, GRID_SIZE, MARGIN_SIZE } from "./CellObj";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { getAppdataDirFile, Paths } from "~/util/path";
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
@@ -14,6 +14,7 @@ import SVGButton from "~/components/SVGButton";
 import { Line } from "~/components/Line";
 import { ifPresent } from "~/util/util";
 import { convertFileSrc } from "@tauri-apps/api/core";
+import { ReactSVG } from "react-svg";
 
 type CellType = "tile" | "label";
 type SaveData = Map<string, TileData>;
@@ -40,7 +41,7 @@ function Tile(props: CellObjProps & TileData) {
 
     return (
         <CellObj {...props} title={props.label.where(props.w <= 1)}>
-            <div className="bg-blue-500 h-full w-full relative active:bg-blue-600 hover:outline-3 outline-launcher-tile-hover-outline active:outline-0 -outline-offset-3">
+            <div className="bg-launcher-tile-bg h-full w-full relative active:bg-launcher-tile-bg-active hover:outline-3 outline-launcher-tile-hover-outline active:outline-0 -outline-offset-3">
                 <div className="flex justify-center items-center h-full w-full">
                     {img && <img className={`h-full w-full max-w-8 p-1 object-contain ${"pt-0".where(props.w > 1)}`} src={img}/>}
                 </div>
@@ -54,7 +55,11 @@ function Label(props: {center?: boolean} & CellObjProps & TileData) {
     const {center, ...rest} = props;
     return (
         <CellObj {...rest}>
-            <div className={`duration-200 h-full w-full border-neutral-800 hover:border-blue-300 ${"border-b".where(!center)} ${"bg-auth-hover".where(props.locked ?? false)} ${"hover:bg-auth-accent-hover".where(props.locked ?? false)}`}>
+            <div className={`
+                duration-200 h-full w-full
+                border-launcher-label-border hover:border-launcher-label-border-hover ${"border-b".where(!center)}
+                ${"bg-launcher-label-bg-locked".where(props.locked ?? false)} ${"hover:bg-launcher-label-bg-locked-hover".where(props.locked ?? false)}
+            `}>
                 <span className="h-full flex text-[75%]" style={{
                     justifyContent: "center".where(!!center),
                     alignItems: center ? "center" : "end",
@@ -259,6 +264,11 @@ export default function LaunchPanel() {
                     onClick={() => addObject("tile")}
                     onRightClick={() => addObject("label")}
                 />
+                {/* TODO: 機能未実装 */ false && <CellObj
+                    {...{type: "label", x: -1, y: (screen.availHeight/getCellSize())-1, w: 1, h: 1}}
+                    locked={true}
+                    className="bg-launcher-label-bg-locked hover:bg-launcher-label-bg-locked-hover"
+                ><ReactSVG src="/settings.svg" className="h-full aspect-square fill-svg p-1"/></CellObj>}
                 {data && data.map((k, v) => {
                     switch (v.type) {
                         case "tile":

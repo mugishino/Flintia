@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from "react";
+import { twMerge } from "tailwind-merge";
 
 export const GRID_SIZE = screen.width / 43;
 export const MARGIN_SIZE = GRID_SIZE / 12;
+
+/**
+ * 複数のセルのサイズを取得します。
+ * @param length セルの個数
+ * @returns サイズ
+ */
+export function getCellSize(length: number=1) {
+    return (GRID_SIZE + MARGIN_SIZE) * length + MARGIN_SIZE;
+}
 
 export type CellData = {
     x: number;
@@ -38,7 +48,7 @@ export function CellObj(props: CellData & CellObjProps) {
     const [moveX, setMoveX] = useState(0);
     const [moveY, setMoveY] = useState(0);
 
-    const {onMoved, locked, isOverlapping, onRightClick, ...rest} = props;
+    const {onMoved, locked, isOverlapping, onRightClick, className, ...rest} = props;
 
     useEffect(() => {
         if (locked || moveing) return;
@@ -66,7 +76,7 @@ export function CellObj(props: CellData & CellObjProps) {
     return (
         <div
             {...rest}
-            className="absolute hover:z-10 cursor-default"
+            className={twMerge("absolute hover:z-10 cursor-default", className)}
             onMouseDown={e => {
                 if (e.button == 1 && !locked) {
                     setMoveing(!moveing);

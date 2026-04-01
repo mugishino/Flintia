@@ -64,7 +64,13 @@
 
     --color-videocut-skip-hover: #fff3;
 
+    --color-launcher-tile-bg: var(--color-blue-500);
+    --color-launcher-tile-bg-active: var(--color-blue-600);
     --color-launcher-tile-hover-outline: #fff3;
+    --color-launcher-label-bg-locked: #fff1;
+    --color-launcher-label-border: var(--color-neutral-800);
+    --color-launcher-label-border-hover: var(--color-blue-300);
+    --color-launcher-label-bg-locked-hover: #08f5;
 }
 
 *:focus {
