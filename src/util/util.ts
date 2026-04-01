@@ -37,3 +37,26 @@ export function formatDate(unixtime: number, format: string) {
 export function ifPresent<T, R>(value: T, callback: (it: T) => R): R|undefined {
     return !!value ? callback(value) : undefined;
 }
+
+/**
+ * Canvas要素を作成します。contextのモードは2dです。
+ * @param width Canvasの横幅
+ * @param height Canvasの縦幅
+ * @returns Canvas要素など
+ */
+export function createCanvas(
+    width: number,
+    height: number,
+) {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = width;
+    canvas.height = height;
+
+    return {
+        width,
+        height,
+        canvas,
+        ctx,
+    };
+}

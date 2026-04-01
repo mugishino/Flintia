@@ -8,6 +8,7 @@ import { Paths } from "~/util/path";
 import { useStaticOverlay } from "~/hooks/useOverlay";
 import { useState } from "react";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
+import { createCanvas } from "~/util/util";
 
 const SUPPORT_EXTENSION = "avif,bmp,jpeg,jpg,png,webp".split(",");
 
@@ -40,12 +41,9 @@ export default function MemeStock_Image({paste, enter, search}: {paste: boolean,
                         const raw = await fetch(fileSrc);
                         const blob = await raw.blob();
                         // canvas
-                        const canvas = document.createElement("canvas");
-                        const ctx = canvas.getContext("2d");
-                        if (!ctx) return Logger.failed("get canvas context");
                         const img = await createImageBitmap(blob);
-                        canvas.width = img.width;
-                        canvas.height = img.height;
+                        const {ctx, canvas} = createCanvas(img.width, img.height);
+                        if (!ctx) return Logger.failed("get canvas context");
                         ctx.drawImage(img, 0, 0);
                         // copy and paste
                         const success = await Clipboards.copyFromCanvas(canvas);

@@ -1,8 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { CellData, CellObj, CellObjProps, getCellSize, GRID_SIZE, MARGIN_SIZE } from "./CellObj";
-import { useEffectAsync } from "~/hooks/useEffectAsync";
-import { getAppdataDirFile, Paths } from "~/util/path";
-import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
+import { useEffect, useState } from "react";
+import { CellObj, CellObjProps, getCellSize, GRID_SIZE, MARGIN_SIZE } from "./CellObj";
 import Overlay from "~/components/Overlay";
 import Setting from "~/components/Setting";
 import { open } from "@tauri-apps/plugin-dialog";
@@ -12,23 +9,11 @@ import { useStaticOverlay } from "~/hooks/useOverlay";
 import { useKVState } from "~/hooks/useKVState";
 import SVGButton from "~/components/SVGButton";
 import { Line } from "~/components/Line";
-import { ifPresent } from "~/util/util";
+import { createCanvas, ifPresent } from "~/util/util";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { ReactSVG } from "react-svg";
-
-type CellType = "tile" | "label";
-type SaveData = Map<string, TileData>;
-type TileData = {
-    type: CellType;
-    label: string;
-    exe?: string;
-    exe_icon?: string;
-    args?: string;
-    custom_icon?: string;
-} & CellData;
-
-
-
+import { TileData, useGridManager } from "./useGridManager";
+import { Paths } from "~/util/path";
 
 function Tile(props: CellObjProps & TileData) {
     const [img, setImg] = useState<string|undefined>(undefined);
@@ -91,10 +76,7 @@ async function resizeImageToBase64(src: string, width: number=64, height: number
         const img = new Image();
         img.crossOrigin = "Anonymous";
         img.onload = () => {
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            canvas.width = width;
-            canvas.height = height;
+            const {ctx, canvas} = createCanvas(width, height);
             ctx?.drawImage(img, 0, 0, width, height);
             const base64 = canvas.toDataURL("image/png");
             resolve("data:image/png;base64," + base64);
@@ -106,11 +88,8 @@ async function resizeImageToBase64(src: string, width: number=64, height: number
 
 
 
-const datafile = await getAppdataDirFile("launcher.json");
-
 export default function LaunchPanel() {
-    const loaded = useRef(false);
-    const [data, setData] = useState<SaveData>(new Map());
+    const {data, updateData, addObject, deleteObject, isOverlapping, moveObject} = useGridManager();
     const [overlay, showOverlay] = useState(false);
     const [staticOverlay, setStaticOverlay] = useStaticOverlay();
     // settings
@@ -124,88 +103,6 @@ export default function LaunchPanel() {
         y: 0,
     });
     const [isDir, setIsDir] = useState(false);
-
-    useEffectAsync(async() => {
-        if (await Paths.notExists(datafile)) return;
-        // load
-        const rawDataString = await readTextFile(datafile);
-        const rawData = JSON.parse(rawDataString);
-        // set
-        const map: SaveData = new Map(Object.entries(rawData));
-        setData(map);
-        loaded.current = true;
-    }, []);
-
-    useEffectAsync(async() => {
-        if (!loaded.current) return;
-        // 保存
-        const json = JSON.stringify(Object.fromEntries(data));
-        await writeTextFile(datafile, json);
-    }, [data]);
-
-    /**
-     * オブジェクト移動時に使用
-     * @param k オブジェクトキー
-     * @param v 古い値
-     * @param x 新しいグリッドX座標
-     * @param y 新しいグリッドY座標
-     */
-    function moveObject(k: string, v: TileData, x: number, y: number) {
-        // reactデータ更新
-        const newData = new Map(data);
-        v.x = x;
-        v.y = y;
-        newData.set(k, v);
-        setData(newData);
-    }
-
-    /**
-     * 新しいオブジェクトを追加する
-     * @param type 追加するオブジェクト種
-     */
-    function addObject(type: CellType) {
-        // 同じ位置にあればキャンセル
-        if (Array.from(data.values()).filter(v => v.y == -1).length > 0) return;
-        moveObject(
-            crypto.randomUUID(),
-            {x: 0, y: -1, w: 1, h: 1, type: type, label: String.empty},
-            0, -1,
-        );
-    }
-
-    function deleteObject(key: string) {
-        const newData = new Map(data);
-        newData.delete(key);
-        setData(newData);
-    }
-
-    /**
-     * セルが重なっているか確認する
-     * @param excludeKey 除外するセルのキー
-     * @param celldata 重なっているか確認するセルのデータ
-     * @returns 重なっていればtrue
-     */
-    function isOverlapping(excludeKey: string, celldata: CellData) {
-        const array = data.map((k, v) => {
-            if (k == excludeKey) return;
-            return v;
-        }).filter(v => !!v);
-        // cache
-        const top = celldata.y;
-        const left = celldata.x;
-        const right = celldata.x + celldata.w;
-        const bottom = celldata.y + celldata.h;
-
-        const filterd = array.filter(v => {
-            return (
-                top    < v.y + v.h && // 上端がvの下端より上
-                left   < v.x + v.w && // 左端がvの右端より左
-                right  > v.x && // 右端がvの左端より右
-                bottom > v.y    // 下端がvの上端より下
-            );
-        });
-        return filterd.length > 0;
-    }
 
     /**
      * セルの設定を開きます。
@@ -312,7 +209,7 @@ export default function LaunchPanel() {
                                     <span className="pl-1">Custom-Icon</span>
                                     {editData.custom_icon && <img src={editData.custom_icon} className="aspect-square ml-2 h-5"/>}
                                 </div>
-                                <div className="flex flex-row w-2/5">
+                                <div className="flex flex-row w-1/2">
                                     {editData.custom_icon && <button className="grow" onClick={() => openDeleteOverlay("カスタムアイコン", () => setEditData("custom_icon", undefined))}>Reset</button>}
                                     <button className="grow" onClick={async() => {
                                         const imageExtension = ["png", "jpg", "jpeg", "webp"];
@@ -355,9 +252,7 @@ export default function LaunchPanel() {
                                     editData.exe_icon = base64;
                                 }
                                 // 保存
-                                const newData = new Map(data);
-                                newData.set(settingKey, editData);
-                                setData(newData);
+                                updateData(newData => newData.set(settingKey, editData));
                                 showOverlay(false);
                             }}/>
                         </div>

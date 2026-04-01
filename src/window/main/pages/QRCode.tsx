@@ -4,6 +4,7 @@ import jsQR from "jsqr";
 import { Clipboards } from "~/util/clipboard";
 import * as mkqr from "qrcode";
 import EvenlyDividedRow from "~/components/EvenlyDividedRow";
+import { createCanvas } from "~/util/util";
 
 async function tryZxing(blob: Blob) {
     const url = URL.createObjectURL(blob);
@@ -19,10 +20,7 @@ async function tryZxing(blob: Blob) {
 async function tryJsqr(blob: Blob) {
     const bmp = await createImageBitmap(blob);
 
-    const canvas  = document.createElement("canvas");
-    canvas.width  = bmp.width;
-    canvas.height = bmp.height;
-    const ctx = canvas.getContext("2d");
+    const {ctx, canvas} = createCanvas(bmp.width, bmp.height);
     if (ctx == null) return null;
     ctx.drawImage(bmp, 0, 0);
 
