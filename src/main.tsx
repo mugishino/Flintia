@@ -16,6 +16,12 @@ import Launcher from "./window/launcher/Launcher";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import NotFoundPage from "./window/main/pages/404";
 import { FlintiaWindow } from "./Flintia";
+import { desktopDir } from "@tauri-apps/api/path";
+
+// CONST
+export const DESKTOP_DIR = await desktopDir();
+
+
 
 const windowLabel = getCurrentWindow().label;
 

@@ -1,14 +1,14 @@
-import { open, save } from "@tauri-apps/plugin-dialog";
 import { useEffect, useState } from "react";
 import { AudioCodec, BuildFFmpegCommand, Preset, QualityMode, VideoCodec } from "./CommandBuilder";
 import { Clipboards } from "~/util/clipboard";
 import { FlintiaWindow } from "~/Flintia";
 import Setting from "~/components/Setting";
 import { Paths } from "~/util/path";
+import { Dialogs, VIDEO_EXTENSIONS } from "~/util/dialog";
 
-const VIDEO_EXT = ["mp4", "mkv", "mov", "webm"] as const;
+const SUPPORTED_VIDEO_EXTENSION = ["mp4", "mkv", "mov", "webm"] as const;
 
-type VideoExt = typeof VIDEO_EXT[number];
+type VideoExt = typeof SUPPORTED_VIDEO_EXTENSION[number];
 type Choices<T> = Record<string, T>;
 
 export default function Video() {
@@ -79,8 +79,6 @@ export default function Video() {
         CQVBR: "cq",
     };
 
-    const oOutputExt: string[] = [...VIDEO_EXT];
-
 
 
     // 消えた選択肢を選択していた場合の処理
@@ -101,22 +99,11 @@ export default function Video() {
     return (
         <>
             <Setting title="InputFile">
-                <button onClick={
-                    async() => {
-                        open({
-                            directory: false,
-                            multiple: false,
-                            title: "Select input file",
-                            filters: [{
-                                name: "movie file",
-                                extensions: [...VIDEO_EXT]
-                            }]
-                        }).then(f => {
-                            if (f != null) setInputFile(f);
-                            FlintiaWindow.getCurrentWindow().then(v => v.show())
-                        });
-                    }}>{sInputFile?.split("\\").slice(-1)[0] ?? "Browse..."}
-                </button>
+                <button onClick={async() => {
+                    const f = await Dialogs.openSingleFile("Select input file", [VIDEO_EXTENSIONS]);
+                    if (f != null) setInputFile(f);
+                    FlintiaWindow.getCurrentWindow().then(v => v.show());
+                }}>{sInputFile?.split("\\").slice(-1)[0] ?? "Browse..."}</button>
             </Setting>
             <Selector title="VideoCodec"    defaultValue={sVideoCodec   } onChange={v => setVideoCodec  (v as VideoCodec    )} options={oVideoCodec  }/>
             <Selector title="Preset"        defaultValue={sPreset       } onChange={v => setPreset      (v as Preset        )} options={oPreset      } hide={sVideoCodec == "copy"}/>
@@ -133,14 +120,9 @@ export default function Video() {
                 />
             </Setting>
             <Setting title="OutputFile">
-                <button onClick={() => {
-                    save({
-                        filters: oOutputExt.map(v => ({name: String.empty, extensions: [v]})),
-                        title: "Output file",
-                    }).then(f => {
-                        if (f != null) setOutputFile(f);
-                        FlintiaWindow.getCurrentWindow().then(v => v.show());
-                    });
+                <button onClick={async() => {
+                    const f = await Dialogs.save("Output file", [{name: "Supported", extensions: [...SUPPORTED_VIDEO_EXTENSION]}]);
+                    if (f != null) setOutputFile(f);
                 }}>{sOutputFile?.split("\\").slice(-1)[0] ?? "Browse..."}</button>
             </Setting>
             {(() => {

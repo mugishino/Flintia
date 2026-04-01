@@ -1,10 +1,9 @@
-import { desktopDir } from "@tauri-apps/api/path";
-import { open } from "@tauri-apps/plugin-dialog";
 import { useState } from "react";
 import { Clipboards } from "~/util/clipboard";
-import { FlintiaWindow } from "~/Flintia";
 import { Paths } from "~/util/path";
 import Setting from "~/components/Setting";
+import { Dialogs, IMAGE_EXTENSIONS } from "~/util/dialog";
+import { DESKTOP_DIR } from "~/main";
 
 const Model = {
     "GAN x4Plus Anime": "RealESRGAN-x4plus-anime",
@@ -14,7 +13,6 @@ const Model = {
     "AnimeVideo x4": "RealESR-animevideov3-x4",
 } as const;
 
-const DESKTOP_DIR = await desktopDir();
 export default function RealEsrgan() {
     const [model, setModel] = useState<keyof typeof Model>("GAN x4Plus Anime");
     const [files, setFiles] = useState<string[]>([]);
@@ -32,18 +30,8 @@ export default function RealEsrgan() {
 
             <Setting title="Input Files">
                 <button onClick={async () => {
-                    await open({
-                        defaultPath: DESKTOP_DIR,
-                        filters: [{
-                            "name": "Image",
-                            "extensions": ["png", "webp", "jpg", "jpeg", "tif", "tiff", "avif"]
-                        }],
-                        title: "Select Images",
-                        multiple: true,
-                    }).then(async v => {
-                        FlintiaWindow.getCurrentWindow().then(v => v.show());
-                        if (v != null) setFiles(v);
-                    });
+                    const result = await Dialogs.openMultiFile("Select Images", [IMAGE_EXTENSIONS], DESKTOP_DIR);
+                    if (result != null) setFiles(result);
                 }}>Browse...</button>
             </Setting>
             {files.length == 0 ? null :
@@ -55,15 +43,8 @@ export default function RealEsrgan() {
 
             <Setting title="Output Directory">
                 <button onClick={async () => {
-                    await open({
-                        defaultPath: DESKTOP_DIR,
-                        directory: true,
-                        multiple: false,
-                        title: "Select Output Directory"
-                    }).then(async v => {
-                        FlintiaWindow.getCurrentWindow().then(v => v.show());
-                        if (v != null) setOutdir(v);
-                    });
+                    const result = await Dialogs.openSingleDirectory("Select output directory", DESKTOP_DIR);
+                    if (result != null) setOutdir(result);
                 }}>{outdir ?? "Browse..."}</button>
             </Setting>
 

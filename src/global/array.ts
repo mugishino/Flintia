@@ -25,6 +25,12 @@ declare global {
          * @param index マイナス値も使用可能
          */
         get(index: number): T;
+        /**
+         * 値が配列に含まれているかを確認します。readonly arrayでも使用できます。
+         * @param value 含まれているか確認する値
+         * @returns 含まれていればtrue
+         */
+        contains(value: unknown): boolean;
     }
 }
 
@@ -43,4 +49,11 @@ Array.prototype.insert = function<T>(index: number, value: T) {
 Array.prototype.get = function(index: number) {
     const array = [...this];
     return array.splice(index)[0];
+}
+
+Array.prototype.contains = function(value: unknown) {
+    for (const v of this) {
+        if (v == value) return true;
+    }
+    return false;
 }

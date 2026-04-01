@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { CellObj, CellObjProps, getCellSize, GRID_SIZE, MARGIN_SIZE } from "./CellObj";
 import Overlay from "~/components/Overlay";
 import Setting from "~/components/Setting";
-import { open } from "@tauri-apps/plugin-dialog";
 import { FlintiaWindow } from "~/Flintia";
 import { WInvoke } from "~/InvokeWrapper";
 import { useStaticOverlay } from "~/hooks/useOverlay";
@@ -14,6 +13,7 @@ import { convertFileSrc } from "@tauri-apps/api/core";
 import { ReactSVG } from "react-svg";
 import { TileData, useGridManager } from "./useGridManager";
 import { Paths } from "~/util/path";
+import { ALL_EXTENSIONS, Dialogs, IMAGE_EXTENSIONS } from "~/util/dialog";
 
 function Tile(props: CellObjProps & TileData) {
     const [img, setImg] = useState<string|undefined>(undefined);
@@ -120,17 +120,9 @@ export default function LaunchPanel() {
     }
 
     async function selectExe(directory: boolean) {
-        const select = await open({
-            title: "Select open " + directory ? "directory" : "file",
-            multiple: false,
-            filters: [{
-                extensions: ["*"],
-                name: "Executionable",
-            }],
-            directory: directory,
-        });
-        const win = await FlintiaWindow.getCurrentWindow();
-        win.show();
+        const select = directory
+            ? await Dialogs.openSingleDirectory("Select open directory")
+            : await Dialogs.openSingleFile("Select open file", [ALL_EXTENSIONS]);
 
         if (select == null) return;
         setEditData("exe", select);
@@ -212,19 +204,12 @@ export default function LaunchPanel() {
                                 <div className="flex flex-row w-1/2">
                                     {editData.custom_icon && <button className="grow" onClick={() => openDeleteOverlay("カスタムアイコン", () => setEditData("custom_icon", undefined))}>Reset</button>}
                                     <button className="grow" onClick={async() => {
-                                        const imageExtension = ["png", "jpg", "jpeg", "webp"];
-                                        const selectPath = await open({
-                                            filters: [{
-                                                extensions: ["*"],
-                                                name: "any",
-                                            }],
-                                            title: "Select custom icon",
-                                        });
+                                        const selectPath = await Dialogs.openSingleFile("Select custom icon", [ALL_EXTENSIONS]);
                                         if (selectPath == null) return;
                                         const ext = Paths.splitExt(selectPath).ext;
                                         const base64 = await (async() => {
                                             // 画像ファイルならそのまま取得、非画像ファイルはファイルアイコンを取得
-                                            if (imageExtension.includes(ext)) {
+                                            if (IMAGE_EXTENSIONS.extensions.includes(ext)) {
                                                 // base64化
                                                 const src = convertFileSrc(selectPath);
                                                 return await resizeImageToBase64(src);

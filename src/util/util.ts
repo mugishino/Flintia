@@ -1,3 +1,5 @@
+import { Falsy } from "./type";
+
 /**
  * setIntervalのラッパー。呼び出し時にもコールバックが実行される。
  * @param callback 実行する関数
@@ -34,8 +36,8 @@ export function formatDate(unixtime: number, format: string) {
  * @param callback 非nullの場合に実行されるコールバック
  * @returns undefinedまたはコールバックの返り値
  */
-export function ifPresent<T, R>(value: T, callback: (it: T) => R): R|undefined {
-    return !!value ? callback(value) : undefined;
+export function ifPresent<T, R>(value: T|Falsy, callback: (it: T) => R): R|undefined {
+    return !!value ? callback(value as T) : undefined;
 }
 
 /**

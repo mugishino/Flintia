@@ -1,5 +1,4 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { open, save } from "@tauri-apps/plugin-dialog";
 import { Command } from "@tauri-apps/plugin-shell";
 import { useRef, useState } from "react";
 import Overlay from "~/components/Overlay";
@@ -12,6 +11,7 @@ import { Clipboards } from "~/util/clipboard";
 import { Paths } from "~/util/path";
 import { Nullable } from "~/util/type";
 import BitrateCalc from "./Tools/BitrateCalc";
+import { Dialogs, VIDEO_EXTENSIONS } from "~/util/dialog";
 
 function secondToTime(sec: number) {
     const h = (sec/3600).toInt().toStringZero(2);
@@ -116,13 +116,7 @@ export default function VideoCut() {
     return (
         <div className="flex flex-col h-full">
             <button className="border-0 border-b" onClick={async () => {
-                const result = await open({
-                    directory: false,
-                    title: "Select Video",
-                    multiple: false,
-                    filters: [{extensions: ["mp4", "webm", "mov", "mkv"], name: String.empty}],
-                });
-                FlintiaWindow.getCurrentWindow().then(v => v.show());
+                const result = await Dialogs.openSingleFile("Select Video", [VIDEO_EXTENSIONS]);
                 if (result) {
                     setInputFile(result);
                     setOutputFile(null);
@@ -166,7 +160,7 @@ export default function VideoCut() {
                 <div className="h-full w-full flex flex-col gap-4 justify-center items-center">
                     <div className="p-8 w-1/3 bg-bg border justify-center border-app-edge flex flex-col gap-2" onClick={e => e.stopPropagation()}>
                         <button onClick={async () => {
-                            const result = await save({title: "Save"});
+                            const result = await Dialogs.save("Save");
                             if (result != null) setOutputFile(result);
                             FlintiaWindow.getCurrentWindow().then(v => v.show());
                         }}>Browse output file</button>

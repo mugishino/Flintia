@@ -1,12 +1,10 @@
-import { desktopDir } from "@tauri-apps/api/path";
-import { open } from "@tauri-apps/plugin-dialog";
 import { useState } from "react";
 import { Paths } from "~/util/path";
 import { Clipboards } from "~/util/clipboard";
-import { FlintiaWindow } from "~/Flintia";
 import Setting from "~/components/Setting";
+import { Dialogs, VIDEO_EXTENSIONS } from "~/util/dialog";
+import { DESKTOP_DIR } from "~/main";
 
-const DESKTOP_DIR = await desktopDir();
 export default function KeyFrameExtraction() {
     const [video, setVideo] = useState(String.empty);
     const [outdir, setOutdir] = useState(String.empty);
@@ -17,32 +15,15 @@ export default function KeyFrameExtraction() {
         <>
             <Setting title="KeyFrameExtractionVideo">
                 <button onClick={async () => {
-                    await open({
-                        defaultPath: DESKTOP_DIR,
-                        directory: false,
-                        multiple: false,
-                        title: "Select Video",
-                        filters: [{
-                            name: "Video",
-                            extensions: ["mp4", "webm", "mkv", "mov"]
-                        }],
-                    }).then(v => {
-                        FlintiaWindow.getCurrentWindow().then(v => v.show());
-                        if (v != null) setVideo(v);
-                    });
+                    const result = await Dialogs.openSingleFile("Select Video", [VIDEO_EXTENSIONS]);
+                    if (result != null) setVideo(result);
                 }}>{video ? Paths.getBasename(video) : "Browse..."}</button>
             </Setting>
 
             <Setting title="OutputDirectory">
                 <button onClick={async () => {
-                    await open({
-                        defaultPath: DESKTOP_DIR,
-                        directory: true,
-                        title: "Output Directory"
-                    }).then(v => {
-                        FlintiaWindow.getCurrentWindow().then(v => v.show());
-                        if (v != null) setOutdir(v);
-                    });
+                    const result = await Dialogs.openSingleDirectory("Output Direcotry", DESKTOP_DIR);
+                    if (result != null) setOutdir(result);
                 }}>{outdir ? outdir : "Browse..."}</button>
             </Setting>
 
