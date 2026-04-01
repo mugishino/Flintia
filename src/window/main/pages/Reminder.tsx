@@ -1,7 +1,6 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { getAppdataDirFile } from "~/util/path";
 import { useRef, useState } from "react";
-import { formatDate } from "~/util/util";
 import { useStaticOverlay } from "~/hooks/useOverlay";
 import { isPermissionGranted, requestPermission, sendNotification } from "@tauri-apps/plugin-notification";
 import SVGButton from "~/components/SVGButton";
@@ -81,7 +80,7 @@ export default function Reminder() {
             <Overlay show={showOverlay} setShow={setShowOverlay}>
                 <div className="m-auto w-3/4">
                     <div className="bg-layerA p-4 flex flex-col gap-1 max-h-100" onClick={e => e.stopPropagation()}>
-                        <input type="datetime-local" min={time} value={formatDate(time, "YYYY-MM-DDTHH:mm")} onChange={v => setTime(new Date(v.currentTarget.value).getTime())}></input>
+                        <input type="datetime-local" min={time} value={Date.format(time, "YYYY-MM-DDTHH:mm")} onChange={v => setTime(new Date(v.currentTarget.value).getTime())}></input>
                         <input type="text" value={title} onChange={v => setTitle(v.currentTarget.value)} placeholder="タイトル"></input>
                         <textarea value={description} onChange={v => setDescription(v.currentTarget.value)} placeholder="説明" className="resize-none border bg-layerB p-1 min-h-[1.5lh] overflow-y-scroll field-sizing-content"></textarea>
                         <button disabled={!title || time<Date.now()} onMouseEnter={v => {
@@ -104,7 +103,7 @@ export default function Reminder() {
                     <div key={v.time+v.title} className={`border-b flex flex-row h-1/12 justify-between ${"bg-reminder-notified".where(Date.now() > v.time)}`} title={v.description}>
                         <div className="flex flex-col p-1 min-w-0">
                             <h1 className="text-2xl truncate">{v.title}</h1>
-                            <div className="text-xs">{formatDate(v.time, "YYYY年MM月DD日 HH時mm分")}</div>
+                            <div className="text-xs">{Date.format(v.time, "YYYY年MM月DD日 HH時mm分")}</div>
                         </div>
                         <div className="flex flex-row">
                             <SVGButton src="edit.svg" className="h-full border-0 border-l" onClick={() => {

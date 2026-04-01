@@ -2,7 +2,6 @@ import { convertFileSrc } from "@tauri-apps/api/core";
 import { readDir } from "@tauri-apps/plugin-fs";
 import Config from "~/Config";
 import { WInvoke } from "~/InvokeWrapper";
-import { Logger } from "~/Logger";
 import { Clipboards } from "~/util/clipboard";
 import { Paths } from "~/util/path";
 import { useStaticOverlay } from "~/hooks/useOverlay";
@@ -43,11 +42,11 @@ export default function MemeStock_Image({paste, enter, search}: {paste: boolean,
                         // canvas
                         const img = await createImageBitmap(blob);
                         const {ctx, canvas} = createCanvas(img.width, img.height);
-                        if (!ctx) return Logger.failed("get canvas context");
+                        if (!ctx) return console.error("[FAILED] Get canvas context");
                         ctx.drawImage(img, 0, 0);
                         // copy and paste
                         const success = await Clipboards.copyFromCanvas(canvas);
-                        if (!success) return Logger.failed("copy image to clipboard");
+                        if (!success) return console.error("[FAILED] Copy image to clipboard");
                         if (paste) await WInvoke.paste(enter);
                     }} onAuxClick={() => {
                         setOverlay(<img className="m-auto h-4/5" src={fileSrc}/>);

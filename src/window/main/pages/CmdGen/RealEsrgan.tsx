@@ -3,7 +3,7 @@ import { Clipboards } from "~/util/clipboard";
 import { Paths } from "~/util/path";
 import Setting from "~/components/Setting";
 import { Dialogs, IMAGE_EXTENSIONS } from "~/util/dialog";
-import { DESKTOP_DIR } from "~/main";
+import { DESKTOP_DIR } from "~/Data";
 
 const Model = {
     "GAN x4Plus Anime": "RealESRGAN-x4plus-anime",

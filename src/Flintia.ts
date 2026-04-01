@@ -77,21 +77,22 @@ export class FlintiaWindow {
         option?: WindowOptions,
         created?: (win: WebviewWindow) => void,
         error?: (win: WebviewWindow) => void
-    ) {
-        let win = await WebviewWindow.getByLabel(label);
-        if (win) return win;
+    ): Promise<FlintiaWindow> {
+        return new Promise(async resolve => {
+            let win = await WebviewWindow.getByLabel(label);
+            if (win) return this.init(win);
 
-        win = new WebviewWindow(label, {...option, url: url});
+            win = new WebviewWindow(label, {...option, url: url});
 
-        win.once("tauri://created", () => {
-            if (created) created(win);
+            win.once("tauri://created", () => {
+                this.init(win).then(v => resolve(v));
+                if (created) created(win);
+            });
+
+            win.once("tauri://error", () => {
+                if (error) error(win);
+            });
         });
-
-        win.once("tauri://error", () => {
-            if (error) error(win);
-        });
-
-        return await this.init(win);
     }
 
 
@@ -118,16 +119,17 @@ export class FlintiaWindow {
         keyArray.push(main);
         const hotkey = keyArray.join("+");
 
-        // 今と同じホットキーであればキャンセル
+        // 今と同じホットキーであればキャンセル(完全に同じものとみなしtrueを返す)
         const old = FlintiaWindow.activeHotkey.get(this.rawWindow.label);
-        if (old == hotkey) return false;
+        if (old == hotkey) return true;
 
         // 既に存在するホットキーであればキャンセル
         const alreadyHotkeys = Array.from(FlintiaWindow.activeHotkey.values()).includes(hotkey);
         if (alreadyHotkeys) return false;
 
         return await new Promise(async resolve => {
-            // Rust側のコールバックIDと合わせるため、F5前に登録済みの物を消す。catchは握り潰しではなく本当に必要ないので
+            // Rust側のコールバックIDと合わせるため、F5前に登録済みの物を消す。
+            // 登録されていないものを消そうとしたときにエラーが出るのでcatchで消す
             await unregister(hotkey).catch(() => {});
             // 新しいホットキーを登録
             await register(hotkey, async e => {

@@ -1,5 +1,6 @@
 import "~/main.css";
 // Utils
+import "~/global/date";
 import "~/global/array";
 import "~/global/json";
 import "~/global/map";
@@ -16,12 +17,8 @@ import Launcher from "./window/launcher/Launcher";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import NotFoundPage from "./window/main/pages/404";
 import { FlintiaWindow } from "./Flintia";
-import { desktopDir } from "@tauri-apps/api/path";
-
-// CONST
-export const DESKTOP_DIR = await desktopDir();
-
-
+import { Logger } from "./Logger";
+import { IS_DEVELOP_MODE } from "./Data";
 
 const windowLabel = getCurrentWindow().label;
 
@@ -29,7 +26,7 @@ const windowLabel = getCurrentWindow().label;
 document.body.classList.add(windowLabel);
 
 // デバッグ時にわかりやすいようにスタイル設定
-if (process.env.NODE_ENV == "development") {
+if (IS_DEVELOP_MODE) {
     document.body.style.borderColor = "#800";
 }
 
@@ -43,7 +40,7 @@ FlintiaWindow.getOrCreateWindow("launcher", "/Launcher", {
     visible: false,
     focus: false,
     transparent: true,
-});
+}).catch(v => Logger.errorTrace("Window create failed:" + v));
 
 
 

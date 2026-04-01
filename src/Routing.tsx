@@ -12,10 +12,10 @@ import QRCode from "./window/main/pages/QRCode";
 import Auth from "./window/main/pages/Auth";
 import System from "./window/main/pages/System/System";
 import MemeStock from "./window/main/pages/MemeStock";
-import { Logger } from "./Logger";
 import VideoCut from "./window/main/pages/VideoCut";
 import Reminder from "./window/main/pages/Reminder";
 import Launcher from "./window/launcher/Launcher";
+import { Logger } from "./Logger";
 
 
 
@@ -73,6 +73,6 @@ export function useFlintiaNavigate() {
         const windowSize = data.size ?? win.getDefaultWindowSize();
         if (windowSize) {
             await win.setWindowSize(windowSize);
-        } else Logger.failed("get page window size and flintia default window size");
+        } else Logger.warning("Failed to get page window size and flintia default window size");
     };
 }

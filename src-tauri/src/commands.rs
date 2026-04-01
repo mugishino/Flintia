@@ -115,3 +115,8 @@ pub fn run_exe(path: &str, args: &str) -> Result<(), String> {
 
     Ok(())
 }
+
+#[tauri::command]
+pub fn console_log(msg: &str) {
+    println!("{}", msg);
+}

@@ -1,18 +1,20 @@
 import Config from "~/Config";
 import { FlintiaWindow } from "~/Flintia";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
+import { Logger } from "~/Logger";
 import { Routing } from "~/Routing";
 import Sidebar from "~/window/main/Sidebar";
 
 export default function MainWindow() {
     useEffectAsync(async() => {
         const mainWindow = await FlintiaWindow.get();
-        if (!mainWindow) return;
+        if (!mainWindow) {
+            Logger.error("Failed to get main window");
+            return;
+        }
 
         Config.load().then(async config => {
-            await mainWindow.registerHotkey(config.hotkey_shift, config.hotkey_ctrl, config.hotkey_alt, config.hotkey_win, config.hotkey_main, async () => {
-                await mainWindow.rawWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
-            });
+            await mainWindow.registerHotkey(config.hotkey_shift, config.hotkey_ctrl, config.hotkey_alt, config.hotkey_win, config.hotkey_main, async () => mainWindow.toggleVisible());
         });
 
         document.addEventListener("keydown", e => {
@@ -23,7 +25,7 @@ export default function MainWindow() {
 
         mainWindow.rawWindow.onFocusChanged(({payload}) => {
             if (!payload) mainWindow.hide();
-        });
+        }).catch(v => Logger.warning("Failed to register onFocusChanged event: " + v));
     }, []);
 
     return (

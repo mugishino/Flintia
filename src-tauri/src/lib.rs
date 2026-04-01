@@ -3,6 +3,7 @@ use tauri::{
 };
 use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
+
 mod commands;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -32,7 +33,8 @@ pub fn run() {
             commands::get_windows_hotfix,
             commands::get_file_icon_base64,
             commands::is_directory,
-            commands::run_exe
+            commands::run_exe,
+            commands::console_log
         ])
         .setup(|app| {
             // 開発用 - DevToolsを自動で開く
@@ -90,12 +92,21 @@ pub fn run() {
                         }
                     }
                     "show" => {
-                        let win = app.get_webview_window("main").expect("no main window");
+                        let Some(win) = app.get_webview_window("main") else {
+                            println!("[ERROR] Failed to get main window");
+                            return;
+                        };
                         // 開発時にJS側でエラーが発生し、ウィンドウが非表示にできない場合の対応策
-                        if !win.is_visible().unwrap_or(false) {
-                            win.show().expect("window show failure");
+                        let is_visible = win.is_visible().unwrap_or(false);
+                        if is_visible {
+                            if let Err(e) = win.hide() {
+                                println!("[ERROR] Window hide failure: {}", e);
+                            }
                         } else {
-                            win.hide().expect("window hide failure");
+                            if let Err(e) = win.show() {
+                                let _ = win.set_focus();
+                                println!("[ERROR] Window show failure: {}", e)
+                            }
                         }
                     }
                     _ => {

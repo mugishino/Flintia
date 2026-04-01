@@ -3,7 +3,7 @@ import { Paths } from "~/util/path";
 import { Clipboards } from "~/util/clipboard";
 import Setting from "~/components/Setting";
 import { Dialogs, VIDEO_EXTENSIONS } from "~/util/dialog";
-import { DESKTOP_DIR } from "~/main";
+import { DESKTOP_DIR } from "~/Data";
 
 export default function KeyFrameExtraction() {
     const [video, setVideo] = useState(String.empty);

@@ -68,4 +68,12 @@ export const WInvoke = {
     async runExe(path: string, args?: string): Promise<string> {
         return await invoke("run_exe", {path: path, args: args ?? String.empty});
     },
+
+    /**
+     * コンソールにログを出力します。
+     * @param msg 出力するメッセージ
+     */
+    async consoleLog(msg: string) {
+        await invoke("console_log", {msg: msg});
+    }
 }
