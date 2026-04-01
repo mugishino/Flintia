@@ -1,9 +1,17 @@
 import { register, unregister } from "@tauri-apps/plugin-global-shortcut";
-import { getCurrentWindow, LogicalPosition, LogicalSize, Window, WindowOptions } from "@tauri-apps/api/window";
+import { currentMonitor, getCurrentWindow, LogicalPosition, LogicalSize, Window, WindowOptions } from "@tauri-apps/api/window";
 import { SessionData } from "./util/session";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 
-export type HotkeyMainKey = "A"|"B"|"C"|"D"|"E"|"F"|"G"|"H"|"I"|"J"|"K"|"L"|"M"|"N"|"O"|"P"|"Q"|"R"|"S"|"T"|"U"|"V"|"W"|"X"|"Y"|"Z";
+export type HotkeyMainKey =
+    "A"|"B"|"C"|"D"|"E"|"F"|"G"|"H"|"I"|"J"|"K"|"L"|"M"|"N"|"O"|"P"|"Q"|"R"|"S"|"T"|"U"|"V"|"W"|"X"|"Y"|"Z"|
+    "1"|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"|"0"|
+    "F1"|"F2"|"F3"|"F4"|"F5"|"F6"|"F7"|"F8"|"F9"|"F10"|"F11"|"F12"|
+    "PageUp"|"PageDown"|"Home"|"End"|"Delete"|"Insert"|
+    "Up"|"Down"|"Left"|"Right"|
+    "Space"|"-"|"["|"]"|","|"."|"/";
+
+export type TaskbarDirection = "Left"|"Top"|"Right"|"Bottom";
 
 export class FlintiaWindow {
     private readonly windowSizeKey: string;
@@ -59,7 +67,7 @@ export class FlintiaWindow {
      * @param url ウィンドウの初期URL
      * @param created ウィンドウ作成時のコールバック
      * @param error ウィンドウエラー時のコールバック
-     * @returns 取得または作成したウィンドウ
+     * @returns 取得または作成したFlintiaWindow
      */
     public static async getOrCreateWindow(
         label: string,
@@ -81,7 +89,7 @@ export class FlintiaWindow {
             if (error) error(win);
         });
 
-        return win;
+        return await this.init(win);
     }
 
 
@@ -145,7 +153,7 @@ export class FlintiaWindow {
     public async show(pos?: LogicalPosition) {
         if (pos) await this.rawWindow.setPosition(pos);
         else {
-            const defaultPos = await this.getDefaultPosition();
+            const defaultPos = this.getDefaultPosition();
             if (!defaultPos) await this.rawWindow.center();
             else this.rawWindow.setPosition(defaultPos);
         }
@@ -175,7 +183,7 @@ export class FlintiaWindow {
      * このウィンドウのデフォルト位置を取得します。
      * @returns 未指定の場合undefinedが返ります。
      */
-    public async getDefaultPosition() {
+    public getDefaultPosition() {
         const data = SessionData.get<{x: number, y: number}>(this.windowPositionKey);
         if (!data) return;
         return new LogicalPosition(data.x, data.y);
@@ -240,5 +248,23 @@ export class FlintiaWindow {
             width: data.width,
             height: data.height
         });
+    }
+
+    /**
+     * タスクバーの方向を取得します。
+     * @returns タスクバーの方向
+     */
+    public async getTaskbarDirection(): Promise<TaskbarDirection | undefined> {
+        const monitor = await currentMonitor();
+        if (monitor == null) return;
+
+        const pos = monitor.workArea.position;
+        if (pos.x != 0) return "Left";
+        if (pos.y != 0) return "Top";
+        const size = monitor.size;
+        const workSize = monitor.workArea.size;
+        if (size.height != workSize.height) return "Bottom";
+        if (size.width != workSize.width) return "Right";
+        return undefined;
     }
 }

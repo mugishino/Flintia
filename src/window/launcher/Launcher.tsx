@@ -2,6 +2,7 @@ import { LogicalPosition, PhysicalSize } from "@tauri-apps/api/dpi";
 import { FlintiaWindow } from "~/Flintia";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import LaunchPanel from "./LaunchPanel";
+import { currentMonitor } from "@tauri-apps/api/window";
 
 const FULLSCREEN = false;
 
@@ -11,12 +12,17 @@ export default function Launcher() {
         if (!win) return;
 
         // ウィンドウ設定
-        await win.setDefaultPosition(new LogicalPosition(0, 0));
+        const monitor = await currentMonitor();
+        if (!FULLSCREEN && monitor) {
+            const workareaPos = monitor.workArea.position;
+            const scaleFactor = await win.rawWindow.scaleFactor();
+            await win.setDefaultPosition(workareaPos.toLogical(scaleFactor));
+        }
         const phySize = FULLSCREEN ? new PhysicalSize(screen.width, screen.height) : new PhysicalSize(screen.availWidth, screen.availHeight);
         await win.rawWindow.setSize(phySize);
-        await win.rawWindow.setPosition(await win.getDefaultPosition() ?? new LogicalPosition(100, 100));
+        await win.rawWindow.setPosition(win.getDefaultPosition() ?? new LogicalPosition(100, 100));
 
-        await win.registerHotkey(true, true, true, false, "A", async() => await win.toggleVisible());
+        await win.registerHotkey(false, false, true, false, "Space", async() => await win.toggleVisible());
         win.rawWindow.onFocusChanged(({payload}) => {
             if (!payload) win.hide();
         });

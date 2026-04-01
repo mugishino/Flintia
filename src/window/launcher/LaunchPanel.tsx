@@ -270,6 +270,7 @@ export default function LaunchPanel() {
                             })();
                             return <Tile  key={k} {...v} isOverlapping={v => isOverlapping(k, v)} onMoved={(x, y) => moveObject(k, v, x, y)} onRightClick={async() => openCellSetting(k)} label={label} onClick={async() => {
                                 if (!v.exe) return;
+                                await (await FlintiaWindow.getCurrentWindow()).hide();
                                 await WInvoke.runExe(v.exe, v.args);
                             }}/>
                         case "label":
