@@ -5,6 +5,7 @@ import Config from "~/Config";
 import { Paths } from "~/util/path";
 import { Clipboards } from "~/util/clipboard";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
+import { AppStorage } from "~/AppStorage";
 
 function secretToNumber(secret: string) {
     const res = new TOTP({
@@ -64,7 +65,7 @@ export default function Auth() {
     const [loadData, setLoadData] = useState(new Map<string, string>());
     useEffectAsync(async() => {
         setErrMsg(String.empty);
-        const file = (await Config.load()).authfile;
+        const file = (await AppStorage.load(new Config())).authfile;
         if (await Paths.notExists(file)) return setErrMsg("Auth file not found");
         const read = await readTextFile(file);
         try {

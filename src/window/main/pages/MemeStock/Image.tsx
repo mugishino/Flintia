@@ -8,6 +8,7 @@ import { useStaticOverlay } from "~/hooks/useOverlay";
 import { useState } from "react";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { createCanvas } from "~/util/util";
+import { AppStorage } from "~/AppStorage";
 
 const SUPPORT_EXTENSION = "avif,bmp,jpeg,jpg,png,webp".split(",");
 
@@ -17,7 +18,7 @@ export default function MemeStock_Image({paste, enter, search}: {paste: boolean,
     const [overlay, setOverlay] = useStaticOverlay();
 
     useEffectAsync(async() => {
-        const config = await Config.load();
+        const config = await AppStorage.load(new Config());
         const imagedirNotFound = await Paths.notExists(config.imagedir);
         if (imagedirNotFound) return;
 

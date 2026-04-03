@@ -8,6 +8,7 @@ import useSearch from "~/hooks/useSearch";
 import ToggleSwitch from "~/components/ToggleSwitch";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import SVGButton from "~/components/SVGButton";
+import { AppStorage } from "~/AppStorage";
 
 interface PassRecord {
     title   : string;
@@ -19,7 +20,7 @@ interface PassRecord {
 }
 
 async function getPassRecords() {
-    const path = (await Config.load()).passfile;
+    const path = (await AppStorage.load(new Config())).passfile;
     if (path == String.empty || await Paths.notExists(path)) {
         return null;
     }

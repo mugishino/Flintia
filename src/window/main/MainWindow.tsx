@@ -1,3 +1,4 @@
+import { AppStorage } from "~/AppStorage";
 import Config from "~/Config";
 import { FlintiaWindow } from "~/Flintia";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
@@ -13,7 +14,7 @@ export default function MainWindow() {
             return;
         }
 
-        Config.load().then(async config => {
+        AppStorage.load(new Config()).then(async config => {
             await mainWindow.registerHotkey(config.hotkey_shift, config.hotkey_ctrl, config.hotkey_alt, config.hotkey_win, config.hotkey_main, async () => mainWindow.toggleVisible());
         });
 

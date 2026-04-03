@@ -10,6 +10,7 @@ import { getAppdataDirFile, Paths } from "~/util/path";
 import ReloadTheme from "~/Theme";
 import { openPath } from "@tauri-apps/plugin-opener";
 import Section from "~/components/Section";
+import { AppStorage } from "~/AppStorage";
 
 export default function MainSetting() {
     const [config, setConfig] = useState<Config|undefined>(undefined);
@@ -32,7 +33,7 @@ export default function MainSetting() {
     useEffectAsync(async () => {
         setThemes(await readDir(await getAppdataDirFile("themes/")));
         setAutostart(await AutoStart.isEnabled());
-        setConfig(await Config.load());
+        setConfig(await AppStorage.load(new Config()));
     }, []);
 
     useEffect(() => {
@@ -50,13 +51,13 @@ export default function MainSetting() {
         if (config == undefined) return;
         const flintia = await FlintiaWindow.getCurrentWindow();
         flintia.registerHotkey(shift, ctrl, alt, win, key as HotkeyMainKeys, () => flintia.toggleVisible()).then(isError => setHotkeyOk(isError));
-        Config.load().then(config => {
+        AppStorage.load(new Config()).then(config => {
             config.hotkey_shift = shift;
             config.hotkey_ctrl  = ctrl ;
             config.hotkey_alt   = alt  ;
             config.hotkey_win   = win  ;
             config.hotkey_main  = key as HotkeyMainKeys;
-            config.save();
+            AppStorage.save(config);
         });
     }, [shift, ctrl, alt, win, key]);
 
@@ -100,9 +101,9 @@ export default function MainSetting() {
                     const value = v.currentTarget.value;
                     setTheme(value);
 
-                    const config = await Config.load();
+                    const config = await AppStorage.load(new Config());
                     config.theme = value;
-                    await config.save();
+                    await AppStorage.save(config);
                     ReloadTheme();
                 }}>
                     <option value={"Default_Dark"}>Default</option>
