@@ -75,5 +75,13 @@ export const WInvoke = {
      */
     async consoleLog(msg: string) {
         await invoke("console_log", {msg: msg});
-    }
+    },
+
+    /**
+     * Windowsのアクセントカラーを取得します。
+     * @returns 取得したアクセントカラーまたはエラー
+     */
+    async getWindowsAccentColor(): Promise<{R: number, G: number, B: number, A: number}> {
+        return await invoke("get_windows_accent_color");
+    },
 }

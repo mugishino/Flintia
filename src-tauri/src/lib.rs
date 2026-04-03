@@ -34,7 +34,8 @@ pub fn run() {
             commands::get_file_icon_base64,
             commands::is_directory,
             commands::run_exe,
-            commands::console_log
+            commands::console_log,
+            commands::get_windows_accent_color
         ])
         .setup(|app| {
             // 開発用 - DevToolsを自動で開く

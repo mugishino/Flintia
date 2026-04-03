@@ -4,6 +4,7 @@ use base64::{Engine, engine::general_purpose};
 use enigo::{Enigo, Key, Keyboard, Settings};
 use file_icon_provider::get_file_icon;
 use image::{DynamicImage, RgbaImage};
+use windows::UI::ViewManagement::{UIColorType, UISettings};
 
 #[tauri::command]
 pub fn paste(enter: bool, win: tauri::WebviewWindow) {
@@ -119,4 +120,18 @@ pub fn run_exe(path: &str, args: &str) -> Result<(), String> {
 #[tauri::command]
 pub fn console_log(msg: &str) {
     println!("{}", msg);
+}
+
+#[tauri::command]
+pub fn get_windows_accent_color() -> Result<serde_json::Value, String> {
+    let settings = UISettings::new().map_err(|_| "Failed to create UISettings new instance")?;
+    let accent_color = settings.GetColorValue(UIColorType::Accent).map_err(|_| "Failed to GetColorValue")?;
+
+    let json = serde_json::json!({
+        "R": accent_color.R,
+        "G": accent_color.G,
+        "B": accent_color.B,
+        "A": accent_color.A,
+    });
+    Ok(json)
 }
