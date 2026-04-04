@@ -1,5 +1,5 @@
 use tauri::{
-    Manager, WindowEvent, menu::{Menu, MenuItem}, tray::TrayIconBuilder
+    Manager, menu::{Menu, MenuItem}, tray::TrayIconBuilder
 };
 use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
@@ -49,27 +49,15 @@ pub fn run() {
                         &MenuItem::with_id(app, "show", "Show", true, None::<&str>)?,
                         &MenuItem::with_id(app, "info", "Info", true, None::<&str>)?,
                         // 詳細: restartロジック
-                        //&MenuItem::with_id(app, "restart", "Restart", true, None::<&str>)?,
+                        &MenuItem::with_id(app, "restart", "Restart", true, None::<&str>)?,
                         &MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?,
                     ],
                 )?)
                 .on_menu_event(|app, event| match event.id.as_ref() {
                     "quit" => {
-                        // ウィンドウが全て閉じたらapp.exitするように設定
-                        for win in app.webview_windows().into_values() {
-                            let app_handle = app.app_handle().clone();
-                            win.on_window_event(move |event| {
-                                if let WindowEvent::Destroyed = event {
-                                    if app_handle.webview_windows().is_empty() {
-                                        app_handle.exit(0);
-                                    }
-                                }
-                            });
-                        }
-                        // ウィンドウを全て閉じる
-                        for win in app.webview_windows().into_values() {
-                            let _ = win.close();
-                        }
+                        // cleanup_before_exitの後の行ではtauri関連のAPIは使用しないでらしい
+                        app.cleanup_before_exit();
+                        app.exit(0);
                     }
                     "info" => {
                         app.dialog()
@@ -88,8 +76,11 @@ pub fn run() {
                             .buttons(MessageDialogButtons::OkCancel)
                             .blocking_show();
                         if answer {
-                            // TODO: エラーが発生する為、Windowを全て閉じてからrestartさせる。quitと同じ感じでいい。
-                            app.restart();
+                            // この処理で本当に安定しているのかは不明。1412エラーが出る可能性も否めない
+                            for win in app.webview_windows().into_values() {
+                                let _ = win.close();
+                            }
+                            app.request_restart();
                         }
                     }
                     "show" => {
