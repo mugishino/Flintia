@@ -174,12 +174,7 @@ export default function VideoCut() {
                             </select>
                         </Setting>
                         <Setting title="Bitrate">
-                            <select value={bitrate} onChange={v => setBitrate(parseInt(v.currentTarget.value))}>
-                                <option>1024</option>
-                                <option>2048</option>
-                                <option>4096</option>
-                                <option>8192</option>
-                            </select>
+                            <input type="number" min={128} step={128} value={bitrate} onChange={v => setBitrate(v.currentTarget.valueAsNumber.orDefault(1))}/>
                         </Setting>
                         <hr className="mb-3"/>
                         <button onClick={() => {
@@ -200,8 +195,9 @@ export default function VideoCut() {
                             await Command.create(cmd.alias, [...cmd.args, "-y"]).execute().finally(() => setStaticOverlay(undefined));
                         }}>Run FFmpeg</button>
                     </div>
-                    <div className="bg-bg p-4 border border-app-edge w-1/3">
-                        <BitrateCalc/>
+                    <div className="bg-bg p-4 border border-app-edge w-1/3 flex flex-col" onClick={e => e.stopPropagation()}>
+                        <span className="text-center">BitrateCalc - 正確性は保証しません</span>
+                        <BitrateCalc duration={Math.trunc((endTime - startTime)*10)/10}/>
                     </div>
                 </div>
             </Overlay>
