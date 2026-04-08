@@ -121,25 +121,15 @@ body {
         border-color: var(--color-border);
     }
 
-    button {
-        border-radius: var(--radius-button);
-        text-align: center;
-        cursor: pointer;
-
-        &:not(:disabled):hover {
-            background-color: var(--color-button-hover);
-        }
-    }
-
     button, select, input {
-        @apply px-1 py-0.5;
-        display: inline-block;
+        @apply px-1 py-0.5 min-h-7;
         color: var(--color-text);
         width: 100%;
 
         border: thin solid var(--color-button-border);
         background-color: var(--color-button-bg);
         transition: 100ms;
+        border-radius: var(--radius-button);
 
         &:disabled {
             color: var(--color-text-gray);
@@ -149,11 +139,21 @@ body {
 
     button, select {
         &:not(:disabled) {
+            &:hover {
+                background-color: var(--color-button-hover);
+            }
             &:active {
-                transition: 0;
                 background-color: var(--color-button-active);
             }
         }
+    }
+
+    button {
+        cursor: pointer;
+    }
+
+    input {
+        cursor: text;
     }
 
     input {
@@ -161,13 +161,6 @@ body {
         &::-webkit-outer-spin-button {
             display: none;
         }
-    }
-
-    select {
-        &:not(:disabled):hover {
-            border-color: #888;
-        }
-        height: 1.1rlh;
     }
 
     option {
@@ -178,21 +171,17 @@ body {
         appearance: none;
         background-color: transparent;
         border: none;
-        &:active {
-            background-color: transparent;
-        }
+        cursor: default;
 
         &::-webkit-slider-runnable-track {
-            background-color: #333;
-            border: thin solid #444;
+            background-color: var(--color-layerC);
             height: 4px;
         }
 
         &::-webkit-slider-thumb {
             appearance: none;
             border-radius: 0;
-            background-color: #555;
-            border: thin solid #666;
+            background-color: var(--color-layerD);
             margin-top: -6px;
             width: 6px;
             height: 16px;
