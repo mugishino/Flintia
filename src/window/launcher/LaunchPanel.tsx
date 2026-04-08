@@ -184,8 +184,8 @@ export default function LaunchPanel() {
                             <input placeholder="Label" type="text" value={editData.label} onChange={e => setEditData("label", e.currentTarget.value)}/>
                             <NumberSelector min={1} max={8} value={editData.h} label="Height" onChange={v => setEditData("h", v)}/>
                             <NumberSelector min={1} max={8} value={editData.w} label="Width" onChange={v => setEditData("w", v)}/>
-                            <Line/>
                             {settingOpenCellData?.type == "tile" && <>
+                                <Line/>
                                 <Setting title="Oepn">
                                     <div className="flex flex-row">
                                         <button onClick={async() => selectExe(false)}>file</button>
@@ -195,7 +195,6 @@ export default function LaunchPanel() {
                                 {editData.exe}
                                 {editData.exe && !isDir && <input placeholder="Arguments" value={editData.args} onChange={e => setEditData("args", e.currentTarget.value)}/>}
                                 <Line/>
-                            </>}
                             <div className="flex flex-row justify-between">
                                 <div className="flex flex-row">
                                     <span className="pl-1">Custom-Icon</span>
@@ -220,8 +219,9 @@ export default function LaunchPanel() {
                                     }}>File</button>
                                 </div>
                             </div>
+                            <Line vertical/>
+                            </>}
                         </div>
-                        <Line vertical/>
                         <div className="flex flex-col justify-between">
                             <SVGButton src="trash_can.svg" className="w-8 fill-fail" onClick={() => openDeleteOverlay(editData.label, () => {
                                 deleteObject(settingKey);
