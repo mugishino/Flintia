@@ -30,7 +30,7 @@ async function getPassRecords() {
 }
 
 export default function Password() {
-    const [PASSWORD_DATA, setPasswordData] = useState<PassRecord[]|null>();
+    const [passwordData, setPasswordData] = useState<PassRecord[]|null>([]);
     const [searchElem, search] = useSearch({className: "border-0 border-b", autofocus: true});
     const [showHide, setShowHide] = useState(false);
     const [paste, setPaste] = useState(true);
@@ -63,20 +63,20 @@ export default function Password() {
 
     useEffectAsync(async () => {
         setErrorMessage(undefined);
-        if (PASSWORD_DATA == null) {
+        if (passwordData == null) {
             setErrorMessage("Password file not found");
             return;
         }
 
         // 表示フィルタ
         const result: PassRecord[] = [];
-        PASSWORD_DATA.forEach(v => {
+        passwordData.forEach(v => {
             if (v.hide && !showHide && search == String.empty) return;
             if (search != String.empty && !v.title.toLowerCase().includes(search.toLowerCase())) return;
             result.push(v);
         });
         setView(result);
-    }, [search, showHide, PASSWORD_DATA]);
+    }, [search, showHide, passwordData]);
 
 
 
