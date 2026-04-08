@@ -1,10 +1,32 @@
 use tauri::{
-    Manager, menu::{Menu, MenuItem}, tray::TrayIconBuilder
+    AppHandle, Manager, WindowEvent, Wry, menu::{Menu, MenuItem}, tray::TrayIconBuilder
 };
 use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
 
 mod commands;
+
+pub fn quit_application(app: &AppHandle<Wry>, restart: bool) {
+    // ウィンドウを閉じた際に最後のウィンドウであれば処理を行う
+    for win in app.webview_windows().into_values() {
+        let app_handle = app.app_handle().clone();
+        win.on_window_event(move |event| {
+            if let WindowEvent::Destroyed = event {
+                if app_handle.webview_windows().is_empty() {
+                    if restart {
+                        app_handle.request_restart();
+                    } else {
+                        app_handle.exit(0);
+                    }
+                }
+            }
+        });
+    }
+    // ウィンドウを全て閉じる
+    for win in app.webview_windows().into_values() {
+        let _ = win.close();
+    }
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -54,10 +76,17 @@ pub fn run() {
                     ],
                 )?)
                 .on_menu_event(|app, event| match event.id.as_ref() {
-                    "quit" => {
-                        // cleanup_before_exitの後の行ではtauri関連のAPIは使用しないでらしい
-                        app.cleanup_before_exit();
-                        app.exit(0);
+                    "restart" | "quit" => {
+                        let is_restart = event.id.as_ref() == "restart";
+                        let dialog_str = if is_restart.clone() {"restart"} else {"quit"};
+                        let answer = app.dialog()
+                            .message(format!("Are you sure you want to {} Flintia?", dialog_str))
+                            .title("Confirmation")
+                            .buttons(MessageDialogButtons::OkCancel)
+                            .blocking_show();
+                        if answer {
+                            quit_application(app, is_restart);
+                        }
                     }
                     "info" => {
                         app.dialog()
@@ -68,20 +97,6 @@ pub fn run() {
                             .kind(tauri_plugin_dialog::MessageDialogKind::Info)
                             .title("Infomation")
                             .blocking_show();
-                    }
-                    "restart" => {
-                        let answer = app.dialog()
-                            .message("Are you sure you want to restart Flintia?")
-                            .title("Confirmation")
-                            .buttons(MessageDialogButtons::OkCancel)
-                            .blocking_show();
-                        if answer {
-                            // この処理で本当に安定しているのかは不明。1412エラーが出る可能性も否めない
-                            for win in app.webview_windows().into_values() {
-                                let _ = win.close();
-                            }
-                            app.request_restart();
-                        }
                     }
                     "show" => {
                         let Some(win) = app.get_webview_window("main") else {
