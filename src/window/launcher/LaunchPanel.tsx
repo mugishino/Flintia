@@ -79,7 +79,7 @@ async function resizeImageToBase64(src: string, width: number=64, height: number
             const {ctx, canvas} = createCanvas(width, height);
             ctx?.drawImage(img, 0, 0, width, height);
             const base64 = canvas.toDataURL("image/png");
-            resolve("data:image/png;base64," + base64);
+            resolve(base64);
         };
         img.onerror = e => reject(new Error("Failed to load image: " + e.toString()));
         img.src = src;

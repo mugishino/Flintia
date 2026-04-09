@@ -36,7 +36,7 @@ export function useGridManager() {
     // save
     useEffectAsync(async() => {
         if (!loaded.current) return;
-        const json = JSON.stringify(Object.fromEntries(data));
+        const json = JSON.stringify(Object.fromEntries(data), undefined, 2);
         await writeTextFile(datafile, json);
     }, [data]);
 
