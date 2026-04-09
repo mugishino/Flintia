@@ -143,6 +143,8 @@ export default function LaunchPanel() {
 
     const settingOpenCellData = data.get(settingKey);
 
+    const settingIsTile  = settingOpenCellData?.type == "tile";
+
     return (
         <div className="h-full w-full overflow-x-scroll overflow-y-scroll" style={{padding: GRID_SIZE+(MARGIN_SIZE*3) + "px"}}>
             <div className="w-full h-full relative">
@@ -182,9 +184,11 @@ export default function LaunchPanel() {
                     <div className="flex flex-row bg-layerA p-4 gap-1 w-1/4 text-[0.75rem] border border-app-edge" onClick={e => e.stopPropagation()}>
                         <div className="flex flex-col grow">
                             <input placeholder="Label" type="text" value={editData.label} onChange={e => setEditData("label", e.currentTarget.value)}/>
-                            <NumberSelector min={1} max={8} value={editData.h} label="Height" onChange={v => setEditData("h", v)}/>
-                            <NumberSelector min={1} max={8} value={editData.w} label="Width" onChange={v => setEditData("w", v)}/>
-                            {settingOpenCellData?.type == "tile" && <>
+                            {settingIsTile && <>
+                                <NumberSelector min={1} max={8} value={editData.h} label="Height" onChange={v => setEditData("h", v)}/>
+                            </>}
+                            <NumberSelector min={1} max={settingIsTile ? 8 : Infinity} value={editData.w} label="Width" onChange={v => setEditData("w", v)}/>
+                            {settingIsTile && <>
                                 <Line/>
                                 <Setting title="Oepn">
                                     <div className="flex flex-row">
