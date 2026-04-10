@@ -11,7 +11,7 @@ import { Line } from "~/components/Line";
 import { createCanvas, ifPresent } from "~/util/util";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { ReactSVG } from "react-svg";
-import { TileData, useGridManager } from "./useGridManager";
+import { DEFAULT_TILE_DATA, TileData, useGridManager } from "./useGridManager";
 import { Paths } from "~/util/path";
 import { ALL_EXTENSIONS, Dialogs, IMAGE_EXTENSIONS } from "~/util/dialog";
 
@@ -56,9 +56,9 @@ function Label(props: {center?: boolean} & CellObjProps & TileData) {
 
 function NumberSelector(props: {min: number, max: number, value: number, label: string, onChange: (v: number) => void}) {
     return (
-        <div className="flex flex-row justify-between p-1">
+        <div className="flex flex-row justify-between grow">
             <button className="w-8" onClick={() => props.onChange((props.value-1).keepRange(props.min, props.max))}>-</button>
-            <div className="m-auto">{props.label}: {props.value}</div>
+            <div className="my-auto">{props.label}: {props.value}</div>
             <button className="w-8" onClick={() => props.onChange((props.value+1).keepRange(props.min, props.max))}>+</button>
         </div>
     );
@@ -94,14 +94,7 @@ export default function LaunchPanel() {
     const [staticOverlay, setStaticOverlay] = useStaticOverlay();
     // settings
     const [settingKey, setSettingKey] = useState(String.empty);
-    const [editData, setEditData, overwriteEditData] = useKVState<TileData>({
-        h: 1,
-        w: 1,
-        label: "NULL",
-        type: "tile",
-        x: 0,
-        y: 0,
-    });
+    const [editData, setEditData, overwriteEditData] = useKVState<TileData>(DEFAULT_TILE_DATA);
     const [isDir, setIsDir] = useState(false);
 
     /**
@@ -113,7 +106,7 @@ export default function LaunchPanel() {
         if (!v) return;
         // 設定画面を更新
         setSettingKey(k);
-        overwriteEditData(v);
+        overwriteEditData({...DEFAULT_TILE_DATA, ...v});
         setIsDir(v.exe ? await WInvoke.isDirectory(v.exe) : false);
         // 表示
         showOverlay(true);
@@ -182,12 +175,14 @@ export default function LaunchPanel() {
             <Overlay show={overlay} setShow={showOverlay} grayBackground={false}>
                 <div className="h-full w-full flex items-center justify-center">
                     <div className="flex flex-row bg-layerA p-4 gap-1 w-1/4 text-[0.75rem] border border-app-edge" onClick={e => e.stopPropagation()}>
-                        <div className="flex flex-col grow">
+                        <div className="flex flex-col grow min-w-0">
                             <input placeholder="Label" type="text" value={editData.label} onChange={e => setEditData("label", e.currentTarget.value)}/>
-                            {settingIsTile && <>
-                                <NumberSelector min={1} max={8} value={editData.h} label="Height" onChange={v => setEditData("h", v)}/>
-                            </>}
-                            <NumberSelector min={1} max={settingIsTile ? 8 : Infinity} value={editData.w} label="Width" onChange={v => setEditData("w", v)}/>
+                            <div className="flex flex-row w-full mt-1 gap-1">
+                                {settingIsTile && <>
+                                    <NumberSelector min={1} max={8} value={editData.h} label="Height" onChange={v => setEditData("h", v)}/>
+                                </>}
+                                <NumberSelector min={1} max={settingIsTile ? 8 : Infinity} value={editData.w} label="Width" onChange={v => setEditData("w", v)}/>
+                            </div>
                             {settingIsTile && <>
                                 <Line/>
                                 <Setting title="Oepn">
@@ -196,8 +191,8 @@ export default function LaunchPanel() {
                                         <button onClick={async() => selectExe(true)}>directory</button>
                                     </div>
                                 </Setting>
-                                {editData.exe}
-                                {editData.exe && !isDir && <input placeholder="Arguments" value={editData.args} onChange={e => setEditData("args", e.currentTarget.value)}/>}
+                                <span className="wrap-break-word">{editData.exe}</span>
+                                {editData.exe && !isDir && <input placeholder="Arguments" value={editData.args ?? String.empty} onChange={e => setEditData("args", e.currentTarget.value)}/>}
                                 <Line/>
                             <div className="flex flex-row justify-between">
                                 <div className="flex flex-row">
@@ -223,10 +218,10 @@ export default function LaunchPanel() {
                                     }}>File</button>
                                 </div>
                             </div>
-                            <Line vertical/>
                             </>}
                         </div>
-                        <div className="flex flex-col justify-between">
+                        <Line vertical/>
+                        <div className="flex flex-col justify-between gap-1">
                             <SVGButton src="trash_can.svg" className="w-8 fill-fail" onClick={() => openDeleteOverlay(editData.label, () => {
                                 deleteObject(settingKey);
                                 showOverlay(false);

@@ -15,6 +15,17 @@ export type TileData = {
     custom_icon?: string;
 } & CellData;
 
+export const DEFAULT_TILE_DATA: TileData = {
+    h: 1, w: 1,
+    x: 0, y: 0,
+    label: String.empty,
+    type: "tile",
+    args: undefined,
+    custom_icon: undefined,
+    exe: undefined,
+    exe_icon: undefined,
+} as const;
+
 const datafile = await getAppdataDirFile("launcher.json");
 
 export function useGridManager() {
