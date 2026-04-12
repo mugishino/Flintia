@@ -194,30 +194,30 @@ export default function LaunchPanel() {
                                 <span className="wrap-break-word">{editData.exe}</span>
                                 {editData.exe && !isDir && <input placeholder="Arguments" value={editData.args ?? String.empty} onChange={e => setEditData("args", e.currentTarget.value)}/>}
                                 <Line/>
-                            <div className="flex flex-row justify-between">
-                                <div className="flex flex-row">
-                                    <span className="pl-1">Custom-Icon</span>
-                                    {editData.custom_icon && <img src={editData.custom_icon} className="aspect-square ml-2 h-5"/>}
+                                <div className="flex flex-row justify-between">
+                                    <div className="flex flex-row">
+                                        <span className="pl-1">Custom-Icon</span>
+                                        {editData.custom_icon && <img src={editData.custom_icon} className="aspect-square ml-2 h-5"/>}
+                                    </div>
+                                    <div className="flex flex-row w-1/2">
+                                        {editData.custom_icon && <button className="grow" onClick={() => openDeleteOverlay("カスタムアイコン", () => setEditData("custom_icon", undefined))}>Reset</button>}
+                                        <button className="grow" onClick={async() => {
+                                            const selectPath = await Dialogs.openSingleFile("Select custom icon", [ALL_EXTENSIONS, {extensions: ["lnk"], name: "Shortcut"}]);
+                                            if (selectPath == null) return;
+                                            const ext = Paths.splitExt(selectPath).ext;
+                                            const base64 = await (async() => {
+                                                // 画像ファイルならそのまま取得、非画像ファイルはファイルアイコンを取得
+                                                if (IMAGE_EXTENSIONS.extensions.includes(ext)) {
+                                                    // base64化
+                                                    const src = convertFileSrc(selectPath);
+                                                    return await resizeImageToBase64(src);
+                                                }
+                                                return await WInvoke.getFileIconBase64(selectPath, 32);
+                                            })();
+                                            setEditData("custom_icon", base64);
+                                        }}>File</button>
+                                    </div>
                                 </div>
-                                <div className="flex flex-row w-1/2">
-                                    {editData.custom_icon && <button className="grow" onClick={() => openDeleteOverlay("カスタムアイコン", () => setEditData("custom_icon", undefined))}>Reset</button>}
-                                    <button className="grow" onClick={async() => {
-                                        const selectPath = await Dialogs.openSingleFile("Select custom icon", [ALL_EXTENSIONS]);
-                                        if (selectPath == null) return;
-                                        const ext = Paths.splitExt(selectPath).ext;
-                                        const base64 = await (async() => {
-                                            // 画像ファイルならそのまま取得、非画像ファイルはファイルアイコンを取得
-                                            if (IMAGE_EXTENSIONS.extensions.includes(ext)) {
-                                                // base64化
-                                                const src = convertFileSrc(selectPath);
-                                                return await resizeImageToBase64(src);
-                                            }
-                                            return await WInvoke.getFileIconBase64(selectPath, 32);
-                                        })();
-                                        setEditData("custom_icon", base64);
-                                    }}>File</button>
-                                </div>
-                            </div>
                             </>}
                         </div>
                         <Line vertical/>
