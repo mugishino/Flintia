@@ -2,6 +2,7 @@ import { register, unregister } from "@tauri-apps/plugin-global-shortcut";
 import { currentMonitor, getCurrentWindow, LogicalPosition, LogicalSize, Window, WindowOptions } from "@tauri-apps/api/window";
 import { SessionData } from "./util/session";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { WInvoke } from "./InvokeWrapper";
 
 export type HotkeyMainKeys = (typeof HOTKEY_MAINKEYS)[number];
 export const HOTKEY_MAINKEYS = [
@@ -270,5 +271,12 @@ export class FlintiaWindow {
         if (size.height != workSize.height) return "Bottom";
         if (size.width != workSize.width) return "Right";
         return undefined;
+    }
+
+    /**
+     * Devtoolsを開きます
+     */
+    public async openDevtools() {
+        await WInvoke.openDevtools(this.rawWindow.label);
     }
 }

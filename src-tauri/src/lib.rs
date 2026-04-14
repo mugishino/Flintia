@@ -57,7 +57,8 @@ pub fn run() {
             commands::is_directory,
             commands::run_exe,
             commands::console_log,
-            commands::get_windows_accent_color
+            commands::get_windows_accent_color,
+            commands::open_devtools,
         ])
         .setup(|app| {
             // 開発用 - DevToolsを自動で開く

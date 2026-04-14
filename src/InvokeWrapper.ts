@@ -84,4 +84,12 @@ export const WInvoke = {
     async getWindowsAccentColor(): Promise<{R: number, G: number, B: number, A: number}> {
         return await invoke("get_windows_accent_color");
     },
+
+    /**
+     * ウィンドウのDevtoolsを開きます。
+     * @param label Devtoolsを開くウィンドウのLabel
+     */
+    async openDevtools(label: string) {
+        await invoke("open_devtools", {label: label});
+    },
 }
