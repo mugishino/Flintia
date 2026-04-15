@@ -13,6 +13,7 @@ import { Line } from "~/components/Line";
 import { useMapState } from "~/hooks/useMapState";
 import { useStaticOverlay } from "~/hooks/useOverlay";
 import { Pair } from "~/util/clazz";
+import { readClipboardQRCode } from "~/module/QRCode";
 
 type AuthData = {
     label: string,
@@ -84,6 +85,7 @@ export default function Auth() {
     const [addOverlay, showAddOverlay] = useState(false);
     const [label, setLabel] = useState(String.empty);
     const [code, setCode] = useState(String.empty);
+    const [readQRMsg, setReadQRMsg] = useState<string|undefined>(undefined);
 
     // Edit overlay
     const [editData, setEditData] = useState<Pair<string, AuthData>|undefined>(undefined);
@@ -138,12 +140,26 @@ export default function Auth() {
                     setEditData(new Pair(k, v));
                 }}/>)}
             </div>
-            <button className="border-0 border-t" onClick={() => showAddOverlay(true)}>Add 2FA</button>
+            <button className="border-0 border-t" onClick={() => {
+                setLabel(String.empty);
+                showAddOverlay(true);
+            }}>Add 2FA</button>
             <Overlay show={addOverlay} setShow={showAddOverlay}>
                 <OverlayWindow className="w-2/3 gap-1">
-                    <button disabled onClick={() => {
-                        // TODO
-                    }}>QRで追加</button>
+                    <button className={"text-fail".where(!!readQRMsg)} onClick={async () => {
+                        const read = await readClipboardQRCode();
+                        read.map_err(e => setReadQRMsg(e))
+                            .map(r => {
+                                const uri = new URL(r);
+                                if (uri.protocol != "otpauth:") return setReadQRMsg("TOTPのQRコードではありません。");
+                                const label = uri.pathname.substring(1);
+                                const secret = uri.searchParams.get("secret");
+                                if (!secret) return setReadQRMsg("データの取得に失敗しました。");
+                                setLoadData(prev => prev.set(crypto.randomUUID(), {label: label, code: secret}))
+                                showAddOverlay(false);
+                            });
+                        setTimeout(() => setReadQRMsg(undefined), 1500);
+                    }}>{readQRMsg ?? "QRで追加"}</button>
                     <Line/>
                     <input placeholder="Label" value={label} onChange={e => setLabel(e.currentTarget.value)}/>
                     <input placeholder="Code" value={code} onChange={e => setCode(e.currentTarget.value)}/>
