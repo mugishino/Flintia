@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 /**
- * KeyValue形式のState
- * @param init 初期値。null許容。
+ * 連想配列用のState
+ * @param init 初期値。
  * @returns [データ, 特定のキーを上書き, データ自体上書き]
  */
 export function useKVState<T>(init: T) {
