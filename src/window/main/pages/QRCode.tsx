@@ -1,47 +1,18 @@
 import { useState } from "react";
-import { BrowserQRCodeReader } from "@zxing/browser";
-import jsQR from "jsqr";
 import { Clipboards } from "~/util/clipboard";
 import * as mkqr from "qrcode";
 import EvenlyDividedRow from "~/components/EvenlyDividedRow";
-import { createCanvas } from "~/util/util";
-
-async function tryZxing(blob: Blob) {
-    const url = URL.createObjectURL(blob);
-    const reader = new BrowserQRCodeReader();
-    try {
-        const decoded = await reader.decodeFromImageUrl(url);
-        return decoded.getText();
-    } catch {
-        return null;
-    }
-}
-
-async function tryJsqr(blob: Blob) {
-    const bmp = await createImageBitmap(blob);
-
-    const {ctx, canvas} = createCanvas(bmp.width, bmp.height);
-    if (ctx == null) return null;
-    ctx.drawImage(bmp, 0, 0);
-
-    const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const qr = jsQR(data.data, data.width, data.height);
-    return qr?.data ?? null;
-}
+import { readClipboardQRCode } from "~/module/QRCode";
 
 export default function QRCode() {
     const [result, setResult] = useState<string|null>(null);
     const [success, setSuccess] = useState(true);
 
     async function readFromClipboard() {
-        setSuccess(false);
-        const blob = await Clipboards.getImageBlob();
-        if (blob == null) return setResult("クリップボードが画像ではありません");
-
-        const qrdata = await tryZxing(blob) ?? await tryJsqr(blob);
-        if (qrdata == null) return setResult("QRコードを読み取れませんでした");
-        setResult(qrdata);
-        setSuccess(true);
+        const read = await readClipboardQRCode();
+        setSuccess(!read.isErr);
+        read.map_err(e => setResult(e))
+            .map    (r => setResult(r));
     }
 
     async function createFromClipboard() {

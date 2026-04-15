@@ -6,6 +6,7 @@
   "permissions": [
     "core:default",
     "opener:default",
+    "shell:default",
     "global-shortcut:default",
     "autostart:default",
 
