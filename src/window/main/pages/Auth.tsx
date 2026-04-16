@@ -1,6 +1,6 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { TOTP } from "otpauth";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Config from "~/Config";
 import { Paths } from "~/util/path";
 import { Clipboards } from "~/util/clipboard";
@@ -79,7 +79,8 @@ export default function Auth() {
     const [errMsg, setErrMsg] = useState<string>(String.empty);
     const [searchElem, search] = useSearch({className: "border-0 border-b", autofocus: true});
     // Label : Code
-    const [loadData, setLoadData, overwriteLoadData] = useMapState<string, AuthData>();
+    const [loadData, setLoadData] = useMapState<string, AuthData>();
+    const [viewData, setViewData] = useMapState<string, AuthData>();
 
     // add 2fa window
     const [addOverlay, showAddOverlay] = useState(false);
@@ -103,7 +104,7 @@ export default function Auth() {
         const read = await readTextFile(file);
         try {
             const map = JSON.toMap<string, AuthData>(read);
-            overwriteLoadData(map);
+            setLoadData(map);
         } catch (err) {
             setErrMsg(String(err));
         }
@@ -117,15 +118,20 @@ export default function Auth() {
         await writeTextFile(file, json);
     }, [loadData]);
 
-    const viewDatas = loadData.filter((_, v) => {
-        // 無効データなら表示しない
-        if (v.disable) return false;
-        // 検索入力なしなら全て返す
-        if (!search) return true;
-        // 検索に合致すれば返す
-        if (v.label.toLocaleLowerCase().includes(search.toLocaleLowerCase())) return true;
-        return false;
-    });
+    // update rendering
+    useEffect(() => {
+        const data = loadData.filter((_, v) => {
+            // 無効データなら表示しない
+            if (v.disable) return false;
+            // 検索入力なしなら全て返す
+            if (!search) return true;
+            // 検索に合致すれば返す
+            if (v.label.toLocaleLowerCase().includes(search.toLocaleLowerCase())) return true;
+            return false;
+        }).sort((a, b) => a.right.label.localeCompare(b.right.label));
+        setViewData(data);
+    }, [search, loadData]);
+
 
 
 
@@ -135,7 +141,7 @@ export default function Auth() {
             {searchElem}
             <div className="h-full overflow-y-scroll">
                 <div className="text-fail">{errMsg}</div>
-                {viewDatas.map((k, v) => <CodeView key={k} secret={v.code} title={v.label} onAuxClick={() => {
+                {viewData.map((k, v) => <CodeView key={k} secret={v.code} title={v.label} onAuxClick={() => {
                     setLabel(v.label);
                     setEditData(new Pair(k, v));
                 }}/>)}

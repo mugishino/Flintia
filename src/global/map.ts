@@ -1,3 +1,5 @@
+import { Pair } from "~/util/clazz";
+
 export {};
 
 declare global {
@@ -19,6 +21,12 @@ declare global {
          * @param call trueが返れば保持、falseが返ればなし
          */
         filter(call: (k: K, v: V) => boolean): Map<K, V>;
+
+        /**
+         * Mapをソートします。
+         * @param call ソートメソッド
+         */
+        sort(call: (a: Pair<K, V>, b: Pair<K, V>) => number): Map<K, V>;
     }
 }
 
@@ -38,5 +46,14 @@ Map.prototype.filter = function<K, V>(call: (k: K, v: V) => boolean) {
         const r = call(k, v);
         if (r) result.set(k, v);
     });
+    return result;
+}
+
+Map.prototype.sort = function<K, V>(call: (a: Pair<K, V>, b: Pair<K, V>) => number) {
+    const data = this.map((k, v) => new Pair(k, v));
+    const sorted = data.sort((a, b) => call(a, b));
+
+    const result = new Map<K, V>();
+    sorted.forEach(v => result.set(v.left, v.right));
     return result;
 }
