@@ -3,7 +3,6 @@ import Config from "~/Config";
 import { Clipboards } from "~/util/clipboard";
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { Paths } from "~/util/path";
-import useSearch from "~/hooks/useSearch";
 import ToggleSwitch from "~/components/ToggleSwitch";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import SVGButton from "~/components/SVGButton";
@@ -14,6 +13,7 @@ import { ifPresent } from "~/util/util";
 import { Line } from "~/components/Line";
 import { useMapState } from "~/hooks/useMapState";
 import { useStaticOverlay } from "~/hooks/useOverlay";
+import Search from "~/components/Search";
 
 interface PassRecord {
     title   ?: string;
@@ -32,7 +32,7 @@ function PasswordSVGButton({src, value, onClick}: {src: string, value?: string, 
 
 export default function Password() {
     const [passwordData, setPasswordData] = useMapState<string, PassRecord>();
-    const [searchElem, search] = useSearch({className: "border-0 border-b", autofocus: true});
+    const [search, setSearch] = useState(String.empty);
     const [showHide, setShowHide] = useState(false);
     const [paste, setPaste] = useState(true);
 
@@ -65,7 +65,7 @@ export default function Password() {
 
 
 
-    function DataRow({data, onClick}: {data: PassRecord, onClick?: () => void}) {
+    function DataRow({data, onAuxClick}: {data: PassRecord, onAuxClick?: () => void}) {
         const pasteClick = (value?: string) => {
             Clipboards.copyText(value ?? String.empty, paste);
         };
@@ -75,7 +75,7 @@ export default function Password() {
                 <div
                     className={`grow pl-1 text-2xl truncate flex items-center hover:bg-button-hover ${"text-text-gray".where(!!data.hide)} ${"underline".where(!!data.note)}`}
                     title={data.note}
-                    onClick={onClick}
+                    onAuxClick={onAuxClick}
                 >{data.title}</div>
                 <PasswordSVGButton src="user.svg" value={data.username} onClick={() => pasteClick(data.username)}/>
                 <PasswordSVGButton src="mail.svg" value={data.mail} onClick={() => pasteClick(data.mail)}/>
@@ -131,10 +131,10 @@ export default function Password() {
     return (
         <>
             {staticOverlay}
-            {searchElem}
+            <Search value={search} onChangeText={v => setSearch(v)} className="border-0 border-b" autoFocus/>
             <div className="overflow-y-scroll grow">
                 <span className="text-fail">{errorMessage}</span>
-                {view.map((k, v) => <DataRow data={v} key={v.title} onClick={() => openEditUI(k)}/>)}
+                {view.map((k, v) => <DataRow data={v} key={v.title} onAuxClick={() => openEditUI(k)}/>)}
             </div>
             <div className="flex flex-row border-t *:border-0 *:not-last:border-r">
                 <ToggleSwitch label="ShowHide" value={showHide} onChange={() => setShowHide(!showHide)}/>
