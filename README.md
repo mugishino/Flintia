@@ -1,42 +1,37 @@
 # 概要
 自分用の便利ツールセット
 
-Ctrl+Shift+ALT+Qで呼び出せる
+デフォルトであれば`Ctrl+Shift+ALT+Q`で呼び出せる
+
+# 動作環境(確認済み)
+- Windows 11 25H2
+- Webview 2
+## 推奨
+- FFmpeg (一部機能に使用)
 
 # ツールリスト
-- パスワード管理
-- 開発ツール(UUID生成など)
+- パスワードマネージャー
+- ツール詰め合わせ(UUID生成など)
 - コマンドジェネレーター
 - メモ帳
 - ToDoリスト
 - QRCode読み取り・生成
 - OTP認証
 - 画像ペースト
+- 動画カット
+- リマインダー
+- ルーレット
+- アプリランチャー
 
-# 設定ファイル
-`%AppData%/Roaming/com.flintia.app/config.json`にデータを直で書き込んでください
+# 初期化
+## ファイル用意
+パスワード管理用、OTP認証用のjsonファイルを用意します。
+ファイルの内容は空の辞書データ `{}` で問題ありません。
+
+## 設定ファイル
+`%AppData%/com.flintia.app/config.json`にファイルパスを書き込んでください
 ```
 passfile: パスワードファイル
 authfile: OTP認証コードファイル
 imagedir: 画像ペーストの元画像ディレクトリ
 ```
-
-# パスワードファイル記述形式(yaml)
-```
-- title   : string
-  username: string
-  mail    : string
-  password: string
-  note    : string
-  hide    : boolean
-```
-
-# OTP認証コードファイル記述形式(json)
-```
-{
-    "Title": "SecretCode"
-}
-```
-
-# ToDoリスト
-右クリックで並べ替えモードに入り、並べ替え先をクリックするとそこにToDoが移動します。
