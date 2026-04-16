@@ -15,4 +15,6 @@ export default class Config implements AppSavedata {
     hotkey_main = "Q" as HotkeyMainKeys;
 
     theme: string = "Default_Dark";
+
+    enable_launcher = true;
 }

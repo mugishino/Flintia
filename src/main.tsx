@@ -19,7 +19,10 @@ import NotFoundPage from "./window/main/pages/404";
 import { FlintiaWindow } from "./Flintia";
 import { Logger } from "./Logger";
 import { IS_DEVELOP_MODE } from "./Data";
+import { AppStorage } from "./AppStorage";
+import Config from "./Config";
 
+const config = await AppStorage.load(new Config());
 const windowLabel = getCurrentWindow().label;
 
 // ウィンドウラベルごとにスタイルを与える
@@ -32,15 +35,17 @@ if (IS_DEVELOP_MODE) {
 
 
 
-FlintiaWindow.getOrCreateWindow("launcher", "/Launcher", {
-    decorations: false,
-    skipTaskbar: true,
-    resizable: false,
-    shadow: false,
-    visible: false,
-    focus: false,
-    transparent: true,
-}).catch(v => Logger.errorTrace("Window create failed:" + v));
+if (config.enable_launcher) {
+    FlintiaWindow.getOrCreateWindow("launcher", "/Launcher", {
+        decorations: false,
+        skipTaskbar: true,
+        resizable: false,
+        shadow: false,
+        visible: false,
+        focus: false,
+        transparent: true,
+    }).catch(v => Logger.errorTrace("Window create failed:" + v));
+}
 
 
 

@@ -30,12 +30,16 @@ export default function MainSetting() {
 
     const [theme, setTheme] = useState<string>("Default_Dark");
 
+    const [enableLauncher, setEnableLauncher] = useState(true);
+
+    // config自体の読み込み
     useEffectAsync(async () => {
         setThemes(await readDir(await getAppdataDirFile("themes/")));
         setAutostart(await AutoStart.isEnabled());
         setConfig(await AppStorage.load(new Config()));
     }, []);
 
+    // configデータの読み込み
     useEffect(() => {
         if (config == undefined) return;
         setShift(config.hotkey_shift);
@@ -45,6 +49,7 @@ export default function MainSetting() {
         setKey  (config.hotkey_main );
 
         setTheme(config.theme);
+        setEnableLauncher(config.enable_launcher);
     }, [config]);
 
     useEffectAsync(async() => {
@@ -60,6 +65,14 @@ export default function MainSetting() {
             AppStorage.save(config);
         });
     }, [shift, ctrl, alt, win, key]);
+
+    useEffectAsync(async() => {
+        if (config == undefined) return;
+        AppStorage.load(new Config()).then(config => {
+            config.enable_launcher = enableLauncher;
+            AppStorage.save(config);
+        });
+    }, [enableLauncher]);
 
     return(
         <Section title="Main Settings">
@@ -117,6 +130,9 @@ export default function MainSetting() {
                         })
                     }
                 </select>
+            </Setting>
+            <Setting title="Enable Launcher">
+                <ToggleSwitch value={enableLauncher} onChange={v => setEnableLauncher(v)}/>
             </Setting>
         </Section>
     );
