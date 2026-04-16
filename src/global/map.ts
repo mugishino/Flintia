@@ -27,6 +27,12 @@ declare global {
          * @param call ソートメソッド
          */
         sort(call: (a: Pair<K, V>, b: Pair<K, V>) => number): Map<K, V>;
+
+        /**
+         * このMapが空かどうか
+         * @returns 空ならtrue
+         */
+        isEmpty(): boolean;
     }
 }
 
@@ -56,4 +62,8 @@ Map.prototype.sort = function<K, V>(call: (a: Pair<K, V>, b: Pair<K, V>) => numb
     const result = new Map<K, V>();
     sorted.forEach(v => result.set(v.left, v.right));
     return result;
+}
+
+Map.prototype.isEmpty = function() {
+    return this.size == 0;
 }
