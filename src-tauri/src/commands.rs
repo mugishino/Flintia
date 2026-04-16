@@ -4,7 +4,6 @@ use base64::{Engine, engine::general_purpose};
 use enigo::{Enigo, Key, Keyboard, Settings};
 use file_icon_provider::get_file_icon;
 use image::{DynamicImage, RgbaImage};
-use tauri::Manager;
 use windows::UI::ViewManagement::{UIColorType, UISettings};
 
 #[tauri::command]
@@ -138,7 +137,10 @@ pub fn get_windows_accent_color() -> Result<serde_json::Value, String> {
 }
 
 #[tauri::command]
+#[cfg(debug_assertions)]
 pub fn open_devtools(app: tauri::AppHandle, label: &str) {
+    use tauri::Manager;
+
     let webview = app.get_webview_window(label);
     if let Some(win) = webview {
         win.open_devtools();
