@@ -91,6 +91,7 @@ export default function Password() {
         const path = (await AppStorage.load(new Config())).passfile;
         if (path == String.empty || await Paths.notExists(path)) {
             setErrorMessage("Password file not found");
+            return;
         }
 
         const raw = await readTextFile(path);

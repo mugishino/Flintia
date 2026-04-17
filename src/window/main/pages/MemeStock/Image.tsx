@@ -14,13 +14,14 @@ const SUPPORT_EXTENSION = "avif,bmp,jpeg,jpg,png,webp".split(",");
 
 export default function MemeStock_Image({paste, enter, search}: {paste: boolean, enter: boolean, search: string}) {
     const [imageList, setImageList] = useState<string[]>([]);
+    const [errMsg, setErrMsg] = useState<string|undefined>(undefined);
 
     const [overlay, setOverlay] = useStaticOverlay();
 
     useEffectAsync(async() => {
         const config = await AppStorage.load(new Config());
         const imagedirNotFound = await Paths.notExists(config.imagedir);
-        if (imagedirNotFound) return;
+        if (imagedirNotFound) return setErrMsg("Directory not found");
 
         const data = (await readDir(config.imagedir)).map(v => {
             if (!v.isFile) return;
@@ -32,7 +33,7 @@ export default function MemeStock_Image({paste, enter, search}: {paste: boolean,
 
     return (
         <div className="overflow-y-scroll flex flex-wrap justify-center content-start h-full">
-            <span className="text-2xl text-fail">{"Image directory not found".where(!imageList)}</span>
+            <span className="text-2xl text-fail">{errMsg}</span>
             {imageList.map(v => {
                 const fileSrc = convertFileSrc(v);
                 if (search.length != 0 && !Paths.getBasename(v.toLowerCase()).includes(search.toLowerCase())) return;

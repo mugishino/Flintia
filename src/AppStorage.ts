@@ -1,5 +1,6 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { getAppdataDirFile, Paths } from "./util/path";
+import { Logger } from "./Logger";
 
 export interface AppSavedata {
     /**
@@ -22,9 +23,14 @@ export namespace AppStorage {
             return fallback;
         }
         const raw = await readTextFile(file);
-        const json = JSON.parse(raw);
-        const result = Object.assign(fallback, json);
-        return result;
+        try {
+            const json = JSON.parse(raw);
+            const result = Object.assign(fallback, json);
+            return result;
+        } catch (e) {
+            Logger.error("Failed to parse json file: " + file);
+            throw e;
+        }
     }
 
     /**

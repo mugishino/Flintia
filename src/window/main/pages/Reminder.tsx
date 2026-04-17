@@ -28,7 +28,7 @@ async function saveReminders() {
 
 
 // 起動時にトップレベルは読み込まれるので動きます
-let reminders = await getReminders();
+let reminders = await getReminders().catch(() => [] as ReminderData[]);
 setInterval(() => {
     const nowTime = Date.now();
     reminders.forEach(async v => {
