@@ -54,3 +54,26 @@ export function createCanvas(
         ctx,
     };
 }
+
+export const MOUSE_BUTTON_BITS = {
+    LEFT: 1,      // 00001
+    RIGHT: 2,     // 00010
+    MIDDLE: 4,    // 00100
+    BACK: 8,      // 01000
+    FORWARD: 16,  // 10000
+} as const;
+
+/**
+ * MouseEventのbuttonsを変換します。
+ * @param value buttonsの値
+ */
+export function parseMouseButtons(event: React.MouseEvent) {
+    const b = event.buttons;
+    return {
+        left:    (b & MOUSE_BUTTON_BITS.LEFT) !== 0,
+        right:   (b & MOUSE_BUTTON_BITS.RIGHT) !== 0,
+        middle:  (b & MOUSE_BUTTON_BITS.MIDDLE) !== 0,
+        back:    (b & MOUSE_BUTTON_BITS.BACK) !== 0,
+        forward: (b & MOUSE_BUTTON_BITS.FORWARD) !== 0,
+    };
+}

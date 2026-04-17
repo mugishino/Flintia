@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
+import { IntVector2 } from "~/util/clazz";
+import { parseMouseButtons } from "~/util/util";
 
 export const GRID_SIZE = screen.width / 43;
 export const MARGIN_SIZE = GRID_SIZE / 12;
+const CELL_DRAG_THRESHOLD = GRID_SIZE / 2;
 
 /**
  * 複数のセルのサイズを取得します。
@@ -48,7 +51,9 @@ export function CellObj(props: CellData & CellObjProps) {
     const [moveX, setMoveX] = useState(0);
     const [moveY, setMoveY] = useState(0);
 
-    const {onMoved, locked, isOverlapping, onRightClick, className, ...rest} = props;
+    const [downOrigin, setDownOrigin] = useState<IntVector2|undefined>(undefined);
+
+    const {onMoved, locked, isOverlapping, onRightClick, className, onClick, ...rest} = props;
 
     useEffect(() => {
         if (locked || moveing) return;
@@ -78,21 +83,28 @@ export function CellObj(props: CellData & CellObjProps) {
             {...rest}
             className={twMerge("absolute hover:z-10 cursor-default", className)}
             onMouseDown={e => {
-                if (e.button == 1 && !locked) {
-                    setMoveing(!moveing);
-                    e.preventDefault();
-
-                    if (!moveing) {
-                        // セル中央をマウスに持っていく
-                        const rect = e.currentTarget.getBoundingClientRect();
-                        const centerX = rect.left + rect.width/2;
-                        const centerY = rect.top  + rect.height/2;
-                        setMoveX(e.clientX - centerX);
-                        setMoveY(e.clientY - centerY);
-                    }
-                }
+                if (e.button == 0) setDownOrigin(new IntVector2(e.pageX, e.pageY));
+            }}
+            onMouseUp={e => {
+                setMoveing(false);
+                // 単純にonClickでやるとセル移動時に離したとき反応してしまうためこちらでやる
+                // e.button == 0で左クリックの変化を取得
+                if (e.button == 0 && !moveing && onClick) onClick(e);
             }}
             onMouseMove={e => {
+                const buttons = parseMouseButtons(e);
+                // 左クリックしながら動かした場合、原点から一定距離離れればmoveing状態にする
+                if (buttons.left && downOrigin && downOrigin.getDistanceFromXY(e.pageX, e.pageY) > CELL_DRAG_THRESHOLD && !moveing) {
+                    setMoveing(true);
+                    // セル中央をマウスに持っていく
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const centerX = rect.left + rect.width/2;
+                    const centerY = rect.top  + rect.height/2;
+                    setMoveX(e.clientX - centerX);
+                    setMoveY(e.clientY - centerY);
+                }
+
+                // セルの移動
                 if (!moveing) return;
                 setMoveX(moveX + e.movementX);
                 setMoveY(moveY + e.movementY);

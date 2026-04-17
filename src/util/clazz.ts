@@ -33,3 +33,27 @@ export class Result<R, E> {
         return this.value;
     }
 }
+
+export class IntVector2 {
+    public constructor(private x: number, private y: number) {}
+
+    public setX(value: number) {
+        this.x = value;
+    }
+
+    public getX() {
+        return this.x.toInt();
+    }
+
+    public setY(value: number) {
+        this.y = value;
+    }
+
+    public getY() {
+        return this.y.toInt();
+    }
+
+    public getDistanceFromXY(x: number, y: number) {
+        return Math.sqrt(Math.pow(x - this.getX(), 2) + Math.pow(y - this.getY(), 2));
+    }
+}

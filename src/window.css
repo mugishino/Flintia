@@ -8,3 +8,9 @@ body.main {
 body.launcher {
     background-color: #000d;
 }
+
+img {
+    user-select: none;
+    -webkit-user-drag: none;
+    -moz-user-select: none;
+}
