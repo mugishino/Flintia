@@ -34,7 +34,10 @@ export function useGridManager() {
 
     // load
     useEffectAsync(async() => {
-        if (await Paths.notExists(datafile)) return;
+        if (await Paths.notExists(datafile)) {
+            loaded.current = true;
+            return;
+        }
         // load
         const rawDataString = await readTextFile(datafile);
         const rawData = JSON.parse(rawDataString);

@@ -5,7 +5,7 @@ import { parseMouseButtons } from "~/util/util";
 
 export const GRID_SIZE = screen.width / 43;
 export const MARGIN_SIZE = GRID_SIZE / 12;
-const CELL_DRAG_THRESHOLD = GRID_SIZE / 2;
+const CELL_DRAG_THRESHOLD = GRID_SIZE / 3;
 
 /**
  * 複数のセルのサイズを取得します。
@@ -75,6 +75,16 @@ export function CellObj(props: CellData & CellObjProps) {
         if (onMoved) onMoved(rx, ry);
     }, [moveing]);
 
+    function grabCell(e: React.MouseEvent) {
+        setMoveing(true);
+        // セル中央をマウスに持っていく
+        const rect = e.currentTarget.getBoundingClientRect();
+        const centerX = rect.left + rect.width/2;
+        const centerY = rect.top  + rect.height/2;
+        setMoveX(e.clientX - centerX);
+        setMoveY(e.clientY - centerY);
+    }
+
     const cellX = gridX * (GRID_SIZE + MARGIN_SIZE);
     const cellY = gridY * (GRID_SIZE + MARGIN_SIZE);
 
@@ -91,17 +101,17 @@ export function CellObj(props: CellData & CellObjProps) {
                 // e.button == 0で左クリックの変化を取得
                 if (e.button == 0 && !moveing && onClick) onClick(e);
             }}
+            onMouseLeave={e => {
+                const buttons = parseMouseButtons(e);
+                if (buttons.left && !moveing) {
+                    grabCell(e);
+                }
+            }}
             onMouseMove={e => {
                 const buttons = parseMouseButtons(e);
                 // 左クリックしながら動かした場合、原点から一定距離離れればmoveing状態にする
                 if (buttons.left && downOrigin && downOrigin.getDistanceFromXY(e.pageX, e.pageY) > CELL_DRAG_THRESHOLD && !moveing) {
-                    setMoveing(true);
-                    // セル中央をマウスに持っていく
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const centerX = rect.left + rect.width/2;
-                    const centerY = rect.top  + rect.height/2;
-                    setMoveX(e.clientX - centerX);
-                    setMoveY(e.clientY - centerY);
+                    grabCell(e);
                 }
 
                 // セルの移動

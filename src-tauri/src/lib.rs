@@ -112,8 +112,12 @@ pub fn run() {
                                 println!("[ERROR] Window hide failure: {}", e);
                             }
                         } else {
-                            if let Err(e) = win.show() {
-                                let _ = win.set_focus();
+                            if let Err(e) = (|| -> tauri::Result<()> {
+                                win.show()?;
+                                win.unminimize()?;
+                                win.set_focus()?;
+                                Ok(())
+                            })() {
                                 println!("[ERROR] Window show failure: {}", e)
                             }
                         }
