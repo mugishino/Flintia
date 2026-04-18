@@ -17,5 +17,5 @@ export default function Overlay({
     /** バックグラウンドをグレーにするかどうか */
     grayBackground?: boolean
 }) {
-    return <div className={`absolute left-0 top-0 z-50 h-full w-full flex ${"hidden".where(!show)} ${grayBackground ? "bg-[#000d]" : "bg-transparent"}`} onClick={() => setShow(false)}>{children}</div>;
+    return <div className={`absolute left-0 top-0 z-50 h-full w-full flex ${"hidden".where(!show)} ${grayBackground ? "bg-overlay-bg" : "bg-transparent"}`} onClick={() => setShow(false)}>{children}</div>;
 }

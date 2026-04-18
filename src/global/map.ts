@@ -34,6 +34,14 @@ declare global {
          */
         isEmpty(): boolean;
     }
+
+    interface MapConstructor {
+        /**
+         * 連想配列からMapオブジェクトを作ります。
+         * @param data 連想配列
+         */
+        fromObject<T extends Record<string|number|symbol, any>>(data: T): Map<string, T[keyof T]>;
+    }
 }
 
 Map.prototype.map = function<K, V, T>(call: (k: K, v: V) => T) {
@@ -66,4 +74,8 @@ Map.prototype.sort = function<K, V>(call: (a: Pair<K, V>, b: Pair<K, V>) => numb
 
 Map.prototype.isEmpty = function() {
     return this.size == 0;
+}
+
+Map.fromObject = function<T extends Record<string | number | symbol, any>>(data: T): Map<string, T[keyof T]> {
+    return new Map(Object.entries(data));
 }

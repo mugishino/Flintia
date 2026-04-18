@@ -58,6 +58,7 @@ pub fn run() {
             commands::run_exe,
             commands::console_log,
             commands::get_windows_accent_color,
+            commands::file_trash,
             #[cfg(debug_assertions)]
             commands::open_devtools,
         ])

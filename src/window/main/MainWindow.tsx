@@ -5,6 +5,7 @@ import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { Logger } from "~/Logger";
 import { Routing } from "~/Routing";
 import Sidebar from "~/window/main/Sidebar";
+import FileConverter from "./FileConverter";
 
 export default function MainWindow() {
     useEffectAsync(async() => {
@@ -29,12 +30,15 @@ export default function MainWindow() {
         }).catch(v => Logger.warning("Failed to register onFocusChanged event: " + v));
     }, []);
 
+
+
     return (
         <>
             <Sidebar/>
             <main className="flex flex-col grow min-w-0">
                 {Routing.getRoutes()}
             </main>
+            <FileConverter/>
         </>
     );
 }

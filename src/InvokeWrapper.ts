@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { IS_DEVELOP_MODE } from "./Data";
 
 interface DiskInfo {
     name: string;
@@ -90,6 +91,15 @@ export const WInvoke = {
      * @param label Devtoolsを開くウィンドウのLabel
      */
     async openDevtools(label: string) {
+        if (!IS_DEVELOP_MODE) return;
         await invoke("open_devtools", {label: label});
+    },
+
+    /**
+     * ファイルをゴミ箱に送る
+     * @param files ゴミ箱に送るファイルリスト
+     */
+    async fileTrash(files: string[]) {
+        await invoke("file_trash", {files: files});
     },
 }

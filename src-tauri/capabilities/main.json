@@ -22,6 +22,8 @@
       {"args": true, "name": "where", "cmd": "where"}
     ]},
 
+    "core:event:allow-listen",
+
     {"allow": [{"path": "**"}], "identifier": "fs:allow-exists"},
     {"allow": [{"path": "**"}], "identifier": "fs:allow-read-text-file"},
     {"allow": [{"path": "**"}], "identifier": "fs:allow-read-dir"},

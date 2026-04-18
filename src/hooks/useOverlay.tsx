@@ -9,10 +9,7 @@ export function useStaticOverlay(grayBackground=true): [React.JSX.Element, (elem
     const [value, setValue] = useState<React.JSX.Element|undefined>(undefined);
 
     const view = <div
-        className="absolute left-0 top-0 z-50 h-full w-full flex"
-        style={{
-            backgroundColor: grayBackground ? "#000d" : "transparent",
-        }}
+        className={`absolute left-0 top-0 z-50 h-full w-full flex ${grayBackground ? "bg-overlay-bg" : "bg-transparent"}`}
         onClick={() => setValue(undefined)}
     >{value}</div>;
 

@@ -137,6 +137,12 @@ pub fn get_windows_accent_color() -> Result<serde_json::Value, String> {
 }
 
 #[tauri::command]
+pub fn file_trash(files: Vec<String>) -> Result<(), String> {
+    let _ = trash::delete_all(files).map_err(|_| "File trash failed");
+    Ok(())
+}
+
+#[tauri::command]
 #[cfg(debug_assertions)]
 pub fn open_devtools(app: tauri::AppHandle, label: &str) {
     use tauri::Manager;

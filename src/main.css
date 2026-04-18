@@ -32,6 +32,8 @@
     --color-svg: var(--color-text);
     --color-svg-disable: var(--color-layerC);
 
+    --color-overlay-bg: #000d;
+
     /* core styles */
     --radius-button: 0;
 
@@ -192,6 +194,31 @@ body {
     input[type="password"]::-ms-clear {
         display: none;
     }
+
+    input[type="checkbox"] {
+        cursor: pointer;
+        appearance: none;
+        aspect-ratio: 1;
+        display: inline-block;
+        width: auto;
+        position: relative;
+
+        &:checked {
+            background-color: #06f;
+
+            &::before {
+                position: absolute;
+                inset: 0;
+                content: "";
+                height: 100%;
+                width: 100%;
+                mask-image: url("check.svg");
+                mask-repeat: no-repeat;
+                mask-size: contain;
+                background-color: white;
+            }
+        }
+    }
 }
 
 @layer utilities {
@@ -200,5 +227,9 @@ body {
         &::-webkit-scrollbar-thumb:hover {
             cursor: default;
         }
+    }
+
+    .no-pointer-events * {
+        pointer-events: none;
     }
 }

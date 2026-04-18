@@ -22,8 +22,8 @@
         "resizable": false,
         "shadow": false,
         "visible": false,
-        "focus": false,
-        "dragDropEnabled": false,
+        "focus": true,
+        "dragDropEnabled": true,
         "transparent": true
       }
     ],
