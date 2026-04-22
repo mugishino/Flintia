@@ -17,7 +17,7 @@ export namespace Paths {
     }
 
     export function getBasename(file: string) {
-        return file.split("\\").get(-1).split("/").get(-1);
+        return file.split("\\").get(-1)?.split("/").get(-1) ?? String.empty;
     }
 
     export function splitExt(filename: string) {

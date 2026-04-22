@@ -1,6 +1,6 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { Command } from "@tauri-apps/plugin-shell";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Overlay from "~/components/Overlay";
 import Setting from "~/components/Setting";
 import SVGButton from "~/components/SVGButton";
@@ -12,6 +12,8 @@ import { Paths } from "~/util/path";
 import { Nullable } from "~/util/type";
 import BitrateCalc from "./Tools/BitrateCalc";
 import { Dialogs, VIDEO_EXTENSIONS } from "~/util/dialog";
+import { DragProvider, DragType } from "../DragProvider";
+import { ifPresent } from "~/util/util";
 
 function secondToTime(sec: number) {
     const h = (sec/3600).toInt().toStringZero(2);
@@ -86,6 +88,26 @@ export default function VideoCut() {
     const [videoCodec, setVideoCodec] = useState<VideoCodec>("av1_nvenc");
     const [copied, setCopied] = useState(false);
 
+    useEffect(() => {
+        DragProvider.setListener(DragType.Enter);
+        DragProvider.setListener(DragType.Leave);
+        DragProvider.setListener(DragType.Drop, e => {
+            const file = e.payload.paths.get(0);
+            if (!file) return;
+
+            const ext = Paths.splitExt(file).ext;
+            if (!VIDEO_EXTENSIONS.extensions.contains(ext)) return;
+
+            setInputFile(file);
+        });
+    }, []);
+
+    useEffect(() => {
+        setOutputFile(null);
+        setStartTime(0);
+        setCurrentTimeByController(0);
+    }, [inputFile]);
+
 
 
     function setCurrentTimeByController(time: number) {
@@ -115,18 +137,11 @@ export default function VideoCut() {
 
     return (
         <div className="flex flex-col h-full">
-            <button className="border-0 border-b" onClick={async () => {
-                const result = await Dialogs.openSingleFile("Select Video", [VIDEO_EXTENSIONS]);
-                if (result) {
-                    setInputFile(result);
-                    setOutputFile(null);
-                    setStartTime(0);
-                    setCurrentTimeByController(0);
-                }
-            }}>{Paths.getBasename(inputFile ?? "Browse...")}</button>
+            <button className="border-0 border-b" onClick={async () => ifPresent(await Dialogs.openSingleFile("Select Video", [VIDEO_EXTENSIONS]), f => setInputFile(f))}>{Paths.getBasename(inputFile ?? "Browse...")}</button>
             <div className="flex grow shrink basis-auto overflow-hidden relative">
                 <div className={`absolute h-full w-1/4 z-10 ${"hover:bg-videocut-skip-hover".where(!!inputFile)}`} onClick={() => setCurrentTimeByController(Math.max(currentTime-5, 0))}></div>
                 <div className={`absolute h-full w-1/4 z-10 ${"hover:bg-videocut-skip-hover".where(!!inputFile)} right-0`} onClick={() => setCurrentTimeByController(Math.min(currentTime+5, duration))}></div>
+                <div className="absolute h-full w-full flex justify-center items-center text-text-gray -z-10">上のBrowseまたはD&Dでファイルを読み込み</div>
                 <video
                     ref={videoRef}
                     className="object-contain mx-auto"

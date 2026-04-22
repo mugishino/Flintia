@@ -95,7 +95,7 @@ export default function FileConverter() {
                 if (convertType.size > 1) return "複数のタイプのファイルが含まれています。";
                 return;
             });
-            setInputFileType(fileTypes.get(0));
+            setInputFileType(fileTypes.get(0) ?? SupportedType.Unsupported);
             setFiles(files);
         });
     }, []);

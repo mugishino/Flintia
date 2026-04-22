@@ -22,9 +22,10 @@ declare global {
         insert(index: number, value: T): void;
         /**
          * データをインデックスから取得します。
+         * 空配列から取得しようとした場合、undefinedが返ります。
          * @param index マイナス値も使用可能
          */
-        get(index: number): T;
+        get(index: number): T|undefined;
         /**
          * 値が配列に含まれているかを確認します。readonly arrayでも使用できます。
          * @param value 含まれているか確認する値

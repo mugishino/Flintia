@@ -21,11 +21,11 @@ export namespace DragProvider {
     /**
      * 現在のlocation.pathnameのドラッグイベントをリスナーします
      * @param type リスナーするイベントのタイプ
-     * @param fun コールバック
+     * @param fun コールバック。未指定の場合は何もしませんが、DefaultListenerは呼び出されなくなります。
      */
-    export function setListener(type: DragType, fun: DragEventListener) {
+    export function setListener(type: DragType, fun?: DragEventListener) {
         const eventmap = data.getOrPut(location.pathname, () => new Map());
-        eventmap.set(type, fun);
+        eventmap.set(type, fun ?? (() => {}));
     }
 
     export function setDefaultListener(type: DragType, fun: DragEventListener) {
