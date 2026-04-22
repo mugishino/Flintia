@@ -6,9 +6,10 @@ import { Paths } from "~/util/path";
 import { CommandExists, DESKTOP_DIR } from "~/Data";
 import Setting from "~/components/Setting";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
-import { Event, listen, TauriEvent } from "@tauri-apps/api/event";
+import { Event } from "@tauri-apps/api/event";
 import { Command } from "@tauri-apps/plugin-shell";
 import { WInvoke } from "~/InvokeWrapper";
+import { DragProvider, DragType } from "./DragProvider";
 
 interface DragDropPayload {
     paths: string[];
@@ -66,10 +67,9 @@ export default function FileConverter() {
     useEffectAsync(async() => {
         if (!CommandExists.FFmpeg) return;
 
-        await listen<DragDropPayload>(TauriEvent.DRAG_ENTER, e => onDragEvent(true , e));
-        await listen<DragDropPayload>(TauriEvent.DRAG_LEAVE, e => onDragEvent(false, e));
-
-        await listen<DragDropPayload>(TauriEvent.DRAG_DROP, async e => {
+        DragProvider.setDefaultListener(DragType.Enter, e => onDragEvent(true , e));
+        DragProvider.setDefaultListener(DragType.Leave, e => onDragEvent(false, e));
+        DragProvider.setDefaultListener(DragType.Drop , e => {
             // reset
             onDragEvent(false, e);
             setIsTrash(false);

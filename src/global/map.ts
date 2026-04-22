@@ -33,6 +33,13 @@ declare global {
          * @returns 空ならtrue
          */
         isEmpty(): boolean;
+
+        /**
+         * 値があればそれを取得し、なければデフォルト値を挿入してそれを返します。
+         * @param key 取得または挿入するキー
+         * @param put 負荷軽減のため遅延生成
+         */
+        getOrPut(key: K,put: () => V): V;
     }
 
     interface MapConstructor {
@@ -74,6 +81,14 @@ Map.prototype.sort = function<K, V>(call: (a: Pair<K, V>, b: Pair<K, V>) => numb
 
 Map.prototype.isEmpty = function() {
     return this.size == 0;
+}
+
+Map.prototype.getOrPut = function<K, V>(key: K, put: () => V) {
+    const data = this.get(key);
+    if (data) return data;
+    const gen = put();
+    this.set(key, gen);
+    return gen;
 }
 
 Map.fromObject = function<T extends Record<string | number | symbol, any>>(data: T): Map<string, T[keyof T]> {
