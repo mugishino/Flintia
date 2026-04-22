@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Paths } from "~/util/path";
 import { Clipboards } from "~/util/clipboard";
 import Setting from "~/components/Setting";
-import { Dialogs, VIDEO_EXTENSIONS } from "~/util/dialog";
+import { Dialogs, VIDEO_EXTENSIONS } from "~/module/Dialogs";
 import { DESKTOP_DIR } from "~/Data";
 
 export default function KeyFrameExtraction() {

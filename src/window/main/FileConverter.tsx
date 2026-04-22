@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Overlay from "~/components/Overlay";
 import { OverlayWindow } from "~/components/OverlayWindow";
-import { AUDIO_EXTENSIONS, Dialogs, IMAGE_EXTENSIONS, VIDEO_EXTENSIONS } from "~/util/dialog";
+import { AUDIO_EXTENSIONS, Dialogs, IMAGE_EXTENSIONS, VIDEO_EXTENSIONS } from "~/module/Dialogs";
 import { Paths } from "~/util/path";
 import { CommandExists, DESKTOP_DIR } from "~/Data";
 import Setting from "~/components/Setting";

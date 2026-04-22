@@ -4,7 +4,7 @@ import { Clipboards } from "~/util/clipboard";
 import { FlintiaWindow } from "~/Flintia";
 import Setting from "~/components/Setting";
 import { Paths } from "~/util/path";
-import { Dialogs, VIDEO_EXTENSIONS } from "~/util/dialog";
+import { Dialogs, VIDEO_EXTENSIONS } from "~/module/Dialogs";
 
 const SUPPORTED_VIDEO_EXTENSION = ["mp4", "mkv", "mov", "webm"] as const;
 

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Clipboards } from "~/util/clipboard";
 import { Paths } from "~/util/path";
 import Setting from "~/components/Setting";
-import { Dialogs, IMAGE_EXTENSIONS } from "~/util/dialog";
+import { Dialogs, IMAGE_EXTENSIONS } from "~/module/Dialogs";
 import { DESKTOP_DIR } from "~/Data";
 
 const Model = {

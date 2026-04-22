@@ -8,7 +8,6 @@ export const AUDIO_EXTENSIONS: DialogFilter = {name: "Audio", extensions: ["mp3"
 export const IMAGE_EXTENSIONS: DialogFilter = {name: "Image", extensions: ["jpg", "jpeg", "png", "tif", "tiff", "webp", "avif"]};
 
 export namespace Dialogs {
-
     async function openWrapper(title: string, extensions: DialogFilter[]|undefined, directory: boolean, multiple: false, defaultPath?: string): Promise<string  |null>;
     async function openWrapper(title: string, extensions: DialogFilter[]|undefined, directory: boolean, multiple: true , defaultPath?: string): Promise<string[]|null>;
 

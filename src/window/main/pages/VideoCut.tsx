@@ -11,7 +11,7 @@ import { Clipboards } from "~/util/clipboard";
 import { Paths } from "~/util/path";
 import { Nullable } from "~/util/type";
 import BitrateCalc from "./Tools/BitrateCalc";
-import { Dialogs, VIDEO_EXTENSIONS } from "~/util/dialog";
+import { Dialogs, VIDEO_EXTENSIONS } from "~/module/Dialogs";
 import { DragProvider, DragType } from "../DragProvider";
 import { ifPresent } from "~/util/util";
 

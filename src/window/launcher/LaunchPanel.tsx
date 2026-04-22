@@ -13,7 +13,7 @@ import { convertFileSrc } from "@tauri-apps/api/core";
 import { ReactSVG } from "react-svg";
 import { DEFAULT_TILE_DATA, TileData, useGridManager } from "./useGridManager";
 import { Paths } from "~/util/path";
-import { ALL_EXTENSIONS, Dialogs, IMAGE_EXTENSIONS } from "~/util/dialog";
+import { ALL_EXTENSIONS, Dialogs, IMAGE_EXTENSIONS } from "~/module/Dialogs";
 
 function Tile(props: CellObjProps & TileData) {
     const [img, setImg] = useState<string|undefined>(undefined);
