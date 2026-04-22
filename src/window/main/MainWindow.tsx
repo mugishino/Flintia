@@ -1,8 +1,8 @@
-import { AppStorage } from "~/AppStorage";
+import { AppStorage } from "~/module/AppStorage";
 import { Config } from "~/Config";
 import { FlintiaWindow } from "~/Flintia";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
-import { Logger } from "~/Logger";
+import { Logger } from "~/module/Logger";
 import { Routing } from "~/Routing";
 import { Sidebar } from "~/window/main/Sidebar";
 import { FileConverter } from "./FileConverter";

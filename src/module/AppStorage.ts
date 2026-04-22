@@ -1,5 +1,5 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
-import { getAppdataDirFile, Paths } from "./util/path";
+import { getAppdataDirFile, Paths } from "../util/path";
 import { Logger } from "./Logger";
 
 export interface AppSavedata {

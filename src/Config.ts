@@ -1,5 +1,5 @@
 import { HotkeyMainKeys } from "./Flintia";
-import { AppSavedata } from "./AppStorage";
+import { AppSavedata } from "./module/AppStorage";
 
 export class Config implements AppSavedata {
     filename = "config.json";

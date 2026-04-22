@@ -3,7 +3,7 @@ import { FlintiaWindow } from "~/Flintia";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { LaunchPanel } from "./LaunchPanel";
 import { currentMonitor } from "@tauri-apps/api/window";
-import { Logger } from "~/Logger";
+import { Logger } from "~/module/Logger";
 
 const FULLSCREEN = false;
 

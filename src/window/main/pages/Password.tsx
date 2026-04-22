@@ -6,7 +6,7 @@ import { Paths } from "~/util/path";
 import { ToggleSwitch } from "~/components/ToggleSwitch";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { SVGButton } from "~/components/SVGButton";
-import { AppStorage } from "~/AppStorage";
+import { AppStorage } from "~/module/AppStorage";
 import { Overlay } from "~/components/Overlay";
 import { OverlayWindow } from "~/components/OverlayWindow";
 import { ifPresent } from "~/util/util";

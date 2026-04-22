@@ -5,7 +5,7 @@ import { Config } from "~/Config";
 import { Paths } from "~/util/path";
 import { Clipboards } from "~/util/clipboard";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
-import { AppStorage } from "~/AppStorage";
+import { AppStorage } from "~/module/AppStorage";
 import { Overlay } from "~/components/Overlay";
 import { OverlayWindow } from "~/components/OverlayWindow";
 import { Line } from "~/components/Line";

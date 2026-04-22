@@ -2,7 +2,7 @@ import { mkdir } from "@tauri-apps/plugin-fs";
 import { getAppdataDirFile, Paths } from "./util/path";
 import { Config } from "./Config";
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { AppStorage } from "./AppStorage";
+import { AppStorage } from "./module/AppStorage";
 
 // init
 const themesDir = await getAppdataDirFile("themes/");

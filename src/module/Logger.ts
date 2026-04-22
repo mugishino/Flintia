@@ -1,5 +1,5 @@
-import { WInvoke } from "./InvokeWrapper";
-import { IS_DEVELOP_MODE } from "./Data";
+import { WInvoke } from "../InvokeWrapper";
+import { IS_DEVELOP_MODE } from "../Data";
 
 enum LogLevel {
     Trace   = 0,

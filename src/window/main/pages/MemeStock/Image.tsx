@@ -8,7 +8,7 @@ import { useStaticOverlay } from "~/hooks/useOverlay";
 import { useState } from "react";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { createCanvas } from "~/util/util";
-import { AppStorage } from "~/AppStorage";
+import { AppStorage } from "~/module/AppStorage";
 
 const SUPPORT_EXTENSION = "avif,bmp,jpeg,jpg,png,webp".split(",");
 

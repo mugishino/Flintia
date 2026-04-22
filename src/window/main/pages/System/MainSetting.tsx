@@ -10,7 +10,7 @@ import { getAppdataDirFile, Paths } from "~/util/path";
 import { ReloadTheme } from "~/Theme";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { Section } from "~/components/Section";
-import { AppStorage } from "~/AppStorage";
+import { AppStorage } from "~/module/AppStorage";
 
 export function MainSetting() {
     const [config, setConfig] = useState<Config|undefined>(undefined);

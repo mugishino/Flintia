@@ -15,7 +15,7 @@ import { MemeStock } from "./window/main/pages/MemeStock";
 import { VideoCut } from "./window/main/pages/VideoCut";
 import { Reminder } from "./window/main/pages/Reminder";
 import { Launcher } from "./window/launcher/Launcher";
-import { Logger } from "./Logger";
+import { Logger } from "./module/Logger";
 import { Roulette } from "./window/main/pages/Roulette";
 
 
