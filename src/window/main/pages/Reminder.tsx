@@ -110,7 +110,7 @@ export default function Reminder() {
                             }}/>
                             <SVGButton src="trash_can.svg" className="h-full border-0 border-l" onClick={() => {
                                 showDeleteOverlay(
-                                    <OverlayWindow>
+                                    <OverlayWindow error>
                                         <h1 className="text-2xl">本当に削除しますか？</h1>
                                         <button className="text-red-400" onClick={() => {
                                             reminders.remove(i);

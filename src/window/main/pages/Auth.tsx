@@ -184,7 +184,7 @@ export default function Auth() {
                             if (!editData) return;
                             setEditData(undefined);
                             setStaticOverlay(
-                                <OverlayWindow>
+                                <OverlayWindow error>
                                     <span>{editData.right.label}を削除しますか？</span>
                                     <button className="text-fail" onClick={() => setLoadData(prev => {
                                         setStaticOverlay(undefined);

@@ -22,6 +22,7 @@
 
     --color-border: var(--color-layerC);
     --color-warn: #db0;
+    --color-error: #f44;
     --color-fail: #c44;
     --color-link: #48f;
     --color-disable: #d44;

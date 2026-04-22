@@ -150,7 +150,7 @@ export default function Password() {
                         <button className={`w-1/5 text-fail ${"hidden".where(!editDataKey)}`} onClick={() => {
                             showEditOverlay(false);
                             setStaticOverlay(
-                                <OverlayWindow>
+                                <OverlayWindow error>
                                     <span>本当に{editData?.title}を削除しますか？</span>
                                     <button className="text-fail" onClick={() => {
                                         // setEditDataをしてもeditDataは次のレンダリングまで書き換わらないので新しく作る
