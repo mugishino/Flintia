@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Setting from "~/components/Setting";
+import { Setting } from "~/components/Setting";
 
-export default function BitrateCalc(props: {
+export function BitrateCalc(props: {
     duration?: number,
 }) {
     const [stateDuration, setDuration] = useState(0);

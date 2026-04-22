@@ -3,8 +3,8 @@ import { getAppdataDirFile } from "~/util/path";
 import { useRef, useState } from "react";
 import { useStaticOverlay } from "~/hooks/useOverlay";
 import { isPermissionGranted, requestPermission, sendNotification } from "@tauri-apps/plugin-notification";
-import SVGButton from "~/components/SVGButton";
-import Overlay from "~/components/Overlay";
+import { SVGButton } from "~/components/SVGButton";
+import { Overlay } from "~/components/Overlay";
 import { OverlayWindow } from "~/components/OverlayWindow";
 
 interface ReminderData {
@@ -51,7 +51,7 @@ setInterval(() => {
 
 
 
-export default function Reminder() {
+export function Reminder() {
     const [showOverlay, setShowOverlay] = useState(false);
     const [deleteOverlay, showDeleteOverlay] = useStaticOverlay();
 

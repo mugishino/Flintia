@@ -1,19 +1,19 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { TOTP } from "otpauth";
 import { useEffect, useRef, useState } from "react";
-import Config from "~/Config";
+import { Config } from "~/Config";
 import { Paths } from "~/util/path";
 import { Clipboards } from "~/util/clipboard";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { AppStorage } from "~/AppStorage";
-import Overlay from "~/components/Overlay";
+import { Overlay } from "~/components/Overlay";
 import { OverlayWindow } from "~/components/OverlayWindow";
 import { Line } from "~/components/Line";
 import { useMapState } from "~/hooks/useMapState";
 import { useStaticOverlay } from "~/hooks/useOverlay";
 import { Pair } from "~/util/clazz";
 import { readClipboardQRCode } from "~/module/QRCode";
-import Search from "~/components/Search";
+import { Search } from "~/components/Search";
 
 type AuthData = {
     label: string,
@@ -75,7 +75,7 @@ function CodeView(props: {
 }
 
 
-export default function Auth() {
+export function Auth() {
     const [errMsg, setErrMsg] = useState<string>(String.empty);
     const [search, setSearch] = useState(String.empty);
     // Label : Code

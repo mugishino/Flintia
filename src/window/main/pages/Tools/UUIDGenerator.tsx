@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Clipboards } from "~/util/clipboard";
 
-export default function UUIDGenerator() {
+export function UUIDGenerator() {
     const [uuidView, setUUID] = useState(crypto.randomUUID());
     return (
         <button

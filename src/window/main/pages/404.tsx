@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-export default function NotFoundPage() {
+export function NotFoundPage() {
     return (
         <div className="bg-[#0077D6] grow flex flex-col p-8 text-2xl">
             <span className="text-8xl pb-8">:(</span>

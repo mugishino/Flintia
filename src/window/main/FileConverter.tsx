@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import Overlay from "~/components/Overlay";
+import { Overlay } from "~/components/Overlay";
 import { OverlayWindow } from "~/components/OverlayWindow";
 import { AUDIO_EXTENSIONS, Dialogs, IMAGE_EXTENSIONS, VIDEO_EXTENSIONS } from "~/module/Dialogs";
 import { Paths } from "~/util/path";
 import { CommandExists, DESKTOP_DIR } from "~/Data";
-import Setting from "~/components/Setting";
+import { Setting } from "~/components/Setting";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { Event } from "@tauri-apps/api/event";
 import { Command } from "@tauri-apps/plugin-shell";
@@ -30,7 +30,7 @@ const ExtensionMap = Map.fromObject({
     [SupportedType.Unsupported]: [String.empty],
 });
 
-export default function FileConverter() {
+export function FileConverter() {
     // overlay
     const [dropOverlay, setDropOverlay] = useState(false);
     const [convertOverlay, setConvertOverlay] = useState(false);

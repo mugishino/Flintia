@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AudioCodec, BuildFFmpegCommand, Preset, QualityMode, VideoCodec } from "./CommandBuilder";
 import { Clipboards } from "~/util/clipboard";
 import { FlintiaWindow } from "~/Flintia";
-import Setting from "~/components/Setting";
+import { Setting } from "~/components/Setting";
 import { Paths } from "~/util/path";
 import { Dialogs, VIDEO_EXTENSIONS } from "~/module/Dialogs";
 
@@ -11,7 +11,7 @@ const SUPPORTED_VIDEO_EXTENSION = ["mp4", "mkv", "mov", "webm"] as const;
 type VideoExt = typeof SUPPORTED_VIDEO_EXTENSION[number];
 type Choices<T> = Record<string, T>;
 
-export default function Video() {
+export function Video() {
     const [sInputFile, setInputFile] = useState<string|null>(null);
     const [sVideoCodec, setVideoCodec] = useState<VideoCodec>("hevc_nvenc");
     const [sPreset, setPreset] = useState<Preset>("auto");

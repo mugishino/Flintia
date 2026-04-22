@@ -1,6 +1,6 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { readDir } from "@tauri-apps/plugin-fs";
-import Config from "~/Config";
+import { Config } from "~/Config";
 import { WInvoke } from "~/InvokeWrapper";
 import { Clipboards } from "~/util/clipboard";
 import { Paths } from "~/util/path";
@@ -12,7 +12,7 @@ import { AppStorage } from "~/AppStorage";
 
 const SUPPORT_EXTENSION = "avif,bmp,jpeg,jpg,png,webp".split(",");
 
-export default function MemeStock_Image({paste, enter, search}: {paste: boolean, enter: boolean, search: string}) {
+export function MemeStock_Image({paste, enter, search}: {paste: boolean, enter: boolean, search: string}) {
     const [imageList, setImageList] = useState<string[]>([]);
     const [errMsg, setErrMsg] = useState<string|undefined>(undefined);
 

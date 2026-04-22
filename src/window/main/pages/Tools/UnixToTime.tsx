@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Clipboards } from "~/util/clipboard";
 
-export default function UnixToTime() {
+export function UnixToTime() {
     const [copied, setCopied] = useState(false);
 
     // Time Data

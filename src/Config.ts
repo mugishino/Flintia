@@ -1,7 +1,7 @@
 import { HotkeyMainKeys } from "./Flintia";
 import { AppSavedata } from "./AppStorage";
 
-export default class Config implements AppSavedata {
+export class Config implements AppSavedata {
     filename = "config.json";
 
     passfile = "";

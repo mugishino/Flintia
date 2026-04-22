@@ -1,7 +1,7 @@
 import { twMerge } from "tailwind-merge";
 import { orDefault } from "~/util/util";
 
-export default function Search(props: {
+export function Search(props: {
     value: string,
     onUpdate: (value: string) => void,
     placeholder?: string,

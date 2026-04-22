@@ -1,16 +1,16 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { Command } from "@tauri-apps/plugin-shell";
 import { useEffect, useRef, useState } from "react";
-import Overlay from "~/components/Overlay";
-import Setting from "~/components/Setting";
-import SVGButton from "~/components/SVGButton";
+import { Overlay } from "~/components/Overlay";
+import { Setting } from "~/components/Setting";
+import { SVGButton } from "~/components/SVGButton";
 import { CommandExists, DefaultFileName } from "~/Data";
 import { FlintiaWindow } from "~/Flintia";
 import { useStaticOverlay } from "~/hooks/useOverlay";
 import { Clipboards } from "~/util/clipboard";
 import { Paths } from "~/util/path";
 import { Nullable } from "~/util/type";
-import BitrateCalc from "./Tools/BitrateCalc";
+import { BitrateCalc } from "./Tools/BitrateCalc";
 import { Dialogs, VIDEO_EXTENSIONS } from "~/module/Dialogs";
 import { DragProvider, DragType } from "../DragProvider";
 import { ifPresent } from "~/util/util";
@@ -69,7 +69,7 @@ function commandBuild(
     };
 }
 
-export default function VideoCut() {
+export function VideoCut() {
     const [overlay, showOverlay] = useState(false);
     const [staticOverlay, setStaticOverlay] = useStaticOverlay();
 

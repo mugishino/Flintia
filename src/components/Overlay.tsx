@@ -3,7 +3,7 @@
  * 使用側で表示管理のuseState<boolean>を用意してください。
  * @returns オーバーレイ要素
  */
-export default function Overlay({
+export function Overlay({
     children,
     show,
     setShow,

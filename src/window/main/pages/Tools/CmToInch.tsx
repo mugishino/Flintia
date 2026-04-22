@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function CmToInch() {
+export function CmToInch() {
     const [cm, setCm] = useState(0);
 
     return (

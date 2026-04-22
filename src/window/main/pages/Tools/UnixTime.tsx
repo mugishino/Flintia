@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Clipboards } from "~/util/clipboard";
 
-export default function UnixTime() {
+export function UnixTime() {
     const [time, setTime] = useState(Date.now());
     useEffect(() => {
         setInterval(() => {

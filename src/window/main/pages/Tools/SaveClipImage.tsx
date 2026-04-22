@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Clipboards } from "~/util/clipboard";
 import { Dialogs } from "~/module/Dialogs";
 
-export default function SaveClipImage() {
+export function SaveClipImage() {
     const [errMsg, setErrMsgRaw] = useState<string|null>(null);
     function setErrorMessage(text: string) {
         setErrMsgRaw(text);

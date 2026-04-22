@@ -1,6 +1,6 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { useRef, useState } from "react";
-import Search from "~/components/Search";
+import { Search } from "~/components/Search";
 import { useUpdateRender } from "~/hooks/useUpdateRender";
 import { getAppdataDirFile, Paths } from "~/util/path";
 
@@ -53,7 +53,7 @@ function TodoColumn({
 }
 
 const data = await loadToDoList();
-export default function ToDo() {
+export function ToDo() {
     const [search, setSearch] = useState(String.empty);
 
     const todoParentElem = useRef<HTMLDivElement>(null);

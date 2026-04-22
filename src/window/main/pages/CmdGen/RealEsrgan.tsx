@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Clipboards } from "~/util/clipboard";
 import { Paths } from "~/util/path";
-import Setting from "~/components/Setting";
+import { Setting } from "~/components/Setting";
 import { Dialogs, IMAGE_EXTENSIONS } from "~/module/Dialogs";
 import { DESKTOP_DIR } from "~/Data";
 
@@ -13,7 +13,7 @@ const Model = {
     "AnimeVideo x4": "RealESR-animevideov3-x4",
 } as const;
 
-export default function RealEsrgan() {
+export function RealEsrgan() {
     const [model, setModel] = useState<keyof typeof Model>("GAN x4Plus Anime");
     const [files, setFiles] = useState<string[]>([]);
     const [outdir, setOutdir] = useState<string|null>(null);

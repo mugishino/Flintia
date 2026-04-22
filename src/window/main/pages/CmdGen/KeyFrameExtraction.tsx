@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Paths } from "~/util/path";
 import { Clipboards } from "~/util/clipboard";
-import Setting from "~/components/Setting";
+import { Setting } from "~/components/Setting";
 import { Dialogs, VIDEO_EXTENSIONS } from "~/module/Dialogs";
 import { DESKTOP_DIR } from "~/Data";
 
-export default function KeyFrameExtraction() {
+export function KeyFrameExtraction() {
     const [video, setVideo] = useState(String.empty);
     const [outdir, setOutdir] = useState(String.empty);
 

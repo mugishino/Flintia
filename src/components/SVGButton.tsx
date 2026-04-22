@@ -1,7 +1,7 @@
 import { ReactSVG } from "react-svg";
 import { twMerge } from "tailwind-merge";
 
-export default function SVGButton(props: {src: string, disabled?: boolean, className?: string} & React.ComponentPropsWithoutRef<"button">) {
+export function SVGButton(props: {src: string, disabled?: boolean, className?: string} & React.ComponentPropsWithoutRef<"button">) {
     const {disabled, className, src, ...rest} = props;
 
     return (

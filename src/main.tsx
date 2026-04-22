@@ -12,15 +12,15 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router";
 // Flintia
-import MainWindow from "./window/main/MainWindow";
-import Launcher from "./window/launcher/Launcher";
+import { MainWindow } from "./window/main/MainWindow";
+import { Launcher } from "./window/launcher/Launcher";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import NotFoundPage from "./window/main/pages/404";
+import { NotFoundPage } from "./window/main/pages/404";
 import { FlintiaWindow } from "./Flintia";
 import { Logger } from "./Logger";
 import { IS_DEVELOP_MODE } from "./Data";
 import { AppStorage } from "./AppStorage";
-import Config from "./Config";
+import { Config } from "./Config";
 
 const config = await AppStorage.load(new Config());
 const windowLabel = getCurrentWindow().label;

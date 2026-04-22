@@ -1,9 +1,9 @@
 import { useState } from "react";
-import MemeStock_Image from "./MemeStock/Image";
-import ToggleSwitch from "~/components/ToggleSwitch";
-import Search from "~/components/Search";
+import { MemeStock_Image } from "./MemeStock/Image";
+import { ToggleSwitch } from "~/components/ToggleSwitch";
+import { Search } from "~/components/Search";
 
-export default function MemeStock() {
+export function MemeStock() {
     const [paste, setPaste] = useState(true);
     const [enter, setAutoEnter] = useState(true);
     const [search, setSearch] = useState(String.empty);

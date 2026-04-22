@@ -1,19 +1,19 @@
 import { useState } from "react";
-import Config from "~/Config";
+import { Config } from "~/Config";
 import { Clipboards } from "~/util/clipboard";
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { Paths } from "~/util/path";
-import ToggleSwitch from "~/components/ToggleSwitch";
+import { ToggleSwitch } from "~/components/ToggleSwitch";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
-import SVGButton from "~/components/SVGButton";
+import { SVGButton } from "~/components/SVGButton";
 import { AppStorage } from "~/AppStorage";
-import Overlay from "~/components/Overlay";
+import { Overlay } from "~/components/Overlay";
 import { OverlayWindow } from "~/components/OverlayWindow";
 import { ifPresent } from "~/util/util";
 import { Line } from "~/components/Line";
 import { useMapState } from "~/hooks/useMapState";
 import { useStaticOverlay } from "~/hooks/useOverlay";
-import Search from "~/components/Search";
+import { Search } from "~/components/Search";
 
 interface PassRecord {
     title   ?: string;
@@ -30,7 +30,7 @@ function PasswordSVGButton({src, value, onClick}: {src: string, value?: string, 
     return <SVGButton src={src} disabled={!value} onClick={onClick}/>;
 }
 
-export default function Password() {
+export function Password() {
     const [passwordData, setPasswordData] = useMapState<string, PassRecord>();
     const [search, setSearch] = useState(String.empty);
     const [showHide, setShowHide] = useState(false);

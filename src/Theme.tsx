@@ -1,6 +1,6 @@
 import { mkdir } from "@tauri-apps/plugin-fs";
 import { getAppdataDirFile, Paths } from "./util/path";
-import Config from "./Config";
+import { Config } from "./Config";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { AppStorage } from "./AppStorage";
 
@@ -11,7 +11,7 @@ if (await Paths.notExists(themesDir)) {
 }
 ReloadTheme();
 
-export default async function ReloadTheme() {
+export async function ReloadTheme() {
     const config = await AppStorage.load(new Config());
     const themeFile = await getAppdataDirFile("themes/"+config.theme);
     const notExists = await Paths.notExists(themeFile);

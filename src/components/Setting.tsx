@@ -1,6 +1,6 @@
 import { twMerge } from "tailwind-merge";
 
-export default function Setting({
+export function Setting({
     title,
     hide,
     children,

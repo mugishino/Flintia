@@ -1,13 +1,13 @@
 import { AppStorage } from "~/AppStorage";
-import Config from "~/Config";
+import { Config } from "~/Config";
 import { FlintiaWindow } from "~/Flintia";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { Logger } from "~/Logger";
 import { Routing } from "~/Routing";
-import Sidebar from "~/window/main/Sidebar";
-import FileConverter from "./FileConverter";
+import { Sidebar } from "~/window/main/Sidebar";
+import { FileConverter } from "./FileConverter";
 
-export default function MainWindow() {
+export function MainWindow() {
     useEffectAsync(async() => {
         const mainWindow = await FlintiaWindow.get();
         if (!mainWindow) {

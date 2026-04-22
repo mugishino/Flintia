@@ -1,13 +1,13 @@
 import { LogicalPosition, PhysicalSize } from "@tauri-apps/api/dpi";
 import { FlintiaWindow } from "~/Flintia";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
-import LaunchPanel from "./LaunchPanel";
+import { LaunchPanel } from "./LaunchPanel";
 import { currentMonitor } from "@tauri-apps/api/window";
 import { Logger } from "~/Logger";
 
 const FULLSCREEN = false;
 
-export default function Launcher() {
+export function Launcher() {
     useEffectAsync(async() => {
         const win = await FlintiaWindow.get("launcher");
         if (!win) {

@@ -1,9 +1,9 @@
-import KeyFrameExtraction from "./CmdGen/KeyFrameExtraction";
-import Video from "./CmdGen/FFmpegVideo/FFmpegVideo";
-import RealEsrgan from "./CmdGen/RealEsrgan";
-import Section from "~/components/Section";
+import { KeyFrameExtraction } from "./CmdGen/KeyFrameExtraction";
+import { Video } from "./CmdGen/FFmpegVideo/FFmpegVideo";
+import { RealEsrgan } from "./CmdGen/RealEsrgan";
+import { Section } from "~/components/Section";
 
-export default function CmdGen() {
+export function CmdGen() {
     return (
         <>
             <Section title="FFmpeg - Video [NVEnc]" children={<Video/>}/>

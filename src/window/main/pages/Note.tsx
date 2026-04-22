@@ -14,7 +14,7 @@ async function save(text: string) {
     await writeTextFile(NOTE_PATH, text);
 }
 
-export default function Note() {
+export function Note() {
     const [text, setText] = useState(String.empty);
     useEffectAsync(async () => {
         setText(await load());

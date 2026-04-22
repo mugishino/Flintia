@@ -1,7 +1,7 @@
 import { Command } from "@tauri-apps/plugin-shell";
 import { useState } from "react";
-import Section from "~/components/Section";
-import Setting from "~/components/Setting";
+import { Section } from "~/components/Section";
+import { Setting } from "~/components/Setting";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { WInvoke } from "~/InvokeWrapper";
 import { startInterval } from "~/util/util";
@@ -9,7 +9,7 @@ import { startInterval } from "~/util/util";
 const NVIDIA = await Command.create("nvidia-smi", ["--query-gpu=driver_version", "--format=noheader"]).execute().then(v => v.stdout).catch(() => undefined);
 const CUDA   = await Command.create("nvcc", ["--version"]).execute().then(v => v.stdout).catch(() => undefined);
 
-export default function SystemInfo() {
+export function SystemInfo() {
     const [uptime, setUptime] = useState(0);
 
     useEffectAsync(async () => {

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Clipboards } from "~/util/clipboard";
 import * as mkqr from "qrcode";
-import EvenlyDividedRow from "~/components/EvenlyDividedRow";
+import { EvenlyDividedRow } from "~/components/EvenlyDividedRow";
 import { readClipboardQRCode } from "~/module/QRCode";
 
-export default function QRCode() {
+export function QRCode() {
     const [result, setResult] = useState<string|null>(null);
     const [success, setSuccess] = useState(true);
 

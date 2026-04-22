@@ -7,58 +7,58 @@ interface DiskInfo {
     available_space: number;
 }
 
-export const WInvoke = {
+export namespace WInvoke {
     /**
      * ウィンドウを閉じたのち、Ctrl+Vを押します。
      * @param enter ペースト後にEnterを押すか
      */
-    async paste(enter: boolean=false) {
+    export async function paste(enter: boolean=false) {
         await invoke("paste", {enter});
-    },
+    }
 
     /**
      * PCの起動時間を取得します。
      * @returns 秒
      */
-    async getSystemUptime(): Promise<number> {
+    export async function getSystemUptime(): Promise<number> {
         return await invoke("get_system_uptime");
-    },
+    }
 
     /**
      * 全てのディスクの情報を取得します。
      * @returns 取得した全てのディスク情報
      */
-    async getAllDiskInfo(): Promise<DiskInfo[]> {
+    export async function getAllDiskInfo(): Promise<DiskInfo[]> {
         return await invoke("get_all_disk_info");
-    },
+    }
 
     /**
      * インストールされているWindowsHotfixを取得します。
      * @returns 取得したHotfixリスト
      */
-    async getWindowsHotfix(): Promise<{HotFixID: string}[]> {
+    export async function getWindowsHotfix(): Promise<{HotFixID: string}[]> {
         const data = await invoke("get_windows_hotfix");
         return JSON.parse(data as string);
-    },
+    }
 
     /**
      * ファイルのアイコンをBase64で取得します。
      * @param mime mineタイプを先頭につける
      * @returns base64
      */
-    async getFileIconBase64(path: string, size=32, mime: boolean=true): Promise<string> {
+    export async function getFileIconBase64(path: string, size=32, mime: boolean=true): Promise<string> {
         const base64 = await invoke("get_file_icon_base64", {path: path, size: size}) as string;
         return (mime ? "data:image/png;base64," : String.empty) + base64;
-    },
+    }
 
     /**
      * パスがディレクトリか判別します。
      * @param path 判別したいパス
      * @returns ディレクトリであればtrue
      */
-    async isDirectory(path: string): Promise<boolean> {
+    export async function isDirectory(path: string): Promise<boolean> {
         return await invoke("is_directory", {path: path});
-    },
+    }
 
     /**
      * ファイルを実行します。
@@ -66,40 +66,40 @@ export const WInvoke = {
      * @param args 実行引数
      * @returns エラーまたは成功
      */
-    async runExe(path: string, args?: string): Promise<string> {
+    export async function runExe(path: string, args?: string): Promise<string> {
         return await invoke("run_exe", {path: path, args: args ?? String.empty});
-    },
+    }
 
     /**
      * コンソールにログを出力します。
      * @param msg 出力するメッセージ
      */
-    async consoleLog(msg: string) {
+    export async function consoleLog(msg: string) {
         await invoke("console_log", {msg: msg});
-    },
+    }
 
     /**
      * Windowsのアクセントカラーを取得します。
      * @returns 取得したアクセントカラーまたはエラー
      */
-    async getWindowsAccentColor(): Promise<{R: number, G: number, B: number, A: number}> {
+    export async function getWindowsAccentColor(): Promise<{R: number, G: number, B: number, A: number}> {
         return await invoke("get_windows_accent_color");
-    },
+    }
 
     /**
      * ウィンドウのDevtoolsを開きます。
      * @param label Devtoolsを開くウィンドウのLabel
      */
-    async openDevtools(label: string) {
+    export async function openDevtools(label: string) {
         if (!IS_DEVELOP_MODE) return;
         await invoke("open_devtools", {label: label});
-    },
+    }
 
     /**
      * ファイルをゴミ箱に送る
      * @param files ゴミ箱に送るファイルリスト
      */
-    async fileTrash(files: string[]) {
+    export async function fileTrash(files: string[]) {
         await invoke("file_trash", {files: files});
-    },
+    }
 }

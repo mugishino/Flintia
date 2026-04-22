@@ -1,10 +1,10 @@
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { ReactNode, useState } from "react";
-import Overlay from "~/components/Overlay";
-import Section from "~/components/Section";
+import { Overlay } from "~/components/Overlay";
+import { Section } from "~/components/Section";
 import { WInvoke } from "~/InvokeWrapper";
 
-export default function Other() {
+export function Other() {
     const [hotfixOverlay, setHotfixOverlay] = useState(false);
     const [hotfixData, setHotfixData] = useState<ReactNode>(undefined);
 

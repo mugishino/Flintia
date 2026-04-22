@@ -1,18 +1,18 @@
 import { DirEntry, readDir } from "@tauri-apps/plugin-fs";
 import * as AutoStart from "@tauri-apps/plugin-autostart";
 import { useEffect, useState } from "react";
-import Setting from "~/components/Setting";
-import ToggleSwitch from "~/components/ToggleSwitch";
-import Config from "~/Config";
+import { Setting } from "~/components/Setting";
+import { ToggleSwitch } from "~/components/ToggleSwitch";
+import { Config } from "~/Config";
 import { FlintiaWindow, HOTKEY_MAINKEYS, HotkeyMainKeys } from "~/Flintia";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { getAppdataDirFile, Paths } from "~/util/path";
-import ReloadTheme from "~/Theme";
+import { ReloadTheme } from "~/Theme";
 import { openPath } from "@tauri-apps/plugin-opener";
-import Section from "~/components/Section";
+import { Section } from "~/components/Section";
 import { AppStorage } from "~/AppStorage";
 
-export default function MainSetting() {
+export function MainSetting() {
     const [config, setConfig] = useState<Config|undefined>(undefined);
 
     const [THEMES, setThemes] = useState<DirEntry[]>([]);

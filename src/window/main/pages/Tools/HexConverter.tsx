@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function HexConverter() {
+export function HexConverter() {
     const [value, setValue] = useState<number>(0);
     const [beforeRadix, setBeforeRadix] = useState(16);
     const [afterRadix, setAfterRadix] = useState(10);

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Routing, useFlintiaNavigate } from "~/Routing";
 
-export default function LandingPage() {
+export function LandingPage() {
     const navigate = useFlintiaNavigate();
     useEffect(() => {
         // useEffect後にしないと正常に動作しない

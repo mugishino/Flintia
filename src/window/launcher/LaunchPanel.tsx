@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { CellObj, CellObjProps, getCellSize, GRID_SIZE, MARGIN_SIZE } from "./CellObj";
-import Overlay from "~/components/Overlay";
-import Setting from "~/components/Setting";
+import { Overlay } from "~/components/Overlay";
+import { Setting } from "~/components/Setting";
 import { FlintiaWindow } from "~/Flintia";
 import { WInvoke } from "~/InvokeWrapper";
 import { useStaticOverlay } from "~/hooks/useOverlay";
 import { useKVState } from "~/hooks/useKVState";
-import SVGButton from "~/components/SVGButton";
+import { SVGButton } from "~/components/SVGButton";
 import { Line } from "~/components/Line";
 import { createCanvas, ifPresent } from "~/util/util";
 import { convertFileSrc } from "@tauri-apps/api/core";
@@ -88,7 +88,7 @@ async function resizeImageToBase64(src: string, width: number=64, height: number
 
 
 
-export default function LaunchPanel() {
+export function LaunchPanel() {
     const {data, updateData, addObject, deleteObject, isOverlapping, moveObject} = useGridManager();
     const [overlay, showOverlay] = useState(false);
     const [staticOverlay, setStaticOverlay] = useStaticOverlay();

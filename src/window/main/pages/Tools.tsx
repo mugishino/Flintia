@@ -1,16 +1,16 @@
-import UnixTime from "./Tools/UnixTime";
-import MinMaxValue from "./Tools/MinMaxValue";
-import UUIDGenerator from "./Tools/UUIDGenerator";
-import SaveClipImage from "./Tools/SaveClipImage";
-import HexConverter from "./Tools/HexConverter";
-import AspectRatioCalc from "./Tools/AspectRatioCalc";
-import UnixToTime from "./Tools/UnixToTime";
-import EvenlyDividedRow from "~/components/EvenlyDividedRow";
-import Section from "~/components/Section";
-import BitrateCalc from "./Tools/BitrateCalc";
-import CmToInch from "./Tools/CmToInch";
+import { UnixTime } from "./Tools/UnixTime";
+import { MinMaxValue } from "./Tools/MinMaxValue";
+import { UUIDGenerator } from "./Tools/UUIDGenerator";
+import { SaveClipImage } from "./Tools/SaveClipImage";
+import { HexConverter } from "./Tools/HexConverter";
+import { AspectRatioCalc } from "./Tools/AspectRatioCalc";
+import { UnixToTime } from "./Tools/UnixToTime";
+import { EvenlyDividedRow } from "~/components/EvenlyDividedRow";
+import { Section } from "~/components/Section";
+import { BitrateCalc } from "./Tools/BitrateCalc";
+import { CmToInch } from "./Tools/CmToInch";
 
-export default function Tools() {
+export function Tools() {
     return (
         <div className="overflow-y-scroll h-full">
             <EvenlyDividedRow>
