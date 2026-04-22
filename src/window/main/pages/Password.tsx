@@ -21,9 +21,7 @@ interface PassRecord {
     mail    ?: string;
     password?: string;
     note    ?: string;
-    hide    ?: boolean;
-    // 間違って消すと良くないので論理削除
-    deleted?: boolean;
+    archive ?: boolean;
 }
 
 function PasswordSVGButton({src, value, onClick}: {src: string, value?: string, onClick?: () => void}) {
@@ -33,7 +31,7 @@ function PasswordSVGButton({src, value, onClick}: {src: string, value?: string, 
 export function Password() {
     const [passwordData, setPasswordData] = useMapState<string, PassRecord>();
     const [search, setSearch] = useState(String.empty);
-    const [showHide, setShowHide] = useState(false);
+    const [archiveMode, setArchiveMode] = useState(false);
     const [paste, setPaste] = useState(true);
 
     // render
@@ -73,7 +71,7 @@ export function Password() {
         return (
             <div className="flex flex-row h-10 border-b hover:[&>span]:bg-layerA">
                 <div
-                    className={`grow pl-1 text-2xl truncate flex items-center hover:bg-button-hover ${"text-text-gray".where(!!data.hide)} ${"underline".where(!!data.note)}`}
+                    className={`grow pl-1 text-2xl truncate flex items-center hover:bg-button-hover ${"text-text-gray".where(!!data.archive)} ${"underline".where(!!data.note)}`}
                     title={data.note}
                     onAuxClick={onAuxClick}
                 >{data.title}</div>
@@ -119,13 +117,12 @@ export function Password() {
 
         // 表示フィルタ
         const result = passwordData.filter((_, v) => {
-            if (v.deleted) return false;
-            if (v.hide && !showHide) return false;
+            if (!!v.archive != archiveMode) return false;
             if (search != String.empty && !v.title?.toLowerCase().includes(search.toLowerCase())) return false;
             return true;
         }).sort((a, b) => (a.right.title??String.empty).localeCompare(b.right.title??String.empty));
         setView(result);
-    }, [search, showHide, passwordData, editData]);
+    }, [search, archiveMode, passwordData, editData]);
 
 
 
@@ -138,31 +135,30 @@ export function Password() {
                 {view.map((k, v) => <DataRow data={v} key={v.title} onAuxClick={() => openEditUI(k)}/>)}
             </div>
             <div className="flex flex-row border-t *:border-0 *:not-last:border-r">
-                <ToggleSwitch label="ShowHide" value={showHide} onChange={() => setShowHide(!showHide)}/>
+                <ToggleSwitch label="View Archive" value={archiveMode} onChange={() => setArchiveMode(!archiveMode)}/>
                 <button onClick={() => openEditUI(undefined)}>Add Password</button>
                 <ToggleSwitch label="Paste" value={paste} onChange={() => setPaste(!paste)}/>
             </div>
             <Overlay show={editOverlay} setShow={showEditOverlay}>
                 <OverlayWindow className="flex flex-col gap-1 w-2/3">
                     <div className="flex flex-row justify-between">
-                        <button className={`w-1/5 ${editData?.hide ? "text-disable" : "text-enable"}`} onClick={() => setEditData(prev => ifPresent(prev, it => ({...it, hide: !prev?.hide})))}>{editData?.hide ? "非表示" : "表示"}</button>
                         <span className="m-auto">{editDataKey ? "データ編集" : "新規追加"}</span>
-                        <button className={`w-1/5 text-fail ${"hidden".where(!editDataKey)}`} onClick={() => {
+                        <button className={`w-auto text-fail ${"hidden".where(!editDataKey)}`} onClick={() => {
                             showEditOverlay(false);
                             setStaticOverlay(
                                 <OverlayWindow error>
-                                    <span>本当に{editData?.title}を削除しますか？</span>
+                                    <span>本当に{editData?.title}をアーカイブ{archiveMode ? "から戻" : "化"}しますか？</span>
                                     <button className="text-fail" onClick={() => {
                                         // setEditDataをしてもeditDataは次のレンダリングまで書き換わらないので新しく作る
-                                        const data: PassRecord = {...editData, deleted: true};
+                                        const data: PassRecord = {...editData, archive: !archiveMode};
                                         if (!editDataKey) return;
                                         setPasswordData(prev => prev?.set(editDataKey, data));
                                         // close overlay
                                         setStaticOverlay(undefined);
-                                    }}>削除する</button>
+                                    }}>アーカイブ化する</button>
                                 </OverlayWindow>
                             );
-                        }}>削除</button>
+                        }}>{archiveMode ? "アーカイブから戻す" : "アーカイブ化"}</button>
                     </div>
                     <input placeholder="Title"       value={editData?.title     ?? String.empty} onChange={e => setEditData(prev => ifPresent(prev, it => ({...it, title    : ifPresent(e.currentTarget.value)})))}/>
                     <input placeholder="Username"    value={editData?.username  ?? String.empty} onChange={e => setEditData(prev => ifPresent(prev, it => ({...it, username : ifPresent(e.currentTarget.value)})))}/>
