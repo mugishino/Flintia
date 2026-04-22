@@ -11,7 +11,7 @@ export default function MemeStock() {
     return (
         <div className="flex flex-col overflow-y-hidden h-full w-full">
             <div className="flex flex-row justify-between border-b">
-                <Search value={search} onChangeText={v => setSearch(v)} className="border-0 w-1/3"/>
+                <Search value={search} onUpdate={v => setSearch(v)} className="border-0 w-1/3"/>
                 <div className="grow-3 text-[0px]">MARGIN</div>
                 <div className="flex flex-row grow">
                     <ToggleSwitch label="AutoEnter" value={enter} onChange={() => setAutoEnter(!enter)} className="border-0 border-l"/>

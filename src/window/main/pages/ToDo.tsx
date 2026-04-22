@@ -1,6 +1,6 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { useRef, useState } from "react";
-import useSearch from "~/hooks/useSearch";
+import Search from "~/components/Search";
 import { useUpdateRender } from "~/hooks/useUpdateRender";
 import { getAppdataDirFile, Paths } from "~/util/path";
 
@@ -54,7 +54,7 @@ function TodoColumn({
 
 const data = await loadToDoList();
 export default function ToDo() {
-    const [searchElem, search] = useSearch({className: "border-0 border-b", autofocus: true});
+    const [search, setSearch] = useState(String.empty);
 
     const todoParentElem = useRef<HTMLDivElement>(null);
 
@@ -95,7 +95,7 @@ export default function ToDo() {
 
     return (
         <>
-            {searchElem}
+            <Search className="border-0 border-b" value={search} onUpdate={v => setSearch(v)} autoFocus/>
             <div className="grow flex flex-col overflow-y-scroll" ref={todoParentElem}>
                 {elems}
             </div>

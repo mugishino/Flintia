@@ -132,7 +132,7 @@ export default function Password() {
     return (
         <>
             {staticOverlay}
-            <Search value={search} onChangeText={v => setSearch(v)} className="border-0 border-b" autoFocus/>
+            <Search value={search} onUpdate={v => setSearch(v)} className="border-0 border-b" autoFocus/>
             <div className="overflow-y-scroll grow">
                 <span className="text-fail">{errorMessage}</span>
                 {view.map((k, v) => <DataRow data={v} key={v.title} onAuxClick={() => openEditUI(k)}/>)}

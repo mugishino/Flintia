@@ -2,12 +2,12 @@ import { twMerge } from "tailwind-merge";
 import { orDefault } from "~/util/util";
 
 export default function Search(props: {
-    value?: string,
+    value: string,
+    onUpdate: (value: string) => void,
     placeholder?: string,
-    onChangeText?: (value: string) => void,
 } & React.ComponentPropsWithoutRef<"div">) {
-    const {value, autoFocus, placeholder, onChangeText, className, ...rest} = props;
-    const onChangeW = orDefault(onChangeText, () => {});
+    const {value, autoFocus, placeholder, onUpdate, className, ...rest} = props;
+    const onChangeW = orDefault(onUpdate, () => {});
 
     return (
         <div className={twMerge("flex flex-row border", className)} {...rest}>

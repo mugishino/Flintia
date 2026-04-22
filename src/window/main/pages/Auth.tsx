@@ -6,7 +6,6 @@ import { Paths } from "~/util/path";
 import { Clipboards } from "~/util/clipboard";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { AppStorage } from "~/AppStorage";
-import useSearch from "~/hooks/useSearch";
 import Overlay from "~/components/Overlay";
 import { OverlayWindow } from "~/components/OverlayWindow";
 import { Line } from "~/components/Line";
@@ -14,6 +13,7 @@ import { useMapState } from "~/hooks/useMapState";
 import { useStaticOverlay } from "~/hooks/useOverlay";
 import { Pair } from "~/util/clazz";
 import { readClipboardQRCode } from "~/module/QRCode";
+import Search from "~/components/Search";
 
 type AuthData = {
     label: string,
@@ -77,7 +77,7 @@ function CodeView(props: {
 
 export default function Auth() {
     const [errMsg, setErrMsg] = useState<string>(String.empty);
-    const [searchElem, search] = useSearch({className: "border-0 border-b", autofocus: true});
+    const [search, setSearch] = useState(String.empty);
     // Label : Code
     const [loadData, setLoadData] = useMapState<string, AuthData>();
     const [viewData, setViewData] = useMapState<string, AuthData>();
@@ -138,7 +138,7 @@ export default function Auth() {
     return (
         <>
             {staticOverlay}
-            {searchElem}
+            <Search value={search} onUpdate={v => setSearch(v)} className="border-0 border-b"/>
             <div className="h-full overflow-y-scroll">
                 <div className="text-fail">{errMsg}</div>
                 {viewData.map((k, v) => <CodeView key={k} secret={v.code} title={v.label} onAuxClick={() => {
