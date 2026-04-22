@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Overlay from "~/components/Overlay";
 import { OverlayWindow } from "~/components/OverlayWindow";
-import { AUDIO_EXTENSIONS, Dialogs, IMAGE_EXTENSIONS } from "~/util/dialog";
+import { AUDIO_EXTENSIONS, Dialogs, IMAGE_EXTENSIONS, VIDEO_EXTENSIONS } from "~/util/dialog";
 import { Paths } from "~/util/path";
 import { CommandExists, DESKTOP_DIR } from "~/Data";
 import Setting from "~/components/Setting";
@@ -19,11 +19,13 @@ enum SupportedType {
     Unsupported,
     Image,
     Audio,
+    Video,
 }
 
 const ExtensionMap = Map.fromObject({
     [SupportedType.Image]: ["png", "jpg", "tiff", "avif"],
     [SupportedType.Audio]: ["mp3", "wav", "flac", "ogg", "opus"],
+    [SupportedType.Video]: ["mp3", "wav", "flac", "ogg", "opus"],
     [SupportedType.Unsupported]: [String.empty],
 });
 
@@ -34,9 +36,9 @@ export default function FileConverter() {
     const [errorMessage, setErrorMessage] = useState<string|undefined>(undefined);
 
     // converter
-    const [fileType, setFileType] = useState<SupportedType>(SupportedType.Unsupported);
+    const [inputFileType, setInputFileType] = useState<SupportedType>(SupportedType.Unsupported);
     const [files, setFiles] = useState<string[]>([]);
-    const [destinationType, setDestinationType] = useState<string|undefined>();
+    const [outputFileType, setOutputFileType] = useState<string|undefined>();
     const [isTrash, setIsTrash] = useState(false);
 
     // output
@@ -49,8 +51,8 @@ export default function FileConverter() {
 
     // update
     useEffect(() => {
-        setDestinationType(ExtensionMap.get(fileType.toString())?.get(0));
-    }, [fileType]);
+        setOutputFileType(ExtensionMap.get(inputFileType.toString())?.get(0));
+    }, [inputFileType]);
 
     function onDragEvent(isEnter: boolean, event: Event<DragDropPayload>) {
         // ファイル以外のドラッグは表示しない
@@ -84,6 +86,7 @@ export default function FileConverter() {
             const fileTypes = extensions.map(v => {
                 if (IMAGE_EXTENSIONS.extensions.includes(v)) return SupportedType.Image;
                 if (AUDIO_EXTENSIONS.extensions.includes(v)) return SupportedType.Audio;
+                if (VIDEO_EXTENSIONS.extensions.includes(v)) return SupportedType.Video;
                 return SupportedType.Unsupported;
             });
             const convertType = new Set(fileTypes);
@@ -92,7 +95,7 @@ export default function FileConverter() {
                 if (convertType.size > 1) return "複数のタイプのファイルが含まれています。";
                 return;
             });
-            setFileType(fileTypes.get(0));
+            setInputFileType(fileTypes.get(0));
             setFiles(files);
         });
     }, []);
@@ -104,16 +107,17 @@ export default function FileConverter() {
             addLog(Paths.getBasename(f) + " -> ", false);
             const o_dir = outdir ?? Paths.getDirectory(f);
             const o_name = Paths.splitExt(Paths.getBasename(f)).name;
-            const o = Paths.join(o_dir, `${o_name}.${destinationType}`);
+            const o = Paths.join(o_dir, `${o_name}.${outputFileType}`);
             // 出力後が同じならスキップ
             if (Paths.equals(o, f)) {
                 addLog("Skip[equals] " + o)
             }
 
-            const cmd = Command.create("ffmpeg", ["-y", "-i", f, o]);
+            const args = ["-y", "-vn".where(inputFileType == SupportedType.Video), "-i", f, o].nullFilter();
+            const cmd = Command.create("ffmpeg", args);
             const result = await cmd.execute();
             if (result.code == 0) {
-                addLog("Success: " + o_name+"."+destinationType);
+                addLog("Success: " + o_name+"."+outputFileType);
                 if (isTrash) await WInvoke.fileTrash([f]);
             } else {
                 addLog("Failed: code " + result.code + "\n" + result.stdout);
@@ -142,8 +146,8 @@ export default function FileConverter() {
                         </>
                     : <>
                         <Setting title="変換先">
-                            <select value={destinationType} onChange={v => setDestinationType(v.currentTarget.value)}>
-                                {ExtensionMap.get(fileType.toString())?.map(v => <option key={v} value={v}>{v}</option>)}
+                            <select value={outputFileType} onChange={v => setOutputFileType(v.currentTarget.value)}>
+                                {ExtensionMap.get(inputFileType.toString())?.map(v => <option key={v} value={v}>{v}</option>)}
                             </select>
                         </Setting>
                         <div className="flex flex-row justify-between pl-1">

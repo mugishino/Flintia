@@ -31,6 +31,10 @@ declare global {
          * @returns 含まれていればtrue
          */
         contains(value: unknown): boolean;
+        /**
+         * 配列からFalsyな値を削除します。
+         */
+        nullFilter(): NonNullable<T>[];
     }
 }
 
@@ -56,4 +60,8 @@ Array.prototype.contains = function(value: unknown) {
         if (v == value) return true;
     }
     return false;
+}
+
+Array.prototype.nullFilter = function() {
+    return this.filter(v => !!v);
 }
