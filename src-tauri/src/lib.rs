@@ -94,7 +94,7 @@ pub fn run() {
                     "info" => {
                         app.dialog()
                             .message(format!(
-                                "Flintia {}\n(C) 2025 sou",
+                                "Flintia {}\n(C) 2025 mugishino",
                                 app.package_info().version.to_string()
                             ))
                             .kind(tauri_plugin_dialog::MessageDialogKind::Info)

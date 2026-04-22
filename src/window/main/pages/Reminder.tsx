@@ -5,6 +5,7 @@ import { useStaticOverlay } from "~/hooks/useOverlay";
 import { isPermissionGranted, requestPermission, sendNotification } from "@tauri-apps/plugin-notification";
 import SVGButton from "~/components/SVGButton";
 import Overlay from "~/components/Overlay";
+import { OverlayWindow } from "~/components/OverlayWindow";
 
 interface ReminderData {
     time: number,
@@ -78,23 +79,21 @@ export default function Reminder() {
     return (
         <>
             <Overlay show={showOverlay} setShow={setShowOverlay}>
-                <div className="m-auto w-3/4">
-                    <div className="bg-layerA p-4 flex flex-col gap-1 max-h-100" onClick={e => e.stopPropagation()}>
-                        <input type="datetime-local" min={time} value={Date.format(time, "YYYY-MM-DDTHH:mm")} onChange={v => setTime(new Date(v.currentTarget.value).getTime())}></input>
-                        <input type="text" value={title} onChange={v => setTitle(v.currentTarget.value)} placeholder="タイトル"></input>
-                        <textarea value={description} onChange={v => setDescription(v.currentTarget.value)} placeholder="説明" className="resize-none border bg-layerB p-1 min-h-[1.5lh] overflow-y-scroll field-sizing-content"></textarea>
-                        <button disabled={!title || time<Date.now()} onMouseEnter={v => {
-                            v.currentTarget.disabled = time<Date.now();
-                        }} onClick={() => {
-                            if (refEditIndex.current != undefined) {
-                                reminders.remove(refEditIndex.current);
-                            }
-                            reminders = [...reminders, {time: time, title: title, description: description, notified: false} as ReminderData].sort((a, b) => a.time - b.time);
-                            saveReminders();
-                            setShowOverlay(false);
-                        }}>リマインダーを{refEditIndex.current == undefined ? "作成" : "編集"}</button>
-                    </div>
-                </div>
+                <OverlayWindow className="w-3/4 flex flex-col gap-1 max-h-100">
+                    <input type="datetime-local" min={time} value={Date.format(time, "YYYY-MM-DDTHH:mm")} onChange={v => setTime(new Date(v.currentTarget.value).getTime())}></input>
+                    <input type="text" value={title} onChange={v => setTitle(v.currentTarget.value)} placeholder="タイトル"></input>
+                    <textarea value={description} onChange={v => setDescription(v.currentTarget.value)} placeholder="説明" className="resize-none border bg-layerB p-1 min-h-[1.5lh] overflow-y-scroll field-sizing-content"></textarea>
+                    <button disabled={!title || time<Date.now()} onMouseEnter={v => {
+                        v.currentTarget.disabled = time<Date.now();
+                    }} onClick={() => {
+                        if (refEditIndex.current != undefined) {
+                            reminders.remove(refEditIndex.current);
+                        }
+                        reminders = [...reminders, {time: time, title: title, description: description, notified: false} as ReminderData].sort((a, b) => a.time - b.time);
+                        saveReminders();
+                        setShowOverlay(false);
+                    }}>リマインダーを{refEditIndex.current == undefined ? "作成" : "編集"}</button>
+                </OverlayWindow>
             </Overlay>
             {deleteOverlay}
             <button className="border-0 border-b" onClick={() => showRegister()}>リマインダーを作成</button>
@@ -111,15 +110,13 @@ export default function Reminder() {
                             }}/>
                             <SVGButton src="trash_can.svg" className="h-full border-0 border-l" onClick={() => {
                                 showDeleteOverlay(
-                                    <div className="m-auto">
-                                        <div className="bg-layerA p-1">
-                                            <h1 className="text-2xl">本当に削除しますか？</h1>
-                                            <button className="text-red-400" onClick={() => {
-                                                reminders.remove(i);
-                                                saveReminders();
-                                            }}>削除</button>
-                                        </div>
-                                    </div>
+                                    <OverlayWindow>
+                                        <h1 className="text-2xl">本当に削除しますか？</h1>
+                                        <button className="text-red-400" onClick={() => {
+                                            reminders.remove(i);
+                                            saveReminders();
+                                        }}>削除</button>
+                                    </OverlayWindow>
                                 );
                             }}/>
                         </div>

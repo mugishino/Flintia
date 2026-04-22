@@ -91,7 +91,7 @@ export default function FileConverter() {
             });
             const convertType = new Set(fileTypes);
             setErrorMessage(() => {
-                if (convertType.has(SupportedType.Unsupported)) return "対応していない拡張子のファイルが含まれています。";
+                if (convertType.has(SupportedType.Unsupported)) return "対応していない拡張子が含まれています。";
                 if (convertType.size > 1) return "複数のタイプのファイルが含まれています。";
                 return;
             });
@@ -139,7 +139,7 @@ export default function FileConverter() {
                 <OverlayWindow className="w-2/3 gap-1">
                     {errorMessage ?
                         <>
-                            <span className="text-fail">{errorMessage}</span>
+                            <span className="text-fail text-center">{errorMessage}</span>
                             <button onClick={() => {
                                 setConvertOverlay(false);
                             }}>OK</button>
