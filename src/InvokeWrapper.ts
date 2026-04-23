@@ -102,4 +102,39 @@ export namespace WInvoke {
     export async function fileTrash(files: string[]) {
         await invoke("file_trash", {files: files});
     }
+
+    interface LinkData {
+        link_info: {
+            local_base_path: string,
+        },
+        string_data: {
+            command_line_arguments: string|null,
+            workingDir: string|null,
+        }
+    }
+
+    /**
+     * lnkファイルを解析します。
+     * @param path 解析するlnkファイル
+     * @returns 解析データ
+     */
+    export async function parseLnk(path: string) {
+        const data = await invoke("parse_lnk", {path: path});
+        return data as LinkData;
+    }
+
+    interface UWPAppInfo {
+        display_name: string|null,
+        description: string|null,
+        aumid: string
+    }
+
+    /**
+     * UWPのアプリを全て取得します。
+     * @returns 取得したUWPのアプリ
+     */
+    export async function getUwpApps() {
+        const data = await invoke("get_uwp_apps");
+        return data as UWPAppInfo[];
+    }
 }

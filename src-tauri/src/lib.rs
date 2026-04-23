@@ -5,6 +5,7 @@ use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
 
 mod commands;
+mod debug_command;
 
 pub fn quit_application(app: &AppHandle<Wry>, restart: bool) {
     // ウィンドウを閉じた際に最後のウィンドウであれば処理を行う
@@ -59,8 +60,10 @@ pub fn run() {
             commands::console_log,
             commands::get_windows_accent_color,
             commands::file_trash,
+            commands::parse_lnk,
+            commands::get_uwp_apps,
             #[cfg(debug_assertions)]
-            commands::open_devtools,
+            debug_command::open_devtools,
         ])
         .setup(|app| {
             // 開発用 - DevToolsを自動で開く
