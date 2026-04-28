@@ -40,7 +40,7 @@ export default defineConfig(async () => ({
      * 上げすぎるとホットリロードで重くなる
      */
     chunkSizeWarningLimit: 1024,
-    rollupOptions: {
+    rolldownOptions: {
       output: {
         manualChunks(id: string) {
           if (id.includes("node_modules")) {
