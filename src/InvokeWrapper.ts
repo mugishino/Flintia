@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { IS_DEVELOP_MODE } from "./Data";
+import { Result } from "./util/clazz";
 
 interface DiskInfo {
     name: string;
@@ -136,5 +137,14 @@ export namespace WInvoke {
     export async function getUwpApps() {
         const data = await invoke("get_uwp_apps");
         return data as UWPAppInfo[];
+    }
+
+    /**
+     * ホットキーを登録します。
+     * @param hotkey 登録するホットキー
+     * @param id listen時に返ってくる識別用ID
+     */
+    export async function registerHotkey(hotkey: string, id: string) {
+        return await Result.fromPromise<string, string>(invoke("register_hotkey", {hotkey, id}));
     }
 }

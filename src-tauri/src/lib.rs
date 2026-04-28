@@ -1,3 +1,5 @@
+use std::{collections::HashMap, sync::Mutex};
+
 use tauri::{
     AppHandle, Manager, WindowEvent, Wry, menu::{Menu, MenuItem}, tray::TrayIconBuilder
 };
@@ -62,9 +64,13 @@ pub fn run() {
             commands::file_trash,
             commands::parse_lnk,
             commands::get_uwp_apps,
+            commands::register_hotkey,
             #[cfg(debug_assertions)]
             debug_command::open_devtools,
         ])
+        .manage(commands::CommandState {
+            hotkey_data: Mutex::new(HashMap::new()),
+        })
         .setup(|app| {
             // 開発用 - DevToolsを自動で開く
 //            app.get_webview_window("main").unwrap().open_devtools();

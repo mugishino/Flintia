@@ -7,25 +7,30 @@ export class Pair<L, R> {
 }
 
 export class Result<R, E> {
-    private constructor(private value: R, private error: E, public isErr: boolean) {}
+    private constructor(private value: R|undefined, private error: E|undefined, public isErr: boolean) {}
 
-    public static Ok<R>(value: R) {
-        return new Result<R, any>(value, undefined, false);
+    public static Ok<R, E=any>(value: R) {
+        return new Result<R, E>(value, undefined, false);
     }
 
-    public static Err<E>(value: E) {
-        return new Result<any, E>(undefined, value, true);
+    public static Err<E, R=any>(value: E) {
+        return new Result<R, E>(undefined, value, true);
+    }
+
+    /** Promiseのthen, catchでいいと思うかもしれないが、型補完が弱い */
+    public static async fromPromise<R, E>(value: Promise<R>) {
+        return await value.then(v => Result.Ok<R, E>(v)).catch(v => Result.Err<E, R>(v as E));
     }
 
 
 
     public map_err(call: (err: E) => void) {
-        if (this.isErr) call(this.error);
+        if (this.isErr) call(this.error!);
         return this;
     }
 
     public map(call: (value: R) => void) {
-        if (!this.isErr) call(this.value);
+        if (!this.isErr) call(this.value!);
         return this;
     }
 

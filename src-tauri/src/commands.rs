@@ -1,4 +1,4 @@
-use std::{io::Cursor, os::windows::process::CommandExt, path, process::{Command, Stdio}};
+use std::{collections::HashMap, io::Cursor, os::windows::process::CommandExt, path, process::{Command, Stdio}, sync::{Mutex}};
 
 use base64::{Engine, engine::general_purpose};
 use enigo::{Enigo, Key, Keyboard, Settings};
@@ -6,7 +6,13 @@ use file_icon_provider::get_file_icon;
 use image::{DynamicImage, RgbaImage};
 use lnk::encoding::WINDOWS_1252;
 use serde::Serialize;
+use tauri::{AppHandle, Emitter, Wry};
+use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
 use windows::{Management::Deployment::PackageManager, UI::ViewManagement::{UIColorType, UISettings}, core::HSTRING};
+
+pub struct CommandState {
+    pub hotkey_data: Mutex<HashMap<String, String>>,
+}
 
 #[tauri::command]
 pub fn paste(enter: bool, win: tauri::WebviewWindow) {
@@ -184,4 +190,33 @@ pub fn get_uwp_apps() -> Result<Vec<UwpAppInfo>, String> {
             }).collect::<Vec<_>>().into_iter()
         }).collect();
     Ok(data)
+}
+
+#[tauri::command]
+pub fn register_hotkey(hotkey: &str, id: &str, app: AppHandle<Wry>, state: tauri::State<'_, CommandState>) -> Result<String, String> {
+    let manager = app.global_shortcut();
+    let mut data = state.hotkey_data.lock().unwrap();
+
+    let already_key_opt = data.get(id);
+    if let Some(already_key) = already_key_opt {
+        // 既に登録されているキーと同じならキャンセル
+        if already_key == hotkey {return Ok("Success - some key".to_string());}
+
+        // キー更新の場合は旧キーを削除
+        let _ = manager.unregister(already_key.as_str());
+    }
+
+    // 登録
+    let id_str = String::from(id);
+    manager.on_shortcut(hotkey, move |app, _, state| {
+        if state.state == ShortcutState::Pressed {
+            let _ = app.emit("hotkey-pressed", id_str.clone()).unwrap();
+        }
+    }).map(|_| {
+        // 成功すれば更新
+        data.insert(String::from(id), String::from(hotkey));
+        format!("Success - Register hotkey: {}", hotkey)
+    }).map_err(|_| {
+        format!("Failed - Register hotkey: {}", hotkey)
+    })
 }

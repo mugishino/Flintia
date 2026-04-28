@@ -1,8 +1,19 @@
-import { register, unregister } from "@tauri-apps/plugin-global-shortcut";
 import { currentMonitor, getCurrentWindow, LogicalPosition, LogicalSize, Window, WindowOptions } from "@tauri-apps/api/window";
 import { SessionData } from "./util/session";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { WInvoke } from "./InvokeWrapper";
+import { Event, listen } from "@tauri-apps/api/event";
+import { Pair } from "./util/clazz";
+
+// ウィンドウごとに一意、listenからアクセス可能なのがトップレベルぐらいしかない
+/** WindowLabel: Hotkey  */
+let hotkeyCallback: Pair<string, () => Promise<void>|void>|undefined = undefined;
+
+// ホットキーのアクション受け取り
+await listen("hotkey-pressed", async (event: Event<string>) => {
+    const id = event.payload;
+    if (hotkeyCallback?.left == id) hotkeyCallback.right();
+});
 
 export type HotkeyMainKeys = (typeof HOTKEY_MAINKEYS)[number];
 export const HOTKEY_MAINKEYS = [
@@ -98,8 +109,6 @@ export class FlintiaWindow {
 
 
 
-    /** WindowLabel: Hotkey */
-    private static activeHotkey: Map<string, string> = new Map();
     /**
      * このウィンドウにホットキーを設定します。前のホットキーは自動的に解除されます。
      * @param shift Shiftが必要か
@@ -120,31 +129,14 @@ export class FlintiaWindow {
         keyArray.push(main);
         const hotkey = keyArray.join("+");
 
-        // 今と同じホットキーであればキャンセル(完全に同じものとみなしtrueを返す)
-        const old = FlintiaWindow.activeHotkey.get(this.rawWindow.label);
-        if (old == hotkey) return true;
-
-        // 既に存在するホットキーであればキャンセル
-        const alreadyHotkeys = Array.from(FlintiaWindow.activeHotkey.values()).includes(hotkey);
-        if (alreadyHotkeys) return false;
-
-        return await new Promise(async resolve => {
-            // Rust側のコールバックIDと合わせるため、F5前に登録済みの物を消す。
-            // 登録されていないものを消そうとしたときにエラーが出るのでcatchで消す
-            await unregister(hotkey).catch(() => {});
-            // 新しいホットキーを登録
-            await register(hotkey, async e => {
-                if (e.state != "Pressed") return;
-                callback();
-            }).then(async () => {
-                // ホットキーの状態管理を更新し、前のホットキーを解除
-                FlintiaWindow.activeHotkey.set(this.rawWindow.label, hotkey);
-                if (old) await unregister(old).catch(() => {});
-                resolve(true);
-            }).catch(() => {
-                resolve(false);
-            });
+        // 登録
+        const id = this.rawWindow.label;
+        const res = await WInvoke.registerHotkey(hotkey, id);
+        res.map(() => {
+            hotkeyCallback = new Pair(id, callback);
         });
+
+        return !res.isErr;
     }
 
     public async toggleVisible() {
