@@ -34,7 +34,7 @@ export default defineConfig(async () => ({
     },
   },
   build: {
-    target: "ES2023",
+    target: "esnext",
     /**
      * 500KBはweb配信基準の為1024KBに変更
      * 上げすぎるとホットリロードで重くなる
