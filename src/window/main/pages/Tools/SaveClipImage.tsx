@@ -15,7 +15,7 @@ export function SaveClipImage() {
 
     async function onSaveButtonClick() {
         const blob = await Clipboards.getImageBlob();
-        if (blob == null) return setErrorMessage("クリップボードが画像ではありません。");
+        if (blob == null) return setErrorMessage("画像ではありません。");
 
         const desktopPath = await desktopDir();
         const savePath = await Dialogs.save("名前を付けて保存", [{name: "Image", extensions: ["png"]}], `${desktopPath}/${Date.now()}.png`);
