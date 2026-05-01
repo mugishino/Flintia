@@ -18,7 +18,7 @@ export function Setting({
     return (
         <div className={twMerge(`flex flex-row justify-between`, "hidden".where(hide??false), className)}>
             <span className={twMerge("pl-1", titleClassName)}>{title}</span>
-            <div className={twMerge("min-w-1/2", childClassName)}>{children}</div>
+            <div className={twMerge("max-w-1/2 w-full", childClassName)}>{children}</div>
         </div>
     );
 }
