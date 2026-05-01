@@ -113,9 +113,10 @@ export function LaunchPanel() {
     }
 
     async function selectExe(directory: boolean) {
+        const opendir = ifPresent(editData.exe, v => Paths.getDirectory(v));
         const select = directory
-            ? await Dialogs.openSingleDirectory("Select open directory")
-            : await Dialogs.openSingleFile("Select open file", [ALL_EXTENSIONS]);
+            ? await Dialogs.openSingleDirectory("Select open directory", opendir)
+            : await Dialogs.openSingleFile("Select open file", [ALL_EXTENSIONS], opendir);
 
         if (select == null) return;
         setEditData("exe", select);

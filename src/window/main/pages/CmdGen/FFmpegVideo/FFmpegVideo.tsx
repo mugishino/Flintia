@@ -5,6 +5,7 @@ import { FlintiaWindow } from "~/Flintia";
 import { Setting } from "~/components/Setting";
 import { Paths } from "~/util/path";
 import { Dialogs, VIDEO_EXTENSIONS } from "~/module/Dialogs";
+import { ifPresent } from "~/util/util";
 
 const SUPPORTED_VIDEO_EXTENSION = ["mp4", "mkv", "mov", "webm"] as const;
 
@@ -121,7 +122,7 @@ export function Video() {
             </Setting>
             <Setting title="OutputFile">
                 <button onClick={async() => {
-                    const f = await Dialogs.save("Output file", [{name: "Supported", extensions: [...SUPPORTED_VIDEO_EXTENSION]}]);
+                    const f = await Dialogs.save("Output file", [{name: "Supported", extensions: [...SUPPORTED_VIDEO_EXTENSION]}], ifPresent(sInputFile, v => Paths.getDirectory(v)));
                     if (f != null) setOutputFile(f);
                 }}>{sOutputFile?.split("\\").slice(-1)[0] ?? "Browse..."}</button>
             </Setting>

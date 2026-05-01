@@ -4,6 +4,7 @@ import { Paths } from "~/util/path";
 import { Setting } from "~/components/Setting";
 import { Dialogs, IMAGE_EXTENSIONS } from "~/module/Dialogs";
 import { DESKTOP_DIR } from "~/Data";
+import { ifPresent } from "~/util/util";
 
 const Model = {
     "GAN x4Plus Anime": "RealESRGAN-x4plus-anime",
@@ -43,7 +44,7 @@ export function RealEsrgan() {
 
             <Setting title="Output Directory">
                 <button onClick={async () => {
-                    const result = await Dialogs.openSingleDirectory("Select output directory", DESKTOP_DIR);
+                    const result = await Dialogs.openSingleDirectory("Select output directory", ifPresent(files, v => Paths.getDirectory(v[0])));
                     if (result != null) setOutdir(result);
                 }}>{outdir ?? "Browse..."}</button>
             </Setting>

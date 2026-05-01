@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Overlay } from "~/components/Overlay";
 import { Setting } from "~/components/Setting";
 import { SVGButton } from "~/components/SVGButton";
-import { CommandExists, DefaultFileName } from "~/Data";
+import { CommandExists, DefaultFileName, DESKTOP_DIR } from "~/Data";
 import { FlintiaWindow } from "~/Flintia";
 import { useStaticOverlay } from "~/hooks/useOverlay";
 import { Clipboards } from "~/util/clipboard";
@@ -137,7 +137,7 @@ export function VideoCut() {
 
     return (
         <div className="flex flex-col h-full">
-            <button className="border-0 border-b" onClick={async () => ifPresent(await Dialogs.openSingleFile("Select Video", [VIDEO_EXTENSIONS]), f => setInputFile(f))}>{Paths.getBasename(inputFile ?? "Browse...")}</button>
+            <button className="border-0 border-b" onClick={async () => ifPresent(await Dialogs.openSingleFile("Select Video", [VIDEO_EXTENSIONS], DESKTOP_DIR), f => setInputFile(f))}>{Paths.getBasename(inputFile ?? "Browse...")}</button>
             <div className="flex grow shrink basis-auto overflow-hidden relative">
                 <div className={`absolute h-full w-1/4 z-10 ${"hover:bg-videocut-skip-hover".where(!!inputFile)}`} onClick={() => setCurrentTimeByController(Math.max(currentTime-5, 0))}></div>
                 <div className={`absolute h-full w-1/4 z-10 ${"hover:bg-videocut-skip-hover".where(!!inputFile)} right-0`} onClick={() => setCurrentTimeByController(Math.min(currentTime+5, duration))}></div>
@@ -175,7 +175,7 @@ export function VideoCut() {
                 <div className="h-full w-full flex flex-col gap-4 justify-center items-center">
                     <div className="p-8 w-1/3 bg-bg border justify-center border-app-edge flex flex-col gap-2" onClick={e => e.stopPropagation()}>
                         <button onClick={async () => {
-                            const result = await Dialogs.save("Save");
+                            const result = await Dialogs.save("Save", undefined, ifPresent(inputFile, v => Paths.getDirectory(v)));
                             if (result != null) setOutputFile(result);
                             FlintiaWindow.getCurrentWindow().then(v => v.show());
                         }}>Browse output file</button>

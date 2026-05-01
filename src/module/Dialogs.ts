@@ -1,5 +1,6 @@
 import * as dialog from "@tauri-apps/plugin-dialog";
 import { DialogFilter } from "@tauri-apps/plugin-dialog"
+import { DESKTOP_DIR } from "~/Data";
 import { FlintiaWindow } from "~/Flintia";
 
 export const ALL_EXTENSIONS  : DialogFilter = {name: "Any"  , extensions: ["*"]};
@@ -18,7 +19,7 @@ export namespace Dialogs {
             filters: extensions,
             directory: directory,
             multiple: multiple,
-            defaultPath: defaultPath,
+            defaultPath: defaultPath ?? DESKTOP_DIR,
         }) as string[] | string | null;
         FlintiaWindow.getCurrentWindow().then(v => v.show());
         return result;
@@ -30,6 +31,7 @@ export namespace Dialogs {
      * 1ファイルのみ選択可能なopenダイアログを開きます。
      * @param title ダイアログのタイトル
      * @param extensions 対応拡張子
+     * @param defaultPath デフォルトで開くパス。未指定の場合デスクトップ
      * @returns 選択されたファイル
      */
     export async function openSingleFile(title: string, extensions: DialogFilter[], defaultPath?: string) {
@@ -39,6 +41,7 @@ export namespace Dialogs {
     /**
      * 1ディレクトリのみ選択可能なopenダイアログを開きます。
      * @param title ダイアログのタイトル
+     * @param defaultPath デフォルトで開くパス。未指定の場合デスクトップ
      * @returns 選択されたディレクトリ
      */
     export async function openSingleDirectory(title: string, defaultPath?: string) {
@@ -49,6 +52,7 @@ export namespace Dialogs {
      * 複数ファイル選択可能なopenダイアログを開きます。
      * @param title ダイアログのタイトル
      * @param extensions 対応拡張子
+     * @param defaultPath デフォルトで開くパス。未指定の場合デスクトップ
      * @returns 選択されたファイルリスト
      */
     export async function openMultiFile(title: string, extensions: DialogFilter[], defaultPath?: string) {
@@ -58,6 +62,7 @@ export namespace Dialogs {
     /**
      * 複数ディレクトリ選択可能なopenダイアログを開きます。
      * @param title ダイアログのタイトル
+     * @param defaultPath デフォルトで開くパス。未指定の場合デスクトップ
      * @returns 選択されたディレクトリリスト
      */
     export async function openMultiDirectory(title: string, defaultPath?: string) {
@@ -68,13 +73,14 @@ export namespace Dialogs {
      * 保存ダイアログを開きます。
      * @param title ダイアログのタイトル
      * @param extensions 保存可能拡張子
+     * @param defaultPath デフォルトで開くパス。未指定の場合デスクトップ
      * @returns 指定されたファイル
      */
     export async function save(title: string, extensions?: DialogFilter[], defaultPath?: string) {
         const result = await dialog.save({
             title: title,
             filters: extensions,
-            defaultPath: defaultPath,
+            defaultPath: defaultPath ?? DESKTOP_DIR,
         });
         FlintiaWindow.getCurrentWindow().then(v => v.show());
         return result;
