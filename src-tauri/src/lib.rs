@@ -65,6 +65,7 @@ pub fn run() {
             commands::parse_lnk,
             commands::get_uwp_apps,
             commands::register_hotkey,
+            commands::get_recursive_files,
             #[cfg(debug_assertions)]
             debug_command::open_devtools,
         ])

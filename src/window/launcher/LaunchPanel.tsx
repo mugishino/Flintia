@@ -8,12 +8,16 @@ import { useStaticOverlay } from "~/hooks/useOverlay";
 import { useKVState } from "~/hooks/useKVState";
 import { SVGButton } from "~/components/SVGButton";
 import { Line } from "~/components/Line";
-import { createCanvas, ifPresent } from "~/util/util";
+import { createCanvas, ifPresent, searchFilter } from "~/util/util";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { ReactSVG } from "react-svg";
 import { DEFAULT_TILE_DATA, TileData, useGridManager } from "./useGridManager";
 import { Paths } from "~/util/path";
 import { ALL_EXTENSIONS, Dialogs, IMAGE_EXTENSIONS } from "~/module/Dialogs";
+import { OverlayWindow } from "~/components/OverlayWindow";
+import { Search } from "~/components/Search";
+import { HOME_DIR } from "~/Data";
+import { useEffectAsync } from "~/hooks/useEffectAsync";
 
 function Tile(props: CellObjProps & TileData) {
     const [img, setImg] = useState<string|undefined>(undefined);
@@ -86,6 +90,14 @@ async function resizeImageToBase64(src: string, width: number=64, height: number
     });
 }
 
+function AppSelect(props: {title: string, onClick: () => void}) {
+    return (
+        <div className="py-1 hover:bg-launcher-tile-hover-outline cursor-pointer" onClick={() => props.onClick()}>
+            <span className="m-auto ml-1">{props.title}</span>
+        </div>
+    );
+}
+
 
 
 export function LaunchPanel() {
@@ -96,6 +108,23 @@ export function LaunchPanel() {
     const [settingKey, setSettingKey] = useState(String.empty);
     const [editData, setEditData, overwriteEditData] = useKVState<TileData>(DEFAULT_TILE_DATA);
     const [isDir, setIsDir] = useState(false);
+    // data
+    const [uwpApps, setUwpApps] = useState<WInvoke.UWPAppInfo[]>([]);
+    const [appLnkFiles, setAppLnkFiles] = useState<string[]>([]);
+    const [appSelectOverlay, setAppSelectOverlay] = useState(false);
+    const [appSearch, setAppSearch] = useState(String.empty);
+
+    useEffectAsync(async() => {
+        WInvoke.getUwpApps().then(v => setUwpApps(v));
+
+        // shortcuts
+        WInvoke.getRecursiveFiles("C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs").then(globalStartMenuFiles =>
+        WInvoke.getRecursiveFiles(Paths.join(HOME_DIR, "AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs")).then(userStartMenuFiles => {
+            const files = [...globalStartMenuFiles, ...userStartMenuFiles];
+            const linkFiles = files.filter(v => Paths.splitExt(v).ext == "lnk");
+            setAppLnkFiles(linkFiles);
+        }));
+    }, []);
 
     /**
      * セルの設定を開きます。
@@ -137,7 +166,8 @@ export function LaunchPanel() {
 
     const settingOpenCellData = data.get(settingKey);
 
-    const settingIsTile  = settingOpenCellData?.type == "tile";
+    const settingIsTile    = settingOpenCellData?.type == "tile";
+    const isUWPApplication = settingOpenCellData?.exe?.startsWith("shell:AppsFolder\\");
 
     return (
         <div className="h-full w-full overflow-x-scroll overflow-y-scroll" style={{padding: GRID_SIZE+(MARGIN_SIZE*3) + "px"}}>
@@ -146,8 +176,9 @@ export function LaunchPanel() {
                     {...{type: "label", label: "+", x: -1, y: -1, w: 1, h: 1}}
                     locked={true}
                     center={true}
-                    onClick={() => addObject("tile")}
-                    onRightClick={() => addObject("label")}
+                    onClick={() => setAppSelectOverlay(true)}
+                    onRightClick={() => addObject("tile")}
+                    onWheelClick={() => addObject("label")}
                 />
                 {/* TODO: 機能未実装 */ false && <CellObj
                     {...{type: "label", x: -1, y: (screen.availHeight/getCellSize())-1, w: 1, h: 1}}
@@ -163,86 +194,123 @@ export function LaunchPanel() {
                                 const split = Paths.splitExt(basename);
                                 return split.name;
                             })();
-                            return <Tile  key={k} {...v} isOverlapping={v => isOverlapping(k, v)} onMoved={(x, y) => moveObject(k, v, x, y)} onRightClick={async() => openCellSetting(k)} label={label} onClick={async() => {
+                            return <Tile  key={k} {...v} isOverlapping={v => isOverlapping(k, v)} onMoved={(x, y) => moveObject(k, v, x, y)} onWheelClick={async() => openCellSetting(k)} label={label} onClick={async() => {
                                 if (!v.exe) return;
                                 await (await FlintiaWindow.getCurrentWindow()).hide();
                                 await WInvoke.runExe(v.exe, v.args);
                             }}/>
                         case "label":
-                            return <Label key={k} {...v} isOverlapping={v => isOverlapping(k, v)} onMoved={(x, y) => moveObject(k, v, x, y)} onRightClick={async() => openCellSetting(k)}/>
+                            return <Label key={k} {...v} isOverlapping={v => isOverlapping(k, v)} onMoved={(x, y) => moveObject(k, v, x, y)} onWheelClick={async() => openCellSetting(k)}/>
                     }
                 })}
             </div>
             <Overlay show={overlay} setShow={showOverlay} grayBackground={false}>
-                <div className="h-full w-full flex items-center justify-center">
-                    <div className="flex flex-row bg-layerA p-4 gap-1 w-1/4 text-[0.75rem] border border-app-edge" onClick={e => e.stopPropagation()}>
-                        <div className="flex flex-col grow min-w-0">
-                            <input placeholder="Label" type="text" value={editData.label} onChange={e => setEditData("label", e.currentTarget.value)}/>
-                            <div className="flex flex-row w-full mt-1 gap-1">
-                                {settingIsTile && <>
-                                    <NumberSelector min={1} max={8} value={editData.h} label="Height" onChange={v => setEditData("h", v)}/>
-                                </>}
-                                <NumberSelector min={1} max={settingIsTile ? 8 : Infinity} value={editData.w} label="Width" onChange={v => setEditData("w", v)}/>
-                            </div>
+                <OverlayWindow nobg className="flex flex-row w-1/3">
+                    <div className="flex flex-col grow min-w-0">
+                        <input placeholder="Label" type="text" value={editData.label} onChange={e => setEditData("label", e.currentTarget.value)}/>
+                        <div className="flex flex-row w-full mt-1 gap-1">
                             {settingIsTile && <>
-                                <Line/>
-                                <Setting title="Oepn">
-                                    <div className="flex flex-row">
-                                        <button onClick={async() => selectExe(false)}>file</button>
-                                        <button onClick={async() => selectExe(true)}>directory</button>
-                                    </div>
-                                </Setting>
-                                <span className="wrap-break-word">{editData.exe}</span>
-                                {editData.exe && !isDir && <input placeholder="Arguments" value={editData.args ?? String.empty} onChange={e => setEditData("args", e.currentTarget.value)}/>}
-                                <Line/>
-                                <div className="flex flex-row justify-between">
-                                    <div className="flex flex-row">
-                                        <span className="pl-1">Custom-Icon</span>
-                                        {editData.custom_icon && <img src={editData.custom_icon} className="aspect-square ml-2 h-5"/>}
-                                    </div>
-                                    <div className="flex flex-row w-1/2">
-                                        {editData.custom_icon && <button className="grow" onClick={() => openDeleteOverlay("カスタムアイコン", () => setEditData("custom_icon", undefined))}>Reset</button>}
-                                        <button className="grow" onClick={async() => {
-                                            const selectPath = await Dialogs.openSingleFile("Select custom icon", [ALL_EXTENSIONS, {extensions: ["lnk"], name: "Shortcut"}]);
-                                            if (selectPath == null) return;
-                                            const ext = Paths.splitExt(selectPath).ext;
-                                            const base64 = await (async() => {
-                                                // 画像ファイルならそのまま取得、非画像ファイルはファイルアイコンを取得
-                                                if (IMAGE_EXTENSIONS.extensions.includes(ext)) {
-                                                    // base64化
-                                                    const src = convertFileSrc(selectPath);
-                                                    return await resizeImageToBase64(src);
-                                                }
-                                                return await WInvoke.getFileIconBase64(selectPath, 32);
-                                            })();
-                                            setEditData("custom_icon", base64);
-                                        }}>File</button>
-                                    </div>
-                                </div>
+                                <NumberSelector min={1} max={8} value={editData.h} label="Height" onChange={v => setEditData("h", v)}/>
                             </>}
+                            <NumberSelector min={1} max={settingIsTile ? 8 : Infinity} value={editData.w} label="Width" onChange={v => setEditData("w", v)}/>
                         </div>
-                        <Line vertical/>
-                        <div className="flex flex-col justify-between gap-1">
-                            <SVGButton src="trash_can.svg" className="w-8 fill-fail" onClick={() => openDeleteOverlay(editData.label, () => {
-                                deleteObject(settingKey);
-                                showOverlay(false);
-                            })}/>
-                            <SVGButton src="refresh.svg" title="Clear Cache" onClick={() => {
-                                editData.exe_icon = undefined;
-                            }}/>
-                            <SVGButton src="save.svg" onClick={async() => {
-                                // exeアイコンのキャッシュを作成
-                                if (editData.exe_icon == undefined && editData.exe) {
-                                    const base64 = await WInvoke.getFileIconBase64(editData.exe, 32);
-                                    editData.exe_icon = base64;
-                                }
-                                // 保存
-                                updateData(newData => newData.set(settingKey, editData));
-                                showOverlay(false);
-                            }}/>
-                        </div>
+                        {settingIsTile && !isUWPApplication && <>
+                            <Line className="my-2"/>
+                            <Setting title="Oepn">
+                                <div className="flex flex-row">
+                                    <button onClick={async() => selectExe(false)}>file</button>
+                                    <button onClick={async() => selectExe(true)}>directory</button>
+                                </div>
+                            </Setting>
+                            <span className="wrap-anywhere text-[90%]">{editData.exe}</span>
+                            {editData.exe && !isDir && <input placeholder="Arguments" value={editData.args ?? String.empty} onChange={e => setEditData("args", e.currentTarget.value)}/>}
+                            <Line className="my-2"/>
+                            <div className="flex flex-row justify-between">
+                                <div className="flex flex-row">
+                                    <span className="pl-1 m-auto">Custom-Icon</span>
+                                    {editData.custom_icon && <img src={editData.custom_icon} className="aspect-square ml-2 h-5"/>}
+                                </div>
+                                <div className="flex flex-row w-1/2">
+                                    {editData.custom_icon && <button className="grow" onClick={() => openDeleteOverlay("カスタムアイコン", () => setEditData("custom_icon", undefined))}>Reset</button>}
+                                    <button className="grow" onClick={async() => {
+                                        const selectPath = await Dialogs.openSingleFile("Select custom icon", [ALL_EXTENSIONS, {extensions: ["lnk"], name: "Shortcut"}]);
+                                        if (selectPath == null) return;
+                                        const ext = Paths.splitExt(selectPath).ext;
+                                        const base64 = await (async() => {
+                                            // 画像ファイルならそのまま取得、非画像ファイルはファイルアイコンを取得
+                                            if (IMAGE_EXTENSIONS.extensions.includes(ext)) {
+                                                // base64化
+                                                const src = convertFileSrc(selectPath);
+                                                return await resizeImageToBase64(src);
+                                            }
+                                            return await WInvoke.getFileIconBase64(selectPath, 32);
+                                        })();
+                                        setEditData("custom_icon", base64);
+                                    }}>File</button>
+                                </div>
+                            </div>
+                        </>}
                     </div>
-                </div>
+                    <Line vertical className="mx-2"/>
+                    <div className="flex flex-col justify-between gap-1">
+                        <SVGButton src="trash_can.svg" className="w-10 fill-fail" onClick={() => openDeleteOverlay(editData.label, () => {
+                            deleteObject(settingKey);
+                            showOverlay(false);
+                        })}/>
+                        <SVGButton src="refresh.svg" title="Clear Cache" onClick={() => {
+                            editData.exe_icon = undefined;
+                        }}/>
+                        <SVGButton src="save.svg" onClick={async() => {
+                            // exeアイコンのキャッシュを作成
+                            if (editData.exe_icon == undefined && editData.exe) {
+                                const base64 = await WInvoke.getFileIconBase64(editData.exe, 32);
+                                editData.exe_icon = base64;
+                            }
+                            // 保存
+                            updateData(newData => newData.set(settingKey, editData));
+                            showOverlay(false);
+                        }}/>
+                    </div>
+                </OverlayWindow>
+            </Overlay>
+            <Overlay show={appSelectOverlay} setShow={setAppSelectOverlay}>
+                <OverlayWindow className="flex flex-col h-4/5 w-1/4">
+                    <Search value={appSearch} onUpdate={v => setAppSearch(v)}/>
+                    <div className="flex flex-col overflow-y-scroll grow">
+                        {appLnkFiles.map(path => {
+                            const name = Paths.splitExt(Paths.getBasename(path)).name;
+                            if (!searchFilter(appSearch, name)) return;
+                            return <AppSelect key={path} title={name} onClick={async() => {
+                                const data = await WInvoke.parseLnk(path);
+                                const custom_icon = await WInvoke.getFileIconBase64(path);
+                                const exe_icon = await WInvoke.getFileIconBase64(data.link_info.local_base_path);
+                                addObject(
+                                    "tile",
+                                    name,
+                                    data.string_data.command_line_arguments ?? undefined,
+                                    exe_icon == custom_icon ? undefined : custom_icon,
+                                    data.link_info.local_base_path,
+                                    exe_icon,
+                                );
+                                setAppSelectOverlay(false);
+                            }}/>;
+                        })}
+                        {uwpApps.map(uwp => {
+                            if (!searchFilter(appSearch, uwp.display_name??String.empty)) return;
+                            return <AppSelect key={uwp.display_name} title={uwp.display_name ?? String.empty} onClick={async() => {
+                                addObject(
+                                    "tile",
+                                    uwp.display_name ?? String.empty,
+                                    undefined,
+                                    undefined,
+                                    "shell:AppsFolder\\" + uwp.aumid,
+                                    undefined,
+                                );
+                                setAppSelectOverlay(false);
+                            }}/>;
+                        })}
+                    </div>
+                </OverlayWindow>
             </Overlay>
             {staticOverlay}
         </div>

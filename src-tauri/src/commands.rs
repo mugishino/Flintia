@@ -1,4 +1,4 @@
-use std::{collections::HashMap, io::Cursor, os::windows::process::CommandExt, path, process::{Command, Stdio}, sync::{Mutex}};
+use std::{collections::HashMap, io::Cursor, os::windows::process::CommandExt, path::{self}, process::{Command, Stdio}, sync::Mutex};
 
 use base64::{Engine, engine::general_purpose};
 use enigo::{Enigo, Key, Keyboard, Settings};
@@ -8,6 +8,7 @@ use lnk::encoding::WINDOWS_1252;
 use serde::Serialize;
 use tauri::{AppHandle, Emitter, Wry};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
+use walkdir::WalkDir;
 use windows::{Management::Deployment::PackageManager, UI::ViewManagement::{UIColorType, UISettings}, core::HSTRING};
 
 pub struct CommandState {
@@ -219,4 +220,14 @@ pub fn register_hotkey(hotkey: &str, id: &str, app: AppHandle<Wry>, state: tauri
     }).map_err(|_| {
         format!("Failed - Register hotkey: {}", hotkey)
     })
+}
+
+#[tauri::command]
+pub fn get_recursive_files(path: String) -> Vec<String> {
+    WalkDir::new(path)
+        .into_iter()
+        .filter_map(|e| e.ok())           // エラー（アクセス権限なし等）をスキップ
+        .filter(|e| e.file_type().is_file()) // ファイルのみに絞り込む
+        .map(|e| e.path().to_string_lossy().into_owned()) // PathからStringへ変換
+        .collect()
 }

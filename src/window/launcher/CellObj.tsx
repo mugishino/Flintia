@@ -42,6 +42,11 @@ export type CellObjProps = {
      * @param e onAuxClickのイベント
      */
     onRightClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
+    /**
+     * ホイールクリックした時に呼び出される
+     * @param e onWheelClickのイベント
+     */
+    onWheelClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
 } & React.ComponentPropsWithoutRef<"div">;
 
 export function CellObj(props: CellData & CellObjProps) {
@@ -53,7 +58,7 @@ export function CellObj(props: CellData & CellObjProps) {
 
     const [downOrigin, setDownOrigin] = useState<IntVector2|undefined>(undefined);
 
-    const {onMoved, locked, isOverlapping, onRightClick, className, onClick, ...rest} = props;
+    const {onMoved, locked, isOverlapping, onRightClick, onWheelClick, className, onClick, ...rest} = props;
 
     useEffect(() => {
         if (locked || moveing) return;
@@ -120,8 +125,8 @@ export function CellObj(props: CellData & CellObjProps) {
                 setMoveY(moveY + e.movementY);
             }}
             onAuxClick={e => {
-                if (e.button != 2) return;
-                if (onRightClick) onRightClick(e);
+                if (e.button == 2 && onRightClick) onRightClick(e);
+                if (e.button == 1 && onWheelClick) onWheelClick(e);
             }}
             style={{
                 left: cellX + moveX,

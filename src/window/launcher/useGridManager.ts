@@ -82,12 +82,19 @@ export function useGridManager() {
      * 新しいオブジェクトを追加する
      * @param type 追加するオブジェクト種
      */
-    function addObject(type: CellType) {
+    function addObject(
+        type: CellType,
+        label?: string,
+        args?: string,
+        custom_icon?: string,
+        exe?: string,
+        exe_icon?: string,
+    ) {
         // 同じ位置にあればキャンセル
         if (Array.from(data.values()).filter(v => v.y == -1).length > 0) return;
         moveObject(
             crypto.randomUUID(),
-            {x: 0, y: -1, w: 1, h: 1, type: type, label: String.empty},
+            {h: 1, w: 1, x: 0, y: -1, label: label ?? String.empty, args, custom_icon, exe, exe_icon, type: type},
             0, -1,
         );
     }

@@ -28,6 +28,7 @@ dependencies = [
  "tauri-plugin-single-instance",
  "tokio",
  "trash",
+ "walkdir",
  "windows 0.62.2",
 ]
 

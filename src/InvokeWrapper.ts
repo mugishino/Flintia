@@ -104,7 +104,7 @@ export namespace WInvoke {
         await invoke("file_trash", {files: files});
     }
 
-    interface LinkData {
+    export interface LinkData {
         link_info: {
             local_base_path: string,
         },
@@ -124,7 +124,7 @@ export namespace WInvoke {
         return data as LinkData;
     }
 
-    interface UWPAppInfo {
+    export interface UWPAppInfo {
         display_name: string|null,
         description: string|null,
         aumid: string
@@ -135,8 +135,7 @@ export namespace WInvoke {
      * @returns 取得したUWPのアプリ
      */
     export async function getUwpApps() {
-        const data = await invoke("get_uwp_apps");
-        return data as UWPAppInfo[];
+        return await invoke("get_uwp_apps") as UWPAppInfo[];
     }
 
     /**
@@ -146,5 +145,15 @@ export namespace WInvoke {
      */
     export async function registerHotkey(hotkey: string, id: string) {
         return await Result.fromPromise<string, string>(invoke("register_hotkey", {hotkey, id}));
+    }
+
+    /**
+     * 再帰的にファイルを取得します。
+     * ### 深い階層があると時間がかかりフリーズする可能性があります。
+     * @param path 取得するディレクトリ
+     * @returns 取得したファイル
+     */
+    export async function getRecursiveFiles(path: string) {
+        return await invoke("get_recursive_files", {path}) as string[];
     }
 }

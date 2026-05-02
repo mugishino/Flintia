@@ -77,3 +77,16 @@ export function parseMouseButtons(event: React.MouseEvent) {
         forward: (b & MOUSE_BUTTON_BITS.FORWARD) !== 0,
     };
 }
+
+/**
+ * 検索に値が引っかかっているか判別します
+ * @param search 検索テキスト
+ * @param value 検索対象値
+ * @returns 引っかかっていればtrue
+ */
+export function searchFilter(search: string, value: string) {
+    if (search.length == 0) return true;
+    const x = search.replaceAll(String.space, String.empty).toLocaleLowerCase();
+    const y = value .replaceAll(String.space, String.empty).toLocaleLowerCase();
+    return y.includes(x);
+}
