@@ -47,9 +47,12 @@ export namespace WInvoke {
      * @param mime mineタイプを先頭につける
      * @returns base64
      */
-    export async function getFileIconBase64(path: string, size=32, mime: boolean=true): Promise<string> {
-        const base64 = await invoke("get_file_icon_base64", {path: path, size: size}) as string;
-        return (mime ? "data:image/png;base64," : String.empty) + base64;
+    export async function getFileIconBase64(path: string, size=32, mime: boolean=true): Promise<Result<string, string>> {
+        return invoke("get_file_icon_base64", {path: path, size: size}).then(base64 => {
+            return Result.Ok((mime ? "data:image/png;base64," : String.empty) + base64);
+        }).catch(reason => {
+            return Result.Err(reason);
+        });
     }
 
     /**

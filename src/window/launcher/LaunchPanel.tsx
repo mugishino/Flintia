@@ -8,7 +8,7 @@ import { useStaticOverlay } from "~/hooks/useOverlay";
 import { useKVState } from "~/hooks/useKVState";
 import { SVGButton } from "~/components/SVGButton";
 import { Line } from "~/components/Line";
-import { createCanvas, ifPresent, searchFilter } from "~/util/util";
+import { createCanvas, ifPresent, normalizeURL, searchFilter } from "~/util/util";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { ReactSVG } from "react-svg";
 import { DEFAULT_TILE_DATA, TileData, useGridManager } from "./useGridManager";
@@ -108,23 +108,29 @@ export function LaunchPanel() {
     const [settingKey, setSettingKey] = useState(String.empty);
     const [editData, setEditData, overwriteEditData] = useKVState<TileData>(DEFAULT_TILE_DATA);
     const [isDir, setIsDir] = useState(false);
-    // data
+    const [openUrlString, setOpenUrlString] = useState<string|undefined>(undefined);
+    // fetch application data
     const [uwpApps, setUwpApps] = useState<WInvoke.UWPAppInfo[]>([]);
     const [appLnkFiles, setAppLnkFiles] = useState<string[]>([]);
     const [appSelectOverlay, setAppSelectOverlay] = useState(false);
     const [appSearch, setAppSearch] = useState(String.empty);
 
     useEffectAsync(async() => {
-        WInvoke.getUwpApps().then(v => setUwpApps(v));
+        if (!appSelectOverlay) return;
+
+        // get UWP apps
+        if (uwpApps.length == 0) WInvoke.getUwpApps().then(v => setUwpApps(v));
 
         // shortcuts
-        WInvoke.getRecursiveFiles("C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs").then(globalStartMenuFiles =>
-        WInvoke.getRecursiveFiles(Paths.join(HOME_DIR, "AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs")).then(userStartMenuFiles => {
-            const files = [...globalStartMenuFiles, ...userStartMenuFiles];
-            const linkFiles = files.filter(v => Paths.splitExt(v).ext == "lnk");
-            setAppLnkFiles(linkFiles);
-        }));
-    }, []);
+        if (appLnkFiles.length == 0) {
+            WInvoke.getRecursiveFiles("C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs").then(globalStartMenuFiles =>
+            WInvoke.getRecursiveFiles(Paths.join(HOME_DIR, "AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs")).then(userStartMenuFiles => {
+                const files = [...globalStartMenuFiles, ...userStartMenuFiles];
+                const linkFiles = files.filter(v => Paths.splitExt(v).ext == "lnk");
+                setAppLnkFiles(linkFiles);
+            }));
+        }
+    }, [appSelectOverlay]);
 
     /**
      * セルの設定を開きます。
@@ -218,8 +224,9 @@ export function LaunchPanel() {
                             <Line className="my-2"/>
                             <Setting title="Oepn">
                                 <div className="flex flex-row">
-                                    <button onClick={async() => selectExe(false)}>file</button>
-                                    <button onClick={async() => selectExe(true)}>directory</button>
+                                    <button onClick={async() => selectExe(false)}>File</button>
+                                    <button onClick={async() => selectExe(true)}>Directory</button>
+                                    <button onClick={async() => setOpenUrlString(String.empty)}>URL</button>
                                 </div>
                             </Setting>
                             <span className="wrap-anywhere text-[90%]">{editData.exe}</span>
@@ -243,7 +250,7 @@ export function LaunchPanel() {
                                                 const src = convertFileSrc(selectPath);
                                                 return await resizeImageToBase64(src);
                                             }
-                                            return await WInvoke.getFileIconBase64(selectPath, 32);
+                                            return (await WInvoke.getFileIconBase64(selectPath, 32)).unwrap();
                                         })();
                                         setEditData("custom_icon", base64);
                                     }}>File</button>
@@ -263,7 +270,7 @@ export function LaunchPanel() {
                         <SVGButton src="save.svg" onClick={async() => {
                             // exeアイコンのキャッシュを作成
                             if (editData.exe_icon == undefined && editData.exe) {
-                                const base64 = await WInvoke.getFileIconBase64(editData.exe, 32);
+                                const base64 = (await WInvoke.getFileIconBase64(editData.exe, 32)).unwrap();
                                 editData.exe_icon = base64;
                             }
                             // 保存
@@ -275,6 +282,7 @@ export function LaunchPanel() {
             </Overlay>
             <Overlay show={appSelectOverlay} setShow={setAppSelectOverlay}>
                 <OverlayWindow className="flex flex-col h-4/5 w-1/4">
+                    <span className="inline-block mx-auto text-2xl">アプリを追加</span>
                     <Search value={appSearch} onUpdate={v => setAppSearch(v)}/>
                     <div className="flex flex-col overflow-y-scroll grow">
                         {appLnkFiles.map(path => {
@@ -282,8 +290,8 @@ export function LaunchPanel() {
                             if (!searchFilter(appSearch, name)) return;
                             return <AppSelect key={path} title={name} onClick={async() => {
                                 const data = await WInvoke.parseLnk(path);
-                                const custom_icon = await WInvoke.getFileIconBase64(path);
-                                const exe_icon = await WInvoke.getFileIconBase64(data.link_info.local_base_path);
+                                const custom_icon = (await WInvoke.getFileIconBase64(path)).unwrap();
+                                const exe_icon = (await WInvoke.getFileIconBase64(data.link_info.local_base_path)).unwrap();
                                 addObject(
                                     "tile",
                                     name,
@@ -310,6 +318,16 @@ export function LaunchPanel() {
                             }}/>;
                         })}
                     </div>
+                </OverlayWindow>
+            </Overlay>
+            <Overlay show={openUrlString != undefined} setShow={() => setOpenUrlString(undefined)}>
+                <OverlayWindow className="w-1/3 z-20 gap-2">
+                    <div className="mx-auto inline-block">URLを設定</div>
+                    <input value={openUrlString ?? String.empty} onChange={v => setOpenUrlString(v.currentTarget.value)} placeholder="開くURL"/>
+                    <button disabled={normalizeURL(openUrlString??String.empty).isErr} onClick={async() => {
+                        setOpenUrlString(undefined);
+                        setEditData("exe", openUrlString);
+                    }}>OK</button>
                 </OverlayWindow>
             </Overlay>
             {staticOverlay}

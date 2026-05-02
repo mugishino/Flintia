@@ -1,3 +1,4 @@
+import { Result } from "./clazz";
 import { Falsy, Nullable } from "./type";
 
 /**
@@ -89,4 +90,13 @@ export function searchFilter(search: string, value: string) {
     const x = search.replaceAll(String.space, String.empty).toLocaleLowerCase();
     const y = value .replaceAll(String.space, String.empty).toLocaleLowerCase();
     return y.includes(x);
+}
+
+export function normalizeURL(text: string): Result<string, string> {
+    try {
+        const url = new URL(text);
+        return Result.Ok(url.href);
+    } catch (err) {
+        return Result.Err(String(err));
+    }
 }
