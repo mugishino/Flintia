@@ -7,6 +7,18 @@ import { Logger } from "~/module/Logger";
 
 const FULLSCREEN = false;
 
+export function CreateLauncherWindow() {
+    FlintiaWindow.getOrCreateWindow("launcher", "/Launcher", {
+        decorations: false,
+        skipTaskbar: true,
+        resizable: false,
+        shadow: false,
+        visible: false,
+        focus: false,
+        transparent: true,
+    }).catch(v => Logger.errorTrace("Window create failed:" + v));
+}
+
 export function Launcher() {
     useEffectAsync(async() => {
         const win = await FlintiaWindow.get("launcher");

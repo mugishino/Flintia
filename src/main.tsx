@@ -13,11 +13,9 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router";
 // Flintia
 import { MainWindow } from "./window/main/MainWindow";
-import { Launcher } from "./window/launcher/Launcher";
+import { CreateLauncherWindow, Launcher } from "./window/launcher/Launcher";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { NotFoundPage } from "./window/main/pages/404";
-import { FlintiaWindow } from "./Flintia";
-import { Logger } from "./module/Logger";
 import { IS_DEVELOP_MODE } from "./Data";
 import { AppStorage } from "./module/AppStorage";
 import { Config } from "./Config";
@@ -36,15 +34,7 @@ if (IS_DEVELOP_MODE) {
 
 
 if (config.enable_launcher) {
-    FlintiaWindow.getOrCreateWindow("launcher", "/Launcher", {
-        decorations: false,
-        skipTaskbar: true,
-        resizable: false,
-        shadow: false,
-        visible: false,
-        focus: false,
-        transparent: true,
-    }).catch(v => Logger.errorTrace("Window create failed:" + v));
+    CreateLauncherWindow();
 }
 
 

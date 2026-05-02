@@ -11,6 +11,7 @@ import { ReloadTheme } from "~/Theme";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { Section } from "~/components/Section";
 import { AppStorage } from "~/module/AppStorage";
+import { CreateLauncherWindow } from "~/window/launcher/Launcher";
 
 export function MainSetting() {
     const [config, setConfig] = useState<Config|undefined>(undefined);
@@ -72,6 +73,12 @@ export function MainSetting() {
             config.enable_launcher = enableLauncher;
             AppStorage.save(config);
         });
+
+        if (enableLauncher) {
+            CreateLauncherWindow();
+        } else {
+            FlintiaWindow.get("launcher").then(v => v?.rawWindow.close());
+        }
     }, [enableLauncher]);
 
     return(
