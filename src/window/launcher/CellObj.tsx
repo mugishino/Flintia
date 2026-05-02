@@ -80,14 +80,14 @@ export function CellObj(props: CellData & CellObjProps) {
         if (onMoved) onMoved(rx, ry);
     }, [moveing]);
 
-    function grabCell(e: React.MouseEvent) {
+    function moveCell(e: React.MouseEvent) {
         setMoveing(true);
         // セル中央をマウスに持っていく
         const rect = e.currentTarget.getBoundingClientRect();
         const centerX = rect.left + rect.width/2;
         const centerY = rect.top  + rect.height/2;
-        setMoveX(e.clientX - centerX);
-        setMoveY(e.clientY - centerY);
+        setMoveX(e.clientX - centerX + moveX + e.movementX);
+        setMoveY(e.clientY - centerY + moveY + e.movementY);
     }
 
     const cellX = gridX * (GRID_SIZE + MARGIN_SIZE);
@@ -109,20 +109,19 @@ export function CellObj(props: CellData & CellObjProps) {
             onMouseLeave={e => {
                 const buttons = parseMouseButtons(e);
                 if (buttons.left && !moveing) {
-                    grabCell(e);
+                    moveCell(e);
                 }
             }}
             onMouseMove={e => {
                 const buttons = parseMouseButtons(e);
                 // 左クリックしながら動かした場合、原点から一定距離離れればmoveing状態にする
                 if (buttons.left && downOrigin && downOrigin.getDistanceFromXY(e.pageX, e.pageY) > CELL_DRAG_THRESHOLD && !moveing) {
-                    grabCell(e);
+                    moveCell(e);
                 }
 
                 // セルの移動
                 if (!moveing) return;
-                setMoveX(moveX + e.movementX);
-                setMoveY(moveY + e.movementY);
+                moveCell(e);
             }}
             onAuxClick={e => {
                 if (e.button == 2 && onRightClick) onRightClick(e);
