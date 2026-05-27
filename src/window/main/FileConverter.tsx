@@ -10,6 +10,7 @@ import { Event } from "@tauri-apps/api/event";
 import { Command } from "@tauri-apps/plugin-shell";
 import { WInvoke } from "~/InvokeWrapper";
 import { DragProvider, DragType } from "./DragProvider";
+import { Line } from "~/components/Line";
 
 interface DragDropPayload {
     paths: string[];
@@ -24,11 +25,13 @@ enum SupportedType {
 }
 
 const ExtensionMap = Map.fromObject({
-    [SupportedType.Image]: ["png", "jpg", "tiff", "avif"],
+    [SupportedType.Image]: ["png", "jpg", "tiff", "avif", "webp", "jxl"],
     [SupportedType.Audio]: ["mp3", "wav", "flac", "ogg", "opus"],
     [SupportedType.Video]: ["mp3", "wav", "flac", "ogg", "opus"],
     [SupportedType.Unsupported]: [String.empty],
 });
+
+const LOSSLESS_SUPPORTED_TYPE = ["webp", "jxl"];
 
 export function FileConverter() {
     // overlay
@@ -41,6 +44,9 @@ export function FileConverter() {
     const [files, setFiles] = useState<string[]>([]);
     const [outputFileType, setOutputFileType] = useState<string|undefined>();
     const [isTrash, setIsTrash] = useState(false);
+
+    // option
+    const [lossless, setLossless] = useState(false);
 
     // output
     const [cmdlog, setCmdlog] = useState<string|undefined>();
@@ -113,7 +119,20 @@ export function FileConverter() {
                 addLog("Skip[equals] " + o)
             }
 
-            const args = ["-y", "-vn".where(inputFileType == SupportedType.Video), "-i", f, o].nullFilter();
+            // command build
+            const arg_vn = "-vn".where(inputFileType == SupportedType.Video);
+            const arg_lossless = (() => {
+                if (!lossless) return [];
+                if (!LOSSLESS_SUPPORTED_TYPE.contains(outputFileType)) return [];
+                switch (outputFileType) {
+                    case "webp": return ["-lossless", "1"];
+                    case "jxl" : return ["-distance", "0"];
+                }
+                return []
+            })();
+            const args = ["-y", "-i", f, arg_vn, ...arg_lossless, o].nullFilter();
+
+            // run
             const cmd = Command.create("ffmpeg", args);
             const result = await cmd.execute();
             if (result.code == 0) {
@@ -129,7 +148,9 @@ export function FileConverter() {
 
     return (
         <div className="contents">
-            <div className={`absolute top-0 left-0 h-full w-full z-10 bg-overlay-bg flex justify-center items-center ${"hidden".where(!dropOverlay)}`}>ドロップしてファイルを変換</div>
+            <Overlay show={dropOverlay} setShow={() => {}}>
+                <div className={`h-full w-full flex justify-center items-center`}>ドロップしてファイルを変換</div>
+            </Overlay>
             <Overlay show={cmdlog != undefined} setShow={() => setCmdlog(undefined)}>
                 <div className="h-full w-full flex flex-col justify-between">
                     {cmdlog}
@@ -154,6 +175,12 @@ export function FileConverter() {
                             <span className="grow">元ファイルをゴミ箱に移動</span>
                             <input type="checkbox" checked={isTrash} onChange={e => setIsTrash(e.currentTarget.checked)}/>
                         </div>
+                        {LOSSLESS_SUPPORTED_TYPE.contains(outputFileType) && <>
+                            <Line className="my-0"/>
+                            <Setting title="無劣化" childClassName="flex justify-end">
+                                <input type="checkbox" checked={lossless} onChange={e => setLossless(e.currentTarget.checked)}/>
+                            </Setting>
+                        </>}
                         <button onClick={async() => await convertAndExport()}>同じディレクトリに出力</button>
                         <button onClick={async() => {
                             const dirpath = await Dialogs.openSingleDirectory("Select output directory", DESKTOP_DIR);

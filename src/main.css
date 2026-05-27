@@ -203,6 +203,7 @@ body {
         display: inline-block;
         width: auto;
         position: relative;
+        transition: 0ms;
 
         &:checked {
             background-color: #06f;
