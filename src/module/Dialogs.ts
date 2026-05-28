@@ -6,7 +6,7 @@ import { FlintiaWindow } from "~/Flintia";
 export const ALL_EXTENSIONS  : DialogFilter = {name: "Any"  , extensions: ["*"]};
 export const VIDEO_EXTENSIONS: DialogFilter = {name: "Video", extensions: ["mp4", "mkv", "avi", "mov", "webm"]};
 export const AUDIO_EXTENSIONS: DialogFilter = {name: "Audio", extensions: ["mp3", "wav", "flac", "ogg", "opus"]};
-export const IMAGE_EXTENSIONS: DialogFilter = {name: "Image", extensions: ["jpg", "jpeg", "png", "tif", "tiff", "webp", "avif"]};
+export const IMAGE_EXTENSIONS: DialogFilter = {name: "Image", extensions: ["jpg", "jpeg", "png", "tif", "tiff", "webp", "avif", "bmp", "jxl"]};
 
 export namespace Dialogs {
     async function openWrapper(title: string, extensions: DialogFilter[]|undefined, directory: boolean, multiple: false, defaultPath?: string): Promise<string  |null>;
