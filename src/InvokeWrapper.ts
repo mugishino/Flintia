@@ -159,4 +159,64 @@ export namespace WInvoke {
     export async function getRecursiveFiles(path: string) {
         return await invoke("get_recursive_files", {path}) as string[];
     }
+
+    export interface FontMetadata {
+        family_name: string | undefined,
+        post_script_name: string | undefined,
+        full_name: string | undefined,
+        subfamily_name: string | undefined,
+        version: string | undefined,
+        license: string | undefined,
+        copyright: string | undefined,
+        monospaced: boolean,
+        variable: boolean,
+    }
+    /**
+     * フォントファイルを解析し、メタデータを取得します。
+     * @param path フォントファイルのパス
+     * @returns Result<データ, エラー>
+     */
+    export async function parseFontMetadata(path: string) {
+        return await Result.fromPromise<FontMetadata, string>(invoke("parse_font_metadata", {path}));
+    }
+
+    /**
+     * フォントのプレビュー画像を生成します。
+     * @param fontPath フォントファイルのパス
+     * @param outputPath 画像出力先
+     * @param text 描画するテキスト
+     * @param fontSize 描画するフォントの大きさ
+     * @param canvasHeight 内部で使用するキャンバスの縦幅(クリッピングされます)
+     * @param canvasWidth 内部で使用するキャンバスの横幅(クリッピングされます)
+     * @param baseX X座標の描画基準点
+     * @param baseY Y座標の描画基準点
+     * @param padding クリッピング後につける余白
+     * @returns
+     */
+    export async function generateFontPreview(
+        fontPath: string,
+        outputPath: string,
+        text: string,
+        fontSize: number,
+        option?: {
+            canvasWidth?: number,
+            canvasHeight?: number,
+            baseX?: number,
+            baseY?: number,
+            padding?: number,
+        }
+    ) {
+        return await Result.fromPromise<string, string>(invoke("generate_font_preview", {
+            fontPath,
+            outputPath,
+            text,
+            fontSize,
+            // option
+            canvasWidth: Math.max(option?.canvasWidth ?? 1024, 1),
+            canvasHeight: Math.max(option?.canvasHeight ?? 128, 1),
+            baseX: option?.baseX ?? 16,
+            baseY: option?.baseY ?? 8,
+            padding: Math.max(option?.padding ?? 8, 0),
+        }));
+    }
 }

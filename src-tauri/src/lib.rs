@@ -66,6 +66,8 @@ pub fn run() {
             commands::get_uwp_apps,
             commands::register_hotkey,
             commands::get_recursive_files,
+            commands::parse_font_metadata,
+            commands::generate_font_preview,
             #[cfg(debug_assertions)]
             debug_command::open_devtools,
         ])

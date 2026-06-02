@@ -56,6 +56,11 @@ trash = "5.2.5"
 lnk = "0.6.4"
 # 再帰的なファイル取得用
 walkdir = "2.5.0"
+# フォント解析用
+ttf-parser = "0.21"
+# フォントプレビューキャッシュ画像作成
+imageproc = "0.26.2"
+ab_glyph = "0.2.32"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-autostart = "2"
