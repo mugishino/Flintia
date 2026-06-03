@@ -183,7 +183,7 @@ export namespace WInvoke {
     /**
      * フォントのプレビュー画像を生成します。
      * @param fontPath フォントファイルのパス
-     * @param outputPath 画像出力先
+     * @param outputPath 画像出力パス(拡張子なし)
      * @param text 描画するテキスト
      * @param fontSize 描画するフォントの大きさ
      * @param canvasHeight 内部で使用するキャンバスの縦幅(クリッピングされます)
@@ -191,7 +191,7 @@ export namespace WInvoke {
      * @param baseX X座標の描画基準点
      * @param baseY Y座標の描画基準点
      * @param padding クリッピング後につける余白
-     * @returns
+     * @returns Result<出力画像パス(拡張子あり), エラー文>
      */
     export async function generateFontPreview(
         fontPath: string,
@@ -206,7 +206,7 @@ export namespace WInvoke {
             padding?: number,
         }
     ) {
-        return await Result.fromPromise<string, string>(invoke("generate_font_preview", {
+        return await Result.fromPromise<undefined, string>(invoke("generate_font_preview", {
             fontPath,
             outputPath,
             text,

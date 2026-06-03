@@ -4,7 +4,7 @@ use ab_glyph::{FontVec, PxScale};
 use base64::{Engine, engine::general_purpose};
 use enigo::{Enigo, Key, Keyboard, Settings};
 use file_icon_provider::get_file_icon;
-use image::{DynamicImage, ImageBuffer, Rgba, RgbaImage, imageops};
+use image::{DynamicImage, ImageBuffer, Rgba, RgbaImage, codecs::webp::WebPEncoder, imageops};
 use imageproc::drawing::draw_text_mut;
 use lnk::encoding::WINDOWS_1252;
 use serde::Serialize;
@@ -370,7 +370,9 @@ pub fn generate_font_preview(
 
 
 
-    // 保存
-    cropped_view.to_image().save(&output_path).map_err(|e| e.to_string())?;
+    // webpに変換し、保存
+    let file = File::create(&output_path).map_err(|e| e.to_string())?;
+    let encoder = WebPEncoder::new_lossless(file);
+    encoder.encode(cropped_view.to_image().as_raw(), final_width, final_height, image::ExtendedColorType::Rgba8).map_err(|e| e.to_string())?;
     Ok(())
 }

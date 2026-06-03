@@ -13,9 +13,10 @@
 
     "notification:default",
 
-    {"identifier": "opener:allow-open-path", "allow": [{
-      "path": "$APPDATA"
-    }]},
+    {"identifier": "opener:allow-open-path", "allow": [
+      {"path": "$APPDATA"},
+      {"path": "$APPDATA/**"}
+    ]},
     {"identifier": "shell:allow-execute", "allow": [
       {"args": true, "name": "nvidia-smi", "cmd": "nvidia-smi"},
       {"args": true, "name": "ffmpeg", "cmd": "ffmpeg"},
@@ -28,6 +29,7 @@
     {"allow": [{"path": "**"}], "identifier": "fs:allow-exists"},
     {"allow": [{"path": "**"}], "identifier": "fs:allow-read-text-file"},
     {"allow": [{"path": "**"}], "identifier": "fs:allow-read-dir"},
-    {"allow": [{"path": "**"}], "identifier": "fs:allow-write-text-file"}
+    {"allow": [{"path": "**"}], "identifier": "fs:allow-write-text-file"},
+    {"allow": [{"path": "$APPDATA/cache/**"}], "identifier": "fs:allow-remove"}
   ]
 }

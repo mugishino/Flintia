@@ -3,12 +3,52 @@ import { exists, mkdir } from "@tauri-apps/plugin-fs";
 import { WInvoke } from "~/InvokeWrapper";
 
 
+/**
+ * このアプリのデータディレクトリのファイルを取得します。
+ * ディレクトリは自動で作成されます。
+ * @param filename 取得するファイル名
+ * @returns Appdata/filename
+ */
 export async function getAppdataDirFile(filename: string) {
-    const dir = await appDataDir();
-    if (await Paths.notExists(dir)) {
-        await mkdir(dir, {recursive: true});
-    }
-    return dir+"\\"+filename;
+    const appdata = await appDataDir();
+    await mkdir(appdata, {recursive: true});
+    return appdata + "/" + filename;
+}
+
+/**
+ * このアプリのデータディレクトリのディレクトリを取得します。
+ * そのディレクトリは自動で作成されます。
+ * @param dirname 取得するディレクトリ名
+ * @returns Appdata/dirname/
+ */
+export async function getAppdataDirDir(dirname: string) {
+    const appdata = await appDataDir();
+    const fullpath = appdata + "/" + dirname + "/";
+    await mkdir(fullpath, {recursive: true});
+    return fullpath;
+}
+
+/**
+ * このアプリのキャッシュディレクトリのファイルを取得します。
+ * キャッシュディレクトリは自動で作成されます。
+ * @param filename 取得するファイル名
+ * @returns Appdata/cache/filename
+ */
+export async function getCacheDirFile(filename: string) {
+    const dir = await getAppdataDirFile("cache/");
+    return dir + filename;
+}
+
+/**
+ * このアプリのキャッシュディレクトリのディレクトリを取得します。
+ * そのディレクトリは自動で作成されます。
+ * @param dirname 取得するディレクトリ名
+ * @returns Appdata/cache/dirname/
+ */
+export async function getCacheDirDir(dirname: string) {
+    const fullpath = "cache/" + dirname;
+    const dir = await getAppdataDirDir(fullpath);
+    return dir;
 }
 
 export namespace Paths {
