@@ -21,6 +21,8 @@
     --color-button-border: var(--color-border);
 
     --color-border: var(--color-layerC);
+    --color-safe: #0c0;
+    --color-info: #06f;
     --color-warn: #db0;
     --color-error: #f44;
     --color-fail: #c44;

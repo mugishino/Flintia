@@ -1,6 +1,6 @@
 import { MainSetting } from "./MainSetting";
 import { SystemInfo } from "./SystemInfo";
-import { DiskHalfwayStatus } from "./DiskHalfwayStatus";
+import { DiskStatus } from "./DiskStatus";
 import { Other } from "./Other";
 
 export function System() {
@@ -8,7 +8,7 @@ export function System() {
         <>
             <MainSetting/>
             <SystemInfo/>
-            <DiskHalfwayStatus/>
+            <DiskStatus/>
             <Other/>
         </>
     );
