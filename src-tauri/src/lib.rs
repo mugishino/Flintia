@@ -6,8 +6,8 @@ use tauri::{
 use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
 
-mod commands;
-mod debug_command;
+mod flintia;
+use flintia::{debug, font, invks, launcher};
 
 pub fn quit_application(app: &AppHandle<Wry>, restart: bool) {
     // ウィンドウを閉じた際に最後のウィンドウであれば処理を行う
@@ -52,26 +52,26 @@ pub fn run() {
             None,
         ))
         .invoke_handler(tauri::generate_handler![
-            commands::paste,
-            commands::get_system_uptime,
-            commands::get_all_disk_info,
-            commands::get_windows_hotfix,
-            commands::get_file_icon_base64,
-            commands::is_directory,
-            commands::run_exe,
-            commands::console_log,
-            commands::get_windows_accent_color,
-            commands::file_trash,
-            commands::parse_lnk,
-            commands::get_uwp_apps,
-            commands::register_hotkey,
-            commands::get_recursive_files,
-            commands::parse_font_metadata,
-            commands::generate_font_preview,
+            invks::paste,
+            invks::get_system_uptime,
+            invks::get_all_disk_info,
+            invks::get_windows_hotfix,
+            launcher::get_file_icon_base64,
+            invks::is_directory,
+            invks::run_exe,
+            invks::console_log,
+            launcher::get_windows_accent_color,
+            invks::file_trash,
+            launcher::parse_lnk,
+            launcher::get_uwp_apps,
+            invks::register_hotkey,
+            invks::get_recursive_files,
+            font::parse_font_metadata,
+            font::generate_font_preview,
             #[cfg(debug_assertions)]
-            debug_command::open_devtools,
+            debug::open_devtools,
         ])
-        .manage(commands::CommandState {
+        .manage(invks::CommandState {
             hotkey_data: Mutex::new(HashMap::new()),
         })
         .setup(|app| {

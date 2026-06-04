@@ -1,0 +1,150 @@
+use std::{collections::HashMap, os::windows::process::CommandExt, path::{self}, process::{Command, Stdio}, sync::Mutex};
+
+use enigo::{Enigo, Key, Keyboard, Settings};
+use tauri::{AppHandle, Emitter, Wry};
+use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
+use walkdir::WalkDir;
+
+pub struct CommandState {
+    pub hotkey_data: Mutex<HashMap<String, String>>,
+}
+
+#[tauri::command]
+pub fn paste(enter: bool, win: tauri::WebviewWindow) {
+    let _ = win.hide();
+    let mut enigo = Enigo::new(&Settings::default()).unwrap();
+
+    // press Ctrl+V
+    enigo.key(Key::Control, enigo::Direction::Press).unwrap();
+    enigo.key(Key::V, enigo::Direction::Click).unwrap();
+
+    // release Ctrl
+    enigo.key(Key::Control, enigo::Direction::Release).unwrap();
+
+    if enter {
+        enigo.key(Key::Return, enigo::Direction::Click).unwrap();
+    }
+}
+
+#[tauri::command]
+pub fn get_system_uptime() -> u64 {
+    sysinfo::System::uptime()
+}
+
+#[derive(serde::Serialize)]
+pub struct DiskInfo {
+    name: String,
+    total_size: u64,
+    available_space: u64,
+}
+
+#[tauri::command]
+pub fn get_all_disk_info() -> Vec<DiskInfo> {
+    let disks = sysinfo::Disks::new_with_refreshed_list();
+    disks
+        .iter()
+        .map(|disk| DiskInfo {
+            name: disk
+                .mount_point()
+                .to_str()
+                .map(|s| s.to_string())
+                .unwrap_or("?:".to_string()),
+            total_size: disk.total_space(),
+            available_space: disk.available_space(),
+        })
+        .collect()
+}
+
+#[tauri::command]
+pub async fn get_windows_hotfix() -> Result<String, String> {
+    let out = tokio::process::Command::new("powershell")
+        .arg("-Command")
+        .arg("Get-Hotfix | ConvertTo-Json")
+        .output()
+        .await
+        .map_err(|_| "Failed to Get-Hotfix")?;
+    Ok(String::from_utf8_lossy(&out.stdout).to_string())
+}
+
+#[tauri::command]
+pub fn is_directory(path: &str) -> bool {
+    let target = path::PathBuf::from(path);
+    target.is_dir()
+}
+
+#[tauri::command]
+pub fn run_exe(path: &str, args: &str) -> Result<(), String> {
+    if path.trim().is_empty() {
+        return Err("path is empty".into());
+    }
+
+    // argsを分割
+    let args_vec = shell_words::split(args)
+        .map_err(|e| e.to_string())?;
+
+    // flags
+    const CREATE_NO_WINDOW: u32 = 0x08000000;
+    const DETACHED_PROCESS: u32 = 0x00000008;
+
+    Command::new("cmd")
+        .args(["/C", "start", "", path])
+        .args(args_vec)
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .creation_flags(CREATE_NO_WINDOW | DETACHED_PROCESS)
+        .spawn()
+        .map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub fn console_log(msg: &str) {
+    println!("{}", msg);
+}
+
+#[tauri::command]
+pub fn file_trash(files: Vec<String>) -> Result<(), String> {
+    let _ = trash::delete_all(files).map_err(|_| "File trash failed");
+    Ok(())
+}
+
+#[tauri::command]
+pub fn register_hotkey(hotkey: &str, id: &str, app: AppHandle<Wry>, state: tauri::State<'_, CommandState>) -> Result<String, String> {
+    let manager = app.global_shortcut();
+    let mut data = state.hotkey_data.lock().unwrap();
+
+    let already_key_opt = data.get(id);
+    if let Some(already_key) = already_key_opt {
+        // 既に登録されているキーと同じならキャンセル
+        if already_key == hotkey {return Ok("Success - some key".to_string());}
+
+        // キー更新の場合は旧キーを削除
+        let _ = manager.unregister(already_key.as_str());
+    }
+
+    // 登録
+    let id_str = String::from(id);
+    manager.on_shortcut(hotkey, move |app, _, state| {
+        if state.state == ShortcutState::Pressed {
+            let _ = app.emit("hotkey-pressed", id_str.clone()).unwrap();
+        }
+    }).map(|_| {
+        // 成功すれば更新
+        data.insert(String::from(id), String::from(hotkey));
+        format!("Success - Register hotkey: {}", hotkey)
+    }).map_err(|_| {
+        format!("Failed - Register hotkey: {}", hotkey)
+    })
+}
+
+#[tauri::command]
+pub fn get_recursive_files(path: String) -> Vec<String> {
+    WalkDir::new(path)
+        .into_iter()
+        .filter_map(|e| e.ok())           // エラー（アクセス権限なし等）をスキップ
+        .filter(|e| e.file_type().is_file()) // ファイルのみに絞り込む
+        .map(|e| e.path().to_string_lossy().into_owned()) // PathからStringへ変換
+        .collect()
+}
