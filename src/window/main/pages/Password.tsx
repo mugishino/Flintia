@@ -40,7 +40,7 @@ export function Password() {
 
     // edit overlay
     const [editOverlay, showEditOverlay] = useState(false);
-    const [editData, setEditData] = useState<PassRecord|undefined>(undefined);
+    const [editData, setEditDataRaw] = useState<PassRecord|undefined>(undefined);
     const [editDataKey, setEditDataKey] = useState<string|undefined>(undefined);
     const [passwordVisible, setPasswordVisible] = useState(false);
 
@@ -57,8 +57,17 @@ export function Password() {
         showEditOverlay(true);
         setEditDataKey(editDataKey);
         const data = ifPresent(editDataKey, it => passwordData?.get(it));
-        setEditData(data ?? {});
+        setEditDataRaw(data ?? {});
         setPasswordVisible(false);
+    }
+
+    /**
+     * setEditDataRawのラッパー。一部の値の上書きが簡潔に。
+     * @param key 値を設定するキー
+     * @param value 設定する値
+     */
+    function setEditData<K extends keyof PassRecord>(key: K, value: PassRecord[K]) {
+        setEditDataRaw(prev => ({...prev, [key]: value}));
     }
 
 
@@ -160,14 +169,14 @@ export function Password() {
                             );
                         }}>{archiveMode ? "アーカイブから戻す" : "アーカイブ化"}</button>
                     </div>
-                    <input placeholder="Title"       value={editData?.title     ?? String.empty} onChange={e => setEditData(prev => ifPresent(prev, it => ({...it, title    : ifPresent(e.currentTarget.value)})))}/>
-                    <input placeholder="Username"    value={editData?.username  ?? String.empty} onChange={e => setEditData(prev => ifPresent(prev, it => ({...it, username : ifPresent(e.currentTarget.value)})))}/>
-                    <input placeholder="MailAddress" value={editData?.mail      ?? String.empty} onChange={e => setEditData(prev => ifPresent(prev, it => ({...it, mail     : ifPresent(e.currentTarget.value)})))}/>
+                    <input placeholder="Title"       value={editData?.title     ?? String.empty} onChange={e => setEditData("title"   , e.currentTarget.value)}/>
+                    <input placeholder="Username"    value={editData?.username  ?? String.empty} onChange={e => setEditData("username", e.currentTarget.value)}/>
+                    <input placeholder="MailAddress" value={editData?.mail      ?? String.empty} onChange={e => setEditData("mail"    , e.currentTarget.value)}/>
                     <div className="flex flex-row gap-1">
-                        <input placeholder="Password" type={passwordVisible ? "text" : "password"} value={editData?.password  ?? String.empty} onChange={e => setEditData(prev => ifPresent(prev, it => ({...it, password : ifPresent(e.currentTarget.value)})))}/>
+                        <input placeholder="Password" type={passwordVisible ? "text" : "password"} value={editData?.password  ?? String.empty} onChange={e => setEditData("password", e.currentTarget.value)}/>
                         <SVGButton src={passwordVisible ? "visibility.svg" : "visibility_off.svg"} className="grow aspect-square" onClick={() => setPasswordVisible(prev => !prev)}/>
                     </div>
-                    <textarea className="h-20 border resize-none" placeholder="Note" value={editData?.note ?? String.empty} onChange={e => setEditData(prev => ifPresent(prev, it => ({...it, note: ifPresent(e.currentTarget.value)})))}/>
+                    <textarea className="h-20 border resize-none" placeholder="Note" value={editData?.note ?? String.empty} onChange={e => setEditData("note", e.currentTarget.value)}/>
                     <Line/>
                     <button disabled={!editData?.title} onClick={() => {
                         if (!editData) return;
