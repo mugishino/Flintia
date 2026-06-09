@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { WInvoke } from "~/InvokeWrapper";
 import { getAppdataDirDir, getAppdataDirFile, getCacheDirDir, Paths } from "~/util/path";
+import { SessionData } from "~/util/session";
 
 const FONT_EXTENSIONS = ["ttf", "otf", "ttc", "woff", "woff2"];
 // ここを変更する際はRust側も変更してください。
@@ -17,12 +18,14 @@ const FONT_DIR = await getAppdataDirDir("fonts/");
 const FONT_PREVIEW_DIR = await getCacheDirDir("font_preview/");
 
 function FontViewColumn(props: {
-    imageSource: string,
+    imageSource?: string,
+    active?: boolean,
+    onClick?: () => void,
 }) {
     return (
-        <div className="h-1/10 border-b flex flex-col">
+        <div className={`h-1/10 border-b flex flex-col cursor-pointer ${"bg-enable-overlay".where(!!props.active)}`} onClick={props.onClick}>
             <div className="grow flex items-center">
-                <img src={props.imageSource}/>
+                <img src={props.imageSource ?? String.empty}/>
             </div>
         </div>
     );
@@ -30,18 +33,35 @@ function FontViewColumn(props: {
 
 type FontViewData = WInvoke.FontMetadata & {
     /** 生の画像パス */
-    image: string
+    image: string,
+    /** フォント自体のパス */
+    font_path: string,
 };
+
+/** F5で再表示しているか確認する用のsessionキー */
+const INIT_KEY = "FONT_MANAGER_INIT";
 
 export function FontManager() {
     const [data, setData] = useState<FontViewData[]>([]);
+    const [selectFonts, setSelectFonts] = useState<string[]>([]);
+    const [loadedFonts, setLoadedFonts] = useState<string[]>([]);
 
     useEffectAsync(async() => {
+        // 既に読み込み済みのフォントを登録
+        (await WInvoke.getActiveFonts()).map(v => setLoadedFonts(v));
+
+        // 読み込み
         const fontFiles = (await readDir(FONT_DIR)).filter(v => {
             if (!v.isFile) return false;
             if (FONT_EXTENSIONS.contains(Paths.splitExt(v.name).ext)) return true;
             return false;
         }).map(v => FONT_DIR + v.name);
+
+        // アプリ起動時に1度のみ行われる初期化
+        if (!SessionData.exists(INIT_KEY)) {
+            SessionData.set(INIT_KEY, true);
+            WInvoke.unregisterFonts(fontFiles);
+        }
 
         const metadataList = fontFiles.map(async (font): Promise<FontViewData|undefined> => {
             // データ解析
@@ -60,17 +80,61 @@ export function FontManager() {
                 });
             }
 
-            return {...metadata, image: output};
+            return {...metadata, image: output, font_path: font};
         });
         setData((await Promise.all(metadataList)).nullFilter());
     }, []);
 
+    async function updateFontRegister() {
+        if (selectFonts.length == 0) return;
+
+        // selectFontsから有効化・無効化するフォントを振り分け
+        const activates: string[] = [];
+        const disables: string[] = [];
+        selectFonts.forEach(font => {
+            if (loadedFonts.contains(font)) return disables.push(font);
+            activates.push(font);
+        });
+
+        // state更新
+        const newLoaded = [...loadedFonts, ...activates].filter(x => !disables.contains(x));
+        setLoadedFonts(newLoaded);
+        setSelectFonts([]);
+
+        if (disables ) await WInvoke.unregisterFonts(disables);
+        if (activates) await WInvoke.registerFonts(activates);
+    }
+
+
+
+    const viewData: (FontViewData & {
+        loaded: boolean,
+        select: boolean,
+    })[] = data.map(data => {
+        const loaded = loadedFonts.contains(data.font_path);
+        const select = selectFonts.contains(data.font_path);
+        return {...data, loaded, select};
+    });
+
     return (
         <>
-            <button className="border-0 border-b" onClick={() => openPath(FONT_DIR)}>Open Font Folder</button>
+            <div className="flex flex-row border-b *:border-0 *:not-last:border-r">
+                <button onClick={() => openPath(FONT_DIR)}>Open Font Folder</button>
+                <button className="text-enable" onClick={updateFontRegister}>フォント読み込みを確定する</button>
+            </div>
             <div className="flex flex-col h-full">
-                {data.map(v =>
-                    <FontViewColumn key={v.post_script_name} imageSource={convertFileSrc(v.image)}/>
+                {viewData.map(v => 
+                    <FontViewColumn
+                        key={v.post_script_name} 
+                        imageSource={convertFileSrc(v.image)} 
+                        active={v.select ? !v.loaded : v.loaded}
+                        onClick={() => {
+                            let newSelects = selectFonts;
+                            if (!v.select) newSelects.push(v.font_path);
+                            else newSelects = newSelects.filter(x => x != v.font_path);
+                            setSelectFonts([...newSelects]);
+                        }}
+                    />
                 )}
             </div>
         </>

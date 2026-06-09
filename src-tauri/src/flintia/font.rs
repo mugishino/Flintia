@@ -1,9 +1,10 @@
-use std::{fs::File, io::{Read}, path::{Path}};
+use std::{fs::File, io::Read, os::windows::ffi::OsStrExt, path::Path, sync::Mutex};
 use ab_glyph::{FontVec, PxScale};
 use image::{ImageBuffer, Rgba, codecs::webp::WebPEncoder, imageops};
 use imageproc::drawing::draw_text_mut;
 use serde::Serialize;
 use ttf_parser::name_id;
+use windows::{Win32::{Foundation::{LPARAM, WPARAM}, Graphics::Gdi::{AddFontResourceExW, FONT_RESOURCE_CHARACTERISTICS, RemoveFontResourceExW}, UI::WindowsAndMessaging::{HWND_BROADCAST, PostMessageW, WM_FONTCHANGE}}, core::{HSTRING, PCWSTR}};
 
 #[derive(Serialize)]
 pub struct FontMetadata {
@@ -144,5 +145,78 @@ pub fn generate_font_preview(
     let file = File::create(&output_path).map_err(|e| e.to_string())?;
     let encoder = WebPEncoder::new_lossless(file);
     encoder.encode(cropped_view.to_image().as_raw(), final_width, final_height, image::ExtendedColorType::Rgba8).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+
+
+static ACTIVE_FONTS: Mutex<Vec<String>> = Mutex::new(Vec::new());
+
+fn fontpath_to_hstring(fontpath: &str) -> HSTRING {
+    let path = Path::new(fontpath);
+    let wide: Vec<u16> = path.as_os_str().encode_wide().collect();
+    HSTRING::from_wide(&wide)
+}
+
+#[tauri::command]
+pub fn register_fonts(fonts: Vec<String>) -> Result<Vec<String>, String> {
+    let mut actives = ACTIVE_FONTS.lock().map_err(|e| e.to_string())?;
+
+    let mut added_fonts: Vec<String> = Vec::new();
+    for f in fonts {
+        let hstr = fontpath_to_hstring(&f);
+        let pcwstr = PCWSTR::from_raw(hstr.as_ptr());
+        unsafe {
+            let r = AddFontResourceExW(pcwstr, FONT_RESOURCE_CHARACTERISTICS(0), None);
+            // 0は失敗なのでそれ以外
+            if r != 0 {
+                added_fonts.push(f);
+            }
+        }
+    }
+    unsafe {
+        let _ = PostMessageW(Some(HWND_BROADCAST), WM_FONTCHANGE, WPARAM(0), LPARAM(0));
+    }
+    // リソース追加成功したフォントをActiveFontsに追加する
+    actives.extend(added_fonts.iter().cloned());
+    Ok(added_fonts)
+}
+
+#[tauri::command]
+pub fn unregister_fonts(fonts: Vec<String>) -> Result<(), String> {
+    let mut actives = ACTIVE_FONTS.lock().map_err(|e| e.to_string())?;
+
+    let mut removed = false;
+    for f in fonts {
+        let hstr = fontpath_to_hstring(&f);
+        let pcwstr = PCWSTR::from_raw(hstr.as_ptr());
+        unsafe {
+            while RemoveFontResourceExW(pcwstr, 0, None).as_bool() {
+                removed = true;
+            }
+        }
+        actives.retain(|x| x.to_string() != f);
+    }
+    if removed {
+        unsafe {
+            let _ = PostMessageW(Some(HWND_BROADCAST), WM_FONTCHANGE, WPARAM(0), LPARAM(0));
+        }
+    }
+    Ok(())
+}
+
+#[tauri::command]
+pub fn get_active_fonts() -> Result<Vec<String>, String> {
+    let fonts = ACTIVE_FONTS.lock().map_err(|e| e.to_string())?;
+    Ok(fonts.clone())
+}
+
+/**
+ * この関数はRust側に登録されているフォントを解放するものです。
+ * フォントディレクトリ内のフォント全てを解放する正確性のあるものではありません。
+ */
+pub fn remove_all_font_resource() -> Result<(), String> {
+    let actives = get_active_fonts().map_err(|e| e.to_string())?;
+    unregister_fonts(actives)?;
     Ok(())
 }

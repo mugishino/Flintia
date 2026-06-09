@@ -6,8 +6,17 @@ use tauri::{
 use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
 
-mod flintia;
-use flintia::{debug, font, invks, launcher};
+pub mod flintia;
+use flintia::{debug as fdebug, font, invks, launcher, core as fcore};
+
+pub fn crash_handler() {
+    //! アプリ終了時の共通処理の記述から呼び出されています。
+    //! クラッシュ時にのみ行う処理が発生した場合は分離するなど対処してください。
+
+    let _ = font::remove_all_font_resource().map_err(|e| {
+        println!("Failed to collect font resource: {}", e)
+    });
+}
 
 pub fn quit_application(app: &AppHandle<Wry>, restart: bool) {
     // ウィンドウを閉じた際に最後のウィンドウであれば処理を行う
@@ -52,27 +61,37 @@ pub fn run() {
             None,
         ))
         .invoke_handler(tauri::generate_handler![
+            fcore::register_hotkey,
             invks::paste,
             invks::get_system_uptime,
             invks::get_all_disk_info,
             invks::get_windows_hotfix,
-            launcher::get_file_icon_base64,
             invks::is_directory,
             invks::run_exe,
             invks::console_log,
-            launcher::get_windows_accent_color,
             invks::file_trash,
+            invks::get_recursive_files,
+            launcher::get_file_icon_base64,
+            launcher::get_windows_accent_color,
             launcher::parse_lnk,
             launcher::get_uwp_apps,
-            invks::register_hotkey,
-            invks::get_recursive_files,
             font::parse_font_metadata,
             font::generate_font_preview,
+            font::register_fonts,
+            font::unregister_fonts,
+            font::get_active_fonts,
             #[cfg(debug_assertions)]
-            debug::open_devtools,
+            fdebug::open_devtools,
         ])
-        .manage(invks::CommandState {
+        .manage(fcore::CommandState {
             hotkey_data: Mutex::new(HashMap::new()),
+        })
+        .on_window_event(|_, event| match event {
+            tauri::WindowEvent::Destroyed => {
+                // アプリ終了時の共通処理
+                crash_handler();
+            }
+            _ => {}
         })
         .setup(|app| {
             // 開発用 - DevToolsを自動で開く

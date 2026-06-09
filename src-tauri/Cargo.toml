@@ -42,6 +42,8 @@ base64 = "0.22.1"
 shell-words = "1.1.1"
 # Windows関係
 windows = { version = "0.62.2", features = [
+    # 一般
+    "Win32_UI_WindowsAndMessaging",
     # アクセントカラー取得
     "UI_ViewManagement",
     # アプリ取得
@@ -49,6 +51,11 @@ windows = { version = "0.62.2", features = [
     "ApplicationModel",
     "ApplicationModel_Core",
     "Foundation_Collections",
+    # フォント登録
+    "Win32_Graphics_Gdi",
+    # クラッシュハンドラー
+    "Win32_System_Diagnostics_Debug",
+    "Win32_System_Kernel",
 ] }
 # ゴミ箱にファイルを移動
 trash = "5.2.5"

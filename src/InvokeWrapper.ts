@@ -183,7 +183,7 @@ export namespace WInvoke {
     /**
      * フォントのプレビュー画像を生成します。
      * @param fontPath フォントファイルのパス
-     * @param outputPath 画像出力パス(拡張子なし)
+     * @param outputPath 画像出力パス
      * @param text 描画するテキスト
      * @param fontSize 描画するフォントの大きさ
      * @param canvasHeight 内部で使用するキャンバスの縦幅(クリッピングされます)
@@ -191,7 +191,7 @@ export namespace WInvoke {
      * @param baseX X座標の描画基準点
      * @param baseY Y座標の描画基準点
      * @param padding クリッピング後につける余白
-     * @returns Result<出力画像パス(拡張子あり), エラー文>
+     * @returns Result<undefined, エラー文>
      */
     export async function generateFontPreview(
         fontPath: string,
@@ -218,5 +218,31 @@ export namespace WInvoke {
             baseY: option?.baseY ?? 8,
             padding: Math.max(option?.padding ?? 8, 0),
         }));
+    }
+
+    /**
+     * フォントを登録します。
+     * @param fonts 登録するフォントファイルのパスリスト
+     * @returns Result<成功したフォントのパスリスト, エラー文>
+     */
+    export async function registerFonts(fonts: string[]) {
+        return await Result.fromPromise<string[], string>(invoke("register_fonts", {fonts}));
+    }
+
+    /**
+     * フォントの登録を解除します。
+     * @param fonts 登録解除するフォントファイルのパスリスト
+     * @returns Result<undefined, エラー文>
+     */
+    export async function unregisterFonts(fonts: string[]) {
+        return await Result.fromPromise<undefined, string>(invoke("unregister_fonts", {fonts}));
+    }
+
+    /**
+     * 読み込み済みのフォントファイルのパスを取得します。
+     * @returns Result<読込済フォントファイルパス, エラー文>
+     */
+    export async function getActiveFonts() {
+        return await Result.fromPromise<string[], string>(invoke("get_active_fonts"));
     }
 }

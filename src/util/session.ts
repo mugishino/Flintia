@@ -36,6 +36,11 @@ export namespace SessionData {
 
 
 
+    /**
+     * キーが存在していた場合なにもしません。でなければ、キーと値を設定します。
+     * @param key 確認・設定するキー
+     * @param value 設定する値
+     */
     export function setIfAbsent(key: string, value: any) {
         if (exists(key)) return;
         set(key, value);
