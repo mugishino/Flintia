@@ -26,7 +26,7 @@ export class DragProvider {
 
     /**
      * 現在のlocation.pathnameのドラッグイベントをリスナーします
-     * @param type リスナーするイベントのタイプ
+     * @param type リスナーするイベントタイプ
      * @param fun コールバック。未指定の場合は何もしませんが、DefaultListenerは呼び出されなくなります。
      */
     public static setListener(type: DragType, fun?: DragEventListener) {
@@ -34,10 +34,20 @@ export class DragProvider {
         eventmap.set(type, fun ?? (() => {}));
     }
 
+    /**
+     * 全ての画面でデフォルトとなるリスナーを登録します。
+     * @param type リスナーを登録するイベントタイプ
+     * @param fun イベント発生時のコールバック
+     */
     public static setDefaultListener(type: DragType, fun: DragEventListener) {
         this.fallback.set(type, fun);
     }
 
+    /**
+     * リスナーを呼び出します。
+     * @param type 呼び出すリスナーのイベントタイプ
+     * @param e ドラッグイベントの情報
+     */
     public static call(type: DragType, e: Event<DragDropPayload>) {
         const eventmap = this.data.get(location.pathname);
         if (eventmap) {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
-import { IntVector2 } from "~/util/clazz";
+import { Integer, IntVector2 } from "~/util/clazz";
 import { parseMouseButtons } from "~/util/util";
 
 export const GRID_SIZE = screen.width / 43;
@@ -98,7 +98,7 @@ export function CellObj(props: CellData & CellObjProps) {
             {...rest}
             className={twMerge("absolute hover:z-10 cursor-default", className)}
             onMouseDown={e => {
-                if (e.button == 0) setDownOrigin(new IntVector2(e.pageX, e.pageY));
+                if (e.button == 0) setDownOrigin(new IntVector2(new Integer(e.pageX), new Integer(e.pageY)));
             }}
             onMouseUp={e => {
                 setMoveing(false);

@@ -1,6 +1,7 @@
 import { appDataDir } from "@tauri-apps/api/path";
 import { exists, mkdir } from "@tauri-apps/plugin-fs";
 import { WInvoke } from "~/InvokeWrapper";
+import { methodRedirect } from "./util";
 
 
 /**
@@ -92,5 +93,5 @@ export class Paths {
         return ra == rb;
     }
 
-    public static readonly isDirectory = (...args: Parameters<typeof WInvoke.isDirectory>) => {return WInvoke.isDirectory(...args)};
+    public static readonly isDirectory = methodRedirect(WInvoke.isDirectory);
 }

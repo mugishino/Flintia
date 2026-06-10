@@ -92,6 +92,11 @@ export function searchFilter(search: string, value: string) {
     return y.includes(x);
 }
 
+/**
+ * URLを標準化します。
+ * @param text 標準化するURL
+ * @returns Result<標準化したURL, エラー文>
+ */
 export function normalizeURL(text: string): Result<string, string> {
     try {
         const url = new URL(text);
@@ -99,4 +104,13 @@ export function normalizeURL(text: string): Result<string, string> {
     } catch (err) {
         return Result.Err(String(err));
     }
+}
+
+/**
+ * メソッドをアロー関数で包み、thisを安全にしてリダイレクトします。
+ * @param targetFn リダイレクトする関数
+ * @returns リダイレクトするアロー関数
+ */
+export function methodRedirect<Args extends any[], Return>(targetFn: (...args: Args) => Return) {
+    return (...args: Args) => targetFn(...args);
 }
