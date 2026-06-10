@@ -9,13 +9,13 @@ export interface AppSavedata {
     filename: string;
 }
 
-export namespace AppStorage {
+export class AppStorage {
     /**
      * このアプリのセーブデータを読み込みます。
      * @param fallback デフォルトデータを入れてください。ファイル名はこのオブジェクトから取得されます。
      * @returns 読み込まれたデータ
      */
-    export async function load<T extends AppSavedata>(fallback: T): Promise<T> {
+    public static async load<T extends AppSavedata>(fallback: T): Promise<T> {
         const file = await getAppdataDirFile(fallback.filename);
 
         if (await Paths.notExists(file)) {
@@ -37,7 +37,7 @@ export namespace AppStorage {
      * このアプリのセーブデータを保存します。
      * @param data 保存するデータ
      */
-    export async function save(data: AppSavedata) {
+    public static async save(data: AppSavedata) {
         const file = await getAppdataDirFile(data.filename);
         await writeTextFile(file, JSON.stringify(data, undefined, 4));
     }

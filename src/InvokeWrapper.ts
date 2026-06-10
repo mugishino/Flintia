@@ -2,18 +2,46 @@ import { invoke } from "@tauri-apps/api/core";
 import { IS_DEVELOP_MODE } from "./Data";
 import { Result } from "./util/clazz";
 
-interface DiskInfo {
+export interface DiskInfo {
     name: string;
     total_size: number;
     available_space: number;
 }
 
-export namespace WInvoke {
+export interface LinkData {
+    link_info: {
+        local_base_path: string,
+    },
+    string_data: {
+        command_line_arguments: string|null,
+        workingDir: string|null,
+    }
+}
+
+export interface UWPAppInfo {
+    display_name: string|null,
+    description: string|null,
+    aumid: string
+}
+
+export interface FontMetadata {
+    family_name: string | undefined,
+    post_script_name: string | undefined,
+    full_name: string | undefined,
+    subfamily_name: string | undefined,
+    version: string | undefined,
+    license: string | undefined,
+    copyright: string | undefined,
+    monospaced: boolean,
+    variable: boolean,
+}
+
+export class WInvoke {
     /**
      * ウィンドウを閉じたのち、Ctrl+Vを押します。
      * @param enter ペースト後にEnterを押すか
      */
-    export async function paste(enter: boolean=false) {
+    public static async paste(enter: boolean=false) {
         await invoke("paste", {enter});
     }
 
@@ -21,7 +49,7 @@ export namespace WInvoke {
      * PCの起動時間を取得します。
      * @returns 秒
      */
-    export async function getSystemUptime(): Promise<number> {
+    public static async getSystemUptime(): Promise<number> {
         return await invoke("get_system_uptime");
     }
 
@@ -29,7 +57,7 @@ export namespace WInvoke {
      * 全てのディスクの情報を取得します。
      * @returns 取得した全てのディスク情報
      */
-    export async function getAllDiskInfo(): Promise<DiskInfo[]> {
+    public static async getAllDiskInfo(): Promise<DiskInfo[]> {
         return await invoke("get_all_disk_info");
     }
 
@@ -37,7 +65,7 @@ export namespace WInvoke {
      * インストールされているWindowsHotfixを取得します。
      * @returns 取得したHotfixリスト
      */
-    export async function getWindowsHotfix(): Promise<{HotFixID: string}[]> {
+    public static async getWindowsHotfix(): Promise<{HotFixID: string}[]> {
         const data = await invoke("get_windows_hotfix");
         return JSON.parse(data as string);
     }
@@ -47,7 +75,7 @@ export namespace WInvoke {
      * @param mime mineタイプを先頭につける
      * @returns base64
      */
-    export async function getFileIconBase64(path: string, size=32, mime: boolean=true): Promise<Result<string, string>> {
+    public static async getFileIconBase64(path: string, size=32, mime: boolean=true): Promise<Result<string, string>> {
         return invoke("get_file_icon_base64", {path: path, size: size}).then(base64 => {
             return Result.Ok((mime ? "data:image/png;base64," : String.empty) + base64);
         }).catch(reason => {
@@ -60,7 +88,7 @@ export namespace WInvoke {
      * @param path 判別したいパス
      * @returns ディレクトリであればtrue
      */
-    export async function isDirectory(path: string): Promise<boolean> {
+    public static async isDirectory(path: string): Promise<boolean> {
         return await invoke("is_directory", {path: path});
     }
 
@@ -70,7 +98,7 @@ export namespace WInvoke {
      * @param args 実行引数
      * @returns エラーまたは成功
      */
-    export async function runExe(path: string, args?: string): Promise<string> {
+    public static async runExe(path: string, args?: string): Promise<string> {
         return await invoke("run_exe", {path: path, args: args ?? String.empty});
     }
 
@@ -78,7 +106,7 @@ export namespace WInvoke {
      * コンソールにログを出力します。
      * @param msg 出力するメッセージ
      */
-    export async function consoleLog(msg: string) {
+    public static async consoleLog(msg: string) {
         await invoke("console_log", {msg: msg});
     }
 
@@ -86,7 +114,7 @@ export namespace WInvoke {
      * Windowsのアクセントカラーを取得します。
      * @returns 取得したアクセントカラーまたはエラー
      */
-    export async function getWindowsAccentColor(): Promise<{R: number, G: number, B: number, A: number}> {
+    public static async getWindowsAccentColor(): Promise<{R: number, G: number, B: number, A: number}> {
         return await invoke("get_windows_accent_color");
     }
 
@@ -94,7 +122,7 @@ export namespace WInvoke {
      * ウィンドウのDevtoolsを開きます。
      * @param label Devtoolsを開くウィンドウのLabel
      */
-    export async function openDevtools(label: string) {
+    public static async openDevtools(label: string) {
         if (!IS_DEVELOP_MODE) return;
         await invoke("open_devtools", {label: label});
     }
@@ -103,18 +131,8 @@ export namespace WInvoke {
      * ファイルをゴミ箱に送る
      * @param files ゴミ箱に送るファイルリスト
      */
-    export async function fileTrash(files: string[]) {
+    public static async fileTrash(files: string[]) {
         await invoke("file_trash", {files: files});
-    }
-
-    export interface LinkData {
-        link_info: {
-            local_base_path: string,
-        },
-        string_data: {
-            command_line_arguments: string|null,
-            workingDir: string|null,
-        }
     }
 
     /**
@@ -122,22 +140,16 @@ export namespace WInvoke {
      * @param path 解析するlnkファイル
      * @returns 解析データ
      */
-    export async function parseLnk(path: string) {
+    public static async parseLnk(path: string) {
         const data = await invoke("parse_lnk", {path: path});
         return data as LinkData;
-    }
-
-    export interface UWPAppInfo {
-        display_name: string|null,
-        description: string|null,
-        aumid: string
     }
 
     /**
      * UWPのアプリを全て取得します。
      * @returns 取得したUWPのアプリ
      */
-    export async function getUwpApps() {
+    public static async getUwpApps() {
         return await invoke("get_uwp_apps") as UWPAppInfo[];
     }
 
@@ -146,7 +158,7 @@ export namespace WInvoke {
      * @param hotkey 登録するホットキー
      * @param id listen時に返ってくる識別用ID
      */
-    export async function registerHotkey(hotkey: string, id: string) {
+    public static async registerHotkey(hotkey: string, id: string) {
         return await Result.fromPromise<string, string>(invoke("register_hotkey", {hotkey, id}));
     }
 
@@ -156,27 +168,16 @@ export namespace WInvoke {
      * @param path 取得するディレクトリ
      * @returns 取得したファイル
      */
-    export async function getRecursiveFiles(path: string) {
+    public static async getRecursiveFiles(path: string) {
         return await invoke("get_recursive_files", {path}) as string[];
     }
 
-    export interface FontMetadata {
-        family_name: string | undefined,
-        post_script_name: string | undefined,
-        full_name: string | undefined,
-        subfamily_name: string | undefined,
-        version: string | undefined,
-        license: string | undefined,
-        copyright: string | undefined,
-        monospaced: boolean,
-        variable: boolean,
-    }
     /**
      * フォントファイルを解析し、メタデータを取得します。
      * @param path フォントファイルのパス
      * @returns Result<データ, エラー>
      */
-    export async function parseFontMetadata(path: string) {
+    public static async parseFontMetadata(path: string) {
         return await Result.fromPromise<FontMetadata, string>(invoke("parse_font_metadata", {path}));
     }
 
@@ -193,7 +194,7 @@ export namespace WInvoke {
      * @param padding クリッピング後につける余白
      * @returns Result<undefined, エラー文>
      */
-    export async function generateFontPreview(
+    public static async generateFontPreview(
         fontPath: string,
         outputPath: string,
         text: string,
@@ -225,7 +226,7 @@ export namespace WInvoke {
      * @param fonts 登録するフォントファイルのパスリスト
      * @returns Result<成功したフォントのパスリスト, エラー文>
      */
-    export async function registerFonts(fonts: string[]) {
+    public static async registerFonts(fonts: string[]) {
         return await Result.fromPromise<string[], string>(invoke("register_fonts", {fonts}));
     }
 
@@ -234,7 +235,7 @@ export namespace WInvoke {
      * @param fonts 登録解除するフォントファイルのパスリスト
      * @returns Result<undefined, エラー文>
      */
-    export async function unregisterFonts(fonts: string[]) {
+    public static async unregisterFonts(fonts: string[]) {
         return await Result.fromPromise<undefined, string>(invoke("unregister_fonts", {fonts}));
     }
 
@@ -242,7 +243,7 @@ export namespace WInvoke {
      * 読み込み済みのフォントファイルのパスを取得します。
      * @returns Result<読込済フォントファイルパス, エラー文>
      */
-    export async function getActiveFonts() {
+    public static async getActiveFonts() {
         return await Result.fromPromise<string[], string>(invoke("get_active_fonts"));
     }
 
@@ -250,7 +251,7 @@ export namespace WInvoke {
      * 初期化済みかを取得します。1回目の呼び出しはtrue、2回目以降の呼び出しはfalseになります。
      * @returns 初期化済みの場合false
      */
-    export async function isInitial(): Promise<boolean> {
+    public static async isInitial(): Promise<boolean> {
         return await invoke("is_initial");
     }
 }

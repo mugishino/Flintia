@@ -19,24 +19,20 @@ import { Logger } from "./module/Logger";
 import { Roulette } from "./window/main/pages/Roulette";
 import { FontManager } from "./window/main/pages/FontManager";
 
+type SidebarPosition = "Top"|"Bottom";
+interface Page {
+    element: JSX.Element;
+    size?: LogicalSize;
+    sidebar?: {
+        label: string;
+        pos: SidebarPosition;
+    },
+}
 
+export class Routing {
+    public static readonly DEFAULT_PAGE = "/Password";
 
-export namespace Routing {
-    export const DEFAULT_PAGE = "/Password";
-
-    type SidebarPosition = "Top"|"Bottom";
-    interface Page {
-        element: JSX.Element;
-        size?: LogicalSize;
-        sidebar?: {
-            label: string;
-            pos: SidebarPosition;
-        },
-    }
-
-
-
-    export const Data: {[_:string]:Page} = {
+    public static readonly Data: {[_:string]: Page} = {
         "*"             :{element: <NotFoundPage/>},
         "/"             :{element: <LandingPage />},
         "/Password"     :{element: <Password    />, sidebar: {pos: "Top", label: "Password"}},
@@ -60,17 +56,17 @@ export namespace Routing {
      * ルーティング要素を返します。
      * @returns \<Routes>を返すので直接使えます。
      */
-    export function getRoutes() {
-        const value = Object.entries(Data).map(([k, v]) => <Route key={k} path={k} element={v.element}/>);
+    public static getRoutes() {
+        const value = Object.entries(this.Data).map(([k, v]) => <Route key={k} path={k} element={v.element}/>);
         return <Routes>{value}</Routes>;
     }
 
-    export function useNavigate() {
+    public static useNavigate() {
         const navi = useReactRouterNavigate();
         return async (path: string) => {
             await navi(path);
             // navi時にすぐpathnameは変更される
-            routingEvents.forEach(v => v(location.pathname));
+            Routing.routingEvents.forEach(v => v(location.pathname));
             // change window size
             const data = Routing.Data[path];
             const win = await FlintiaWindow.getCurrentWindow();
@@ -81,9 +77,9 @@ export namespace Routing {
         };
     }
 
-    const routingEvents: ((pathname: string) => void)[] = [];
-    export function addRoutingEvent(fun: (pathname: string) => void) {
-        routingEvents.push(fun);
+    public static routingEvents: ((pathname: string) => void)[] = [];
+    public static addRoutingEvent(fun: (pathname: string) => void) {
+        this.routingEvents.push(fun);
     }
 }
 

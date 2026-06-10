@@ -3,7 +3,7 @@ import { CellObj, CellObjProps, getCellSize, GRID_SIZE, MARGIN_SIZE } from "./Ce
 import { Overlay } from "~/components/Overlay";
 import { Setting } from "~/components/Setting";
 import { FlintiaWindow } from "~/Flintia";
-import { WInvoke } from "~/InvokeWrapper";
+import { UWPAppInfo, WInvoke } from "~/InvokeWrapper";
 import { useStaticOverlay } from "~/hooks/useOverlay";
 import { useKVState } from "~/hooks/useKVState";
 import { SVGButton } from "~/components/SVGButton";
@@ -110,7 +110,7 @@ export function LaunchPanel() {
     const [isDir, setIsDir] = useState(false);
     const [openUrlString, setOpenUrlString] = useState<string|undefined>(undefined);
     // fetch application data
-    const [uwpApps, setUwpApps] = useState<WInvoke.UWPAppInfo[]>([]);
+    const [uwpApps, setUwpApps] = useState<UWPAppInfo[]>([]);
     const [appLnkFiles, setAppLnkFiles] = useState<string[]>([]);
     const [appSelectOverlay, setAppSelectOverlay] = useState(false);
     const [appSearch, setAppSearch] = useState(String.empty);

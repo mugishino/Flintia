@@ -1,12 +1,12 @@
 import { WInvoke } from "../InvokeWrapper";
 
-export namespace Clipboards {
+export class Clipboards {
     /**
      * テキストをコピーします。
      * @param text コピーするテキスト
      * @param paste 貼り付ける
      */
-    export function copyText(text: string|number, paste: boolean=false) {
+    public static copyText(text: string|number, paste: boolean=false) {
         navigator.clipboard.writeText(text.toString());
         if (paste) {
             WInvoke.paste();
@@ -18,7 +18,7 @@ export namespace Clipboards {
      * @param item 判定するClipboardItem
      * @returns 画像のMIMEタイプ, 画像でなければundefined
      */
-    export function isImage(item: ClipboardItem) {
+    public static isImage(item: ClipboardItem) {
         const itemType = item.types.find(t => [
             "image/png",
             "image/jpeg",
@@ -33,9 +33,9 @@ export namespace Clipboards {
      * クリップボードの画像をBlobで取得します。
      * @returns 失敗した場合nullが返ります。
      */
-    export async function getImageBlob() {
+    public static async getImageBlob() {
         const item = (await navigator.clipboard.read())[0];
-        const mime = isImage(item);
+        const mime = Clipboards.isImage(item);
         if (!mime) return null;
         return await item.getType(mime);
     }
@@ -45,7 +45,7 @@ export namespace Clipboards {
      * @param canvas コピーするcanvas
      * @returns 成功した場合true
      */
-    export async function copyFromCanvas(canvas: HTMLCanvasElement) {
+    public static async copyFromCanvas(canvas: HTMLCanvasElement) {
         // toBlobを待たずにclipboardを使おうとするとエラーが出ます
         const blob: Blob|null = await new Promise(resolve => {
             canvas.toBlob(async blob => resolve(blob));

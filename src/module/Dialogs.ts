@@ -8,12 +8,11 @@ export const VIDEO_EXTENSIONS: DialogFilter = {name: "Video", extensions: ["mp4"
 export const AUDIO_EXTENSIONS: DialogFilter = {name: "Audio", extensions: ["mp3", "wav", "flac", "ogg", "opus"]};
 export const IMAGE_EXTENSIONS: DialogFilter = {name: "Image", extensions: ["jpg", "jpeg", "png", "tif", "tiff", "webp", "avif", "bmp", "jxl"]};
 
-export namespace Dialogs {
-    async function openWrapper(title: string, extensions: DialogFilter[]|undefined, directory: boolean, multiple: false, defaultPath?: string): Promise<string  |null>;
-    async function openWrapper(title: string, extensions: DialogFilter[]|undefined, directory: boolean, multiple: true , defaultPath?: string): Promise<string[]|null>;
-
+export class Dialogs {
     // 大本のラップ関数
-    async function openWrapper(title: string, extensions: DialogFilter[]|undefined, directory: boolean, multiple: boolean, defaultPath?: string) {
+    private static async openWrapper(title: string, extensions: DialogFilter[]|undefined, directory: boolean, multiple: false, defaultPath?: string): Promise<string  |null>;
+    private static async openWrapper(title: string, extensions: DialogFilter[]|undefined, directory: boolean, multiple: true , defaultPath?: string): Promise<string[]|null>;
+    private static async openWrapper(title: string, extensions: DialogFilter[]|undefined, directory: boolean, multiple: boolean, defaultPath?: string) {
         const result = await dialog.open({
             title: title,
             filters: extensions,
@@ -34,8 +33,8 @@ export namespace Dialogs {
      * @param defaultPath デフォルトで開くパス。未指定の場合デスクトップ
      * @returns 選択されたファイル
      */
-    export async function openSingleFile(title: string, extensions: DialogFilter[], defaultPath?: string) {
-        return openWrapper(title, extensions, false, false, defaultPath);
+    public static async openSingleFile(title: string, extensions: DialogFilter[], defaultPath?: string) {
+        return this.openWrapper(title, extensions, false, false, defaultPath);
     }
 
     /**
@@ -44,8 +43,8 @@ export namespace Dialogs {
      * @param defaultPath デフォルトで開くパス。未指定の場合デスクトップ
      * @returns 選択されたディレクトリ
      */
-    export async function openSingleDirectory(title: string, defaultPath?: string) {
-        return openWrapper(title, undefined, true, false, defaultPath);
+    public static async openSingleDirectory(title: string, defaultPath?: string) {
+        return this.openWrapper(title, undefined, true, false, defaultPath);
     }
 
     /**
@@ -55,8 +54,8 @@ export namespace Dialogs {
      * @param defaultPath デフォルトで開くパス。未指定の場合デスクトップ
      * @returns 選択されたファイルリスト
      */
-    export async function openMultiFile(title: string, extensions: DialogFilter[], defaultPath?: string) {
-        return openWrapper(title, extensions, false, true, defaultPath);
+    public static async openMultiFile(title: string, extensions: DialogFilter[], defaultPath?: string) {
+        return this.openWrapper(title, extensions, false, true, defaultPath);
     }
 
     /**
@@ -65,8 +64,8 @@ export namespace Dialogs {
      * @param defaultPath デフォルトで開くパス。未指定の場合デスクトップ
      * @returns 選択されたディレクトリリスト
      */
-    export async function openMultiDirectory(title: string, defaultPath?: string) {
-        return openWrapper(title, undefined, true, true, defaultPath);
+    public static async openMultiDirectory(title: string, defaultPath?: string) {
+        return this.openWrapper(title, undefined, true, true, defaultPath);
     }
 
     /**
@@ -76,7 +75,7 @@ export namespace Dialogs {
      * @param defaultPath デフォルトで開くパス。未指定の場合デスクトップ
      * @returns 指定されたファイル
      */
-    export async function save(title: string, extensions?: DialogFilter[], defaultPath?: string) {
+    public static async save(title: string, extensions?: DialogFilter[], defaultPath?: string) {
         const result = await dialog.save({
             title: title,
             filters: extensions,

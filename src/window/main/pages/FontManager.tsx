@@ -4,7 +4,7 @@ import { openPath } from "@tauri-apps/plugin-opener";
 import { useState } from "react";
 import { IS_INITIAL } from "~/Data";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
-import { WInvoke } from "~/InvokeWrapper";
+import { FontMetadata, WInvoke } from "~/InvokeWrapper";
 import { getAppdataDirDir, getAppdataDirFile, getCacheDirDir, Paths } from "~/util/path";
 
 const FONT_EXTENSIONS = ["ttf", "otf", "ttc", "woff", "woff2"];
@@ -53,7 +53,7 @@ export async function getFontFiles() {
     return fontFiles;
 }
 
-type FontViewData = WInvoke.FontMetadata & {
+type FontViewData = FontMetadata & {
     /** 生の画像パス */
     image: string,
     /** フォント自体のパス */

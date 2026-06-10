@@ -1,5 +1,6 @@
 import { WInvoke } from "../InvokeWrapper";
 import { IS_DEVELOP_MODE } from "../Data";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
 enum LogLevel {
     Trace   = 0,
@@ -12,8 +13,8 @@ enum LogLevel {
 
 let logCount = 1;
 
-export namespace Logger {
-    function print(type: string, text: string, level: LogLevel, color: string) {
+export class Logger {
+    private static print(type: string, text: string, level: LogLevel, color: string) {
         if (!IS_DEVELOP_MODE && level <= LogLevel.Debug) return;
         const time = new Date().format("HH:mm:SS.ss", 3);
         const logType = type.padEnd(5);
@@ -22,47 +23,48 @@ export namespace Logger {
         WInvoke.consoleLog(color + prefix + result + "\x1b[0m");
     }
 
-    export function trace(msg: string) {
-        print("TRACE", msg, LogLevel.Trace, "\x1b[32m");
+    public static trace(msg: string) {
+        this.print("TRACE", msg, LogLevel.Trace, "\x1b[32m");
     }
 
-    export function debug(msg: string) {
-        print("DEBUG", msg, LogLevel.Debug, "\x1b[30m");
+    public static debug(msg: string) {
+        this.print("DEBUG", msg, LogLevel.Debug, "\x1b[30m");
     }
 
-    export function info(msg: string) {
-        print("INFO", msg, LogLevel.Info, "\x1b[37m");
+    public static info(msg: string) {
+        this.print("INFO", msg, LogLevel.Info, "\x1b[37m");
     }
 
-    export function warning(msg: string) {
-        print("WARN", msg, LogLevel.Debug, "\x1b[33m");
+    public static warning(msg: string) {
+        this.print("WARN", msg, LogLevel.Debug, "\x1b[33m");
     }
 
-    export function error(text: string) {
-        print("ERROR", text, LogLevel.Error, "\x1b[31m");
+    public static error(text: string) {
+        this.print("ERROR", text, LogLevel.Error, "\x1b[31m");
     }
 
-    export function critical(msg: string) {
-        print("CRIT", msg, LogLevel.Critical, "\x1b[41m");
+    public static critical(msg: string) {
+        this.print("CRIT", msg, LogLevel.Critical, "\x1b[41m");
     }
 
 
 
-    function tracePrint(err: Error, func: (msg: string) => void) {
-        (func == warning ? console.warn : console.error)(`[${logCount}] ${name}: ${err.message}`);
+    private static tracePrint(err: Error, func: (msg: string) => void) {
+        const windowLabel = getCurrentWindow().label;
+        (func == Logger.warning ? console.warn : console.error)(`[${logCount}] ${windowLabel}: ${err.message}`);
         const trace = (err.stack ?? String.empty).split("\n").slice(2);
         func([`${err}`, ...trace].join("\n"));
     }
 
-    export function warningTrace(msg: string) {
-        tracePrint(new Error(msg), warning);
+    public static warningTrace(msg: string) {
+        this.tracePrint(new Error(msg), this.warning);
     }
 
-    export function errorTrace(msg: string) {
-        tracePrint(new Error(msg), error);
+    public static errorTrace(msg: string) {
+        this.tracePrint(new Error(msg), this.error);
     }
 
-    export function criticalTrace(msg: string) {
-        tracePrint(new Error(msg), critical);
+    public static criticalTrace(msg: string) {
+        this.tracePrint(new Error(msg), this.critical);
     }
 }

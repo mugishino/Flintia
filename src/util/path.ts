@@ -51,16 +51,16 @@ export async function getCacheDirDir(dirname: string) {
     return dir;
 }
 
-export namespace Paths {
-    export async function notExists(path: string) {
+export class Paths {
+    public static async notExists(path: string) {
         return !(await exists(path));
     }
 
-    export function getBasename(file: string) {
+    public static getBasename(file: string) {
         return file.split("\\").get(-1)?.split("/").get(-1) ?? String.empty;
     }
 
-    export function splitExt(filename: string) {
+    public static splitExt(filename: string) {
         const split = filename.split(".");
         const ext = split.splice(-1)[0];
         const name = split.join(".");
@@ -68,11 +68,11 @@ export namespace Paths {
         return name.length == 0 ? {name: ext, ext: name} : {name, ext};
     }
 
-    export function getDirectory(file: string) {
+    public static getDirectory(file: string) {
         return file.split("\\").slice(0, -1).join("\\")+"\\";
     }
 
-    export function join(...paths: string[]) {
+    public static join(...paths: string[]) {
         const joined = paths
             // 空文字の削除とバックスラッシュ統一
             .filter(s => !!s)
@@ -86,11 +86,11 @@ export namespace Paths {
         return (isNetworkPath ? "\\" : String.empty) + duplicateFix;
     }
 
-    export function equals(a: string, b: string) {
+    public static equals(a: string, b: string) {
         const ra = a.toLocaleLowerCase().replace(/\//g, "\\");
         const rb = b.toLocaleLowerCase().replace(/\//g, "\\");
         return ra == rb;
     }
 
-    export const isDirectory = WInvoke.isDirectory;
+    public static readonly isDirectory = (...args: Parameters<typeof WInvoke.isDirectory>) => {return WInvoke.isDirectory(...args)};
 }
