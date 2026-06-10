@@ -2,14 +2,22 @@ import { convertFileSrc } from "@tauri-apps/api/core";
 import { readDir } from "@tauri-apps/plugin-fs";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { useState } from "react";
+import { IS_INITIAL } from "~/Data";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { WInvoke } from "~/InvokeWrapper";
 import { getAppdataDirDir, getAppdataDirFile, getCacheDirDir, Paths } from "~/util/path";
-import { SessionData } from "~/util/session";
 
 const FONT_EXTENSIONS = ["ttf", "otf", "ttc", "woff", "woff2"];
 // ここを変更する際はRust側も変更してください。
 const PREVIEW_EXPORT_EXTENSION = ".webp";
+
+
+
+if (IS_INITIAL) {
+    getFontFiles().then(fontFiles => {
+        WInvoke.unregisterFonts(fontFiles);
+    });
+}
 
 
 
@@ -31,15 +39,26 @@ function FontViewColumn(props: {
     );
 }
 
+/**
+ * フォントファイルのパスを全て取得します。
+ * @returns 取得したフォントファイルの絶対パス
+ */
+export async function getFontFiles() {
+    const dirFiles = await readDir(FONT_DIR);
+    const fontFiles = dirFiles.filter(item => {
+        if (!item.isFile) return false;
+        if (FONT_EXTENSIONS.contains(Paths.splitExt(item.name).ext)) return true;
+        return false;
+    }).map(v => FONT_DIR + v.name);
+    return fontFiles;
+}
+
 type FontViewData = WInvoke.FontMetadata & {
     /** 生の画像パス */
     image: string,
     /** フォント自体のパス */
     font_path: string,
 };
-
-/** F5で再表示しているか確認する用のsessionキー */
-const INIT_KEY = "FONT_MANAGER_INIT";
 
 export function FontManager() {
     const [data, setData] = useState<FontViewData[]>([]);
@@ -51,17 +70,7 @@ export function FontManager() {
         (await WInvoke.getActiveFonts()).map(v => setLoadedFonts(v));
 
         // 読み込み
-        const fontFiles = (await readDir(FONT_DIR)).filter(v => {
-            if (!v.isFile) return false;
-            if (FONT_EXTENSIONS.contains(Paths.splitExt(v.name).ext)) return true;
-            return false;
-        }).map(v => FONT_DIR + v.name);
-
-        // アプリ起動時に1度のみ行われる初期化
-        if (!SessionData.exists(INIT_KEY)) {
-            SessionData.set(INIT_KEY, true);
-            WInvoke.unregisterFonts(fontFiles);
-        }
+        const fontFiles = await getFontFiles();
 
         const metadataList = fontFiles.map(async (font): Promise<FontViewData|undefined> => {
             // データ解析
