@@ -1,10 +1,9 @@
-use std::{collections::HashMap, sync::{Mutex, atomic::{AtomicBool, Ordering}}};
+use std::{collections::HashMap, sync::{Mutex}};
 use tauri::{AppHandle, Emitter, Wry};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
 
 pub struct CommandState {
     pub hotkey_data: Mutex<HashMap<String, String>>,
-    pub is_initial: AtomicBool,
 }
 
 #[tauri::command]
@@ -34,11 +33,4 @@ pub fn register_hotkey(hotkey: &str, id: &str, app: AppHandle<Wry>, state: tauri
     }).map_err(|_| {
         format!("Failed - Register hotkey: {}", hotkey)
     })
-}
-
-#[tauri::command]
-pub fn is_initial(state: tauri::State<'_, CommandState>) -> bool {
-    let value = state.is_initial.load(Ordering::SeqCst);
-    state.is_initial.store(false, Ordering::SeqCst);
-    value
 }

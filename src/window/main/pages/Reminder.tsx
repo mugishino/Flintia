@@ -115,6 +115,7 @@ export function Reminder() {
                                         <button className="text-red-400" onClick={() => {
                                             reminders.remove(i);
                                             saveReminders();
+                                            showDeleteOverlay(undefined);
                                         }}>削除</button>
                                     </OverlayWindow>
                                 );

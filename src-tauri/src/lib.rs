@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::{Mutex, atomic::AtomicBool}};
+use std::{collections::HashMap, sync::{Mutex}};
 
 use tauri::{
     AppHandle, Manager, WindowEvent, Wry, menu::{Menu, MenuItem}, tray::TrayIconBuilder
@@ -62,7 +62,6 @@ pub fn run() {
         ))
         .invoke_handler(tauri::generate_handler![
             fcore::register_hotkey,
-            fcore::is_initial,
             invks::paste,
             invks::get_system_uptime,
             invks::get_all_disk_info,
@@ -86,7 +85,6 @@ pub fn run() {
         ])
         .manage(fcore::CommandState {
             hotkey_data: Mutex::new(HashMap::new()),
-            is_initial: AtomicBool::new(true),
         })
         .on_window_event(|_, event| match event {
             tauri::WindowEvent::Destroyed => {

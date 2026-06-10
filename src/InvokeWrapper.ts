@@ -246,12 +246,4 @@ export class WInvoke {
     public static async getActiveFonts() {
         return await Result.fromPromise<string[], string>(invoke("get_active_fonts"));
     }
-
-    /**
-     * 初期化済みかを取得します。1回目の呼び出しはtrue、2回目以降の呼び出しはfalseになります。
-     * @returns 初期化済みの場合false
-     */
-    public static async isInitial(): Promise<boolean> {
-        return await invoke("is_initial");
-    }
 }
