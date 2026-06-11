@@ -22,7 +22,7 @@ export function Sidebar() {
 
     const sidebar_top: {[_:string]:string} = {};
     const sidebar_bot: {[_:string]:string} = {};
-    Object.entries(Routing.Data).forEach(([k, v]) => {
+    Routing.Data.forEach((v, k) => {
         if (v.sidebar == undefined) return;
         if (v.sidebar.pos == "Top"   ) sidebar_top[v.sidebar.label] = k;
         if (v.sidebar.pos == "Bottom") sidebar_bot[v.sidebar.label] = k;

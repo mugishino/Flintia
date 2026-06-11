@@ -24,12 +24,12 @@ enum SupportedType {
     Video,
 }
 
-const ExtensionMap = Map.fromObject({
-    [SupportedType.Image]: ["png", "jpg", "tiff", "avif", "webp", "jxl"],
-    [SupportedType.Audio]: ["mp3", "wav", "flac", "ogg", "opus"],
-    [SupportedType.Video]: ["mp3", "wav", "flac", "ogg", "opus"],
-    [SupportedType.Unsupported]: [String.empty],
-});
+const ExtensionMap = new Map<SupportedType, string[]>()
+    .set(SupportedType.Image, ["png", "jpg", "tiff", "avif", "webp", "jxl"])
+    .set(SupportedType.Audio, ["mp3", "wav", "flac", "ogg", "opus"])
+    .set(SupportedType.Video, ["mp3", "wav", "flac", "ogg", "opus"])
+    .set(SupportedType.Unsupported, [String.empty])
+    ;
 
 const LOSSLESS_SUPPORTED_TYPE = ["webp", "jxl"];
 
@@ -58,7 +58,7 @@ export function FileConverter() {
 
     // update
     useEffect(() => {
-        setOutputFileType(ExtensionMap.get(inputFileType.toString())?.get(0));
+        setOutputFileType(ExtensionMap.get(inputFileType)?.get(0));
     }, [inputFileType]);
 
     function onDragEvent(isEnter: boolean, event: Event<DragDropPayload>) {
@@ -168,7 +168,7 @@ export function FileConverter() {
                     : <>
                         <Setting title="変換先">
                             <select value={outputFileType} onChange={v => setOutputFileType(v.currentTarget.value)}>
-                                {ExtensionMap.get(inputFileType.toString())?.map(v => <option key={v} value={v}>{v}</option>)}
+                                {ExtensionMap.get(inputFileType)?.map(v => <option key={v} value={v}>{v}</option>)}
                             </select>
                         </Setting>
                         <div className="flex flex-row justify-between pl-1">

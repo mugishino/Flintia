@@ -95,7 +95,8 @@ pub fn run() {
         })
         .setup(|app| {
             // 開発用 - DevToolsを自動で開く
-//            app.get_webview_window("main").unwrap().open_devtools();
+            #[cfg(debug_assertions)]
+            app.get_webview_window("main").unwrap().open_devtools();
 
             // タスクトレイ
             let _ = TrayIconBuilder::new()

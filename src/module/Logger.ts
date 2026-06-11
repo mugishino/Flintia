@@ -21,6 +21,15 @@ export class Logger {
         const prefix = `[${logCount.toString().padStart(5)}][${time}][${logType}] `;
         const result = text.split("\n").map(v => String.space.repeat(prefix.length) + v).join("\n").trimStart();
         WInvoke.consoleLog(color + prefix + result + "\x1b[0m");
+        
+        switch (level) {
+            case LogLevel.Trace     : return console.trace(prefix + result);
+            case LogLevel.Debug     : return console.debug(prefix + result);
+            case LogLevel.Info      : return console.info (prefix + result);
+            case LogLevel.Warning   : return console.warn (prefix + result);
+            case LogLevel.Error     : return console.error(prefix + result);
+            case LogLevel.Critical  : return console.error(prefix + result);
+        }
     }
 
     public static trace(msg: string) {
