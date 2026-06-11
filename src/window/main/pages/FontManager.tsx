@@ -2,10 +2,14 @@ import { convertFileSrc } from "@tauri-apps/api/core";
 import { readDir } from "@tauri-apps/plugin-fs";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { useState } from "react";
+import { Overlay } from "~/components/Overlay";
+import { OverlayWindow } from "~/components/OverlayWindow";
+import { Setting } from "~/components/Setting";
 import { IS_INITIAL } from "~/Data";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { FontMetadata, WInvoke } from "~/InvokeWrapper";
 import { getAppdataDirDir, getAppdataDirFile, getCacheDirDir, Paths } from "~/util/path";
+import { ifPresent, MOUSE_BUTTON_BITS } from "~/util/util";
 
 const FONT_EXTENSIONS = ["ttf", "otf", "ttc", "woff", "woff2"];
 // ここを変更する際はRust側も変更してください。
@@ -28,10 +32,26 @@ const FONT_PREVIEW_DIR = await getCacheDirDir("font_preview/");
 function FontViewColumn(props: {
     imageSource?: string,
     active?: boolean,
+    data?: FontMetadata,
     onClick?: () => void,
+    onRightClick?: () => void,
 }) {
     return (
-        <div className={`h-1/10 border-b flex flex-col cursor-pointer ${"bg-enable-overlay".where(!!props.active)}`} onClick={props.onClick}>
+        <div className={
+            `h-1/8 flex flex-col cursor-pointer py-2 m-2 mb-0
+            hover:bg-[#ffffff08] hover:rounded-md duration-75
+            hover:outline-border not-hover:border-b outline-1 outline-transparent
+            ${"bg-enable-overlay hover:bg-enable-overlay-outline hover:outline-enable-overlay-outline rounded-md".where(!!props.active)}`} 
+            onClick={props.onClick}
+            onAuxClick={e => {
+                if (e.button == MOUSE_BUTTON_BITS.RIGHT) props.onRightClick?.();
+            }}>
+
+            <div className="ml-2 flex flex-row gap-2 items-center">
+                <span>{props.data?.full_name}</span>
+                <span className="text-text-gray text-xs">{ifPresent(props.data?.variable, () => "Variable")}</span>
+                <span className="text-text-gray text-xs">{props.data?.version}</span>
+            </div>
             <div className="grow flex items-center">
                 <img src={props.imageSource ?? String.empty}/>
             </div>
@@ -64,6 +84,7 @@ export function FontManager() {
     const [data, setData] = useState<FontViewData[]>([]);
     const [selectFonts, setSelectFonts] = useState<string[]>([]);
     const [loadedFonts, setLoadedFonts] = useState<string[]>([]);
+    const [overlayData, setOverlayData] = useState<FontViewData|undefined>(undefined);
 
     useEffectAsync(async() => {
         // 既に読み込み済みのフォントを登録
@@ -132,20 +153,33 @@ export function FontManager() {
                 <button className="text-enable" onClick={updateFontRegister}>フォント読み込みを確定する</button>
             </div>
             <div className="flex flex-col h-full">
-                {viewData.map(v => 
+                {viewData.map(v =>
                     <FontViewColumn
-                        key={v.post_script_name} 
-                        imageSource={convertFileSrc(v.image)} 
+                        key={v.post_script_name}
+                        imageSource={convertFileSrc(v.image)}
                         active={v.select ? !v.loaded : v.loaded}
+                        data={v}
                         onClick={() => {
                             let newSelects = selectFonts;
                             if (!v.select) newSelects.push(v.font_path);
                             else newSelects = newSelects.filter(x => x != v.font_path);
                             setSelectFonts([...newSelects]);
                         }}
+                        onRightClick={() => setOverlayData(v)}
                     />
                 )}
             </div>
+            <Overlay show={!!overlayData} setShow={() => setOverlayData(undefined)}>
+                <OverlayWindow className="w-1/2 h-4/5 [&>div]:border-b *:mb-2 rounded-md">
+                    <span className="text-4xl pl-1">{overlayData?.full_name}</span>
+                    <Setting title="Version">{overlayData?.version}</Setting>
+                    <Setting title="Post script name">{overlayData?.post_script_name}</Setting>
+                    <Setting title="Monospaced">{String(overlayData?.monospaced)}</Setting>
+                    <Setting title="Variable">{String(overlayData?.variable)}</Setting>
+                    <div className="grow border bg-layerB p-1 overflow-y-scroll select-text">{overlayData?.license}</div>
+                    <span className="w-full text-center">{overlayData?.copyright}</span>
+                </OverlayWindow>
+            </Overlay>
         </>
     );
 }
