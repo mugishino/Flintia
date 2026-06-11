@@ -29,8 +29,6 @@
     --color-link: #48f;
     --color-disable: #d44;
     --color-enable: #4bf;
-    --color-enable-overlay: #4bf3;
-    --color-enable-overlay-outline: #4bf4;
 
     --color-app-edge: #248;
 
@@ -78,6 +76,10 @@
     --color-launcher-label-border: var(--color-neutral-800);
     --color-launcher-label-border-hover: var(--color-blue-300);
     --color-launcher-label-bg-locked-hover: #08f5;
+
+    --color-font-disable: #ffffff10;
+    --color-font-enable: #4bf3;
+    --color-font-enable-outline: #4bf4;
 }
 
 *:focus {

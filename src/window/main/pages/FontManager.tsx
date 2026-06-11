@@ -1,27 +1,20 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { readDir } from "@tauri-apps/plugin-fs";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { useState } from "react";
 import { Overlay } from "~/components/Overlay";
 import { OverlayWindow } from "~/components/OverlayWindow";
+import { Search } from "~/components/Search";
 import { Setting } from "~/components/Setting";
+import { ViewGroup } from "~/components/ViewGroup";
 import { IS_INITIAL } from "~/Data";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { FontMetadata, WInvoke } from "~/InvokeWrapper";
 import { getAppdataDirDir, getAppdataDirFile, getCacheDirDir, Paths } from "~/util/path";
-import { ifPresent, MOUSE_BUTTON_BITS } from "~/util/util";
+import { ifPresent, MOUSE_BUTTON_BITS, searchFilter } from "~/util/util";
 
 const FONT_EXTENSIONS = ["ttf", "otf", "ttc", "woff", "woff2"];
 // ここを変更する際はRust側も変更してください。
 const PREVIEW_EXPORT_EXTENSION = ".webp";
-
-
-
-if (IS_INITIAL) {
-    getFontFiles().then(fontFiles => {
-        WInvoke.unregisterFonts(fontFiles);
-    });
-}
 
 
 
@@ -39,9 +32,9 @@ function FontViewColumn(props: {
     return (
         <div className={
             `h-1/8 flex flex-col cursor-pointer py-2 m-2 mb-0
-            hover:bg-[#ffffff08] hover:rounded-md duration-75
+            hover:bg-font-disable hover:rounded-md duration-75
             hover:outline-border not-hover:border-b outline-1 outline-transparent
-            ${"bg-enable-overlay hover:bg-enable-overlay-outline hover:outline-enable-overlay-outline rounded-md".where(!!props.active)}`} 
+            ${"bg-font-enable hover:bg-font-enable-outline hover:outline-font-enable-outline rounded-md".where(!!props.active)}`} 
             onClick={props.onClick}
             onAuxClick={e => {
                 if (e.button == MOUSE_BUTTON_BITS.RIGHT) props.onRightClick?.();
@@ -64,12 +57,11 @@ function FontViewColumn(props: {
  * @returns 取得したフォントファイルの絶対パス
  */
 export async function getFontFiles() {
-    const dirFiles = await readDir(FONT_DIR);
+    const dirFiles = await WInvoke.getRecursiveFiles(FONT_DIR);
     const fontFiles = dirFiles.filter(item => {
-        if (!item.isFile) return false;
-        if (FONT_EXTENSIONS.contains(Paths.splitExt(item.name).ext)) return true;
+        if (FONT_EXTENSIONS.contains(Paths.splitExt(item).ext)) return true;
         return false;
-    }).map(v => FONT_DIR + v.name);
+    });
     return fontFiles;
 }
 
@@ -80,11 +72,28 @@ type FontViewData = FontMetadata & {
     font_path: string,
 };
 
+
+
+if (IS_INITIAL) {
+    getFontFiles().then(fontFiles => {
+        WInvoke.unregisterFonts(fontFiles);
+    });
+}
+
 export function FontManager() {
+    // core
     const [data, setData] = useState<FontViewData[]>([]);
     const [selectFonts, setSelectFonts] = useState<string[]>([]);
     const [loadedFonts, setLoadedFonts] = useState<string[]>([]);
+
+    // UI
+    const [search, setSearch] = useState(String.empty);
+
+    // overlay
     const [overlayData, setOverlayData] = useState<FontViewData|undefined>(undefined);
+    const [showInfo, setShowInfo] = useState(false);
+
+
 
     useEffectAsync(async() => {
         // 既に読み込み済みのフォントを登録
@@ -141,14 +150,20 @@ export function FontManager() {
         loaded: boolean,
         select: boolean,
     })[] = data.map(data => {
+        if (!searchFilter(search, data.full_name ?? String.empty)) return undefined;
+
         const loaded = loadedFonts.contains(data.font_path);
         const select = selectFonts.contains(data.font_path);
         return {...data, loaded, select};
-    });
+    })
+    .nullFilter()
+    .sort((a, b) => (a.full_name??String.empty).localeCompare(b.full_name??String.empty));
 
     return (
         <>
-            <div className="flex flex-row border-b *:border-0 *:not-last:border-r">
+            <div className="flex flex-row *:border-0 *:not-last:border-r border-b">
+                <Search value={search} onUpdate={setSearch} className="w-full"/>
+                <button disabled>検索フィルタ</button>
                 <button onClick={() => openPath(FONT_DIR)}>Open Font Folder</button>
                 <button className="text-enable" onClick={updateFontRegister}>フォント読み込みを確定する</button>
             </div>
@@ -165,19 +180,29 @@ export function FontManager() {
                             else newSelects = newSelects.filter(x => x != v.font_path);
                             setSelectFonts([...newSelects]);
                         }}
-                        onRightClick={() => setOverlayData(v)}
+                        onRightClick={() => {
+                            setOverlayData(v);
+                            setShowInfo(false);
+                        }}
                     />
                 )}
             </div>
             <Overlay show={!!overlayData} setShow={() => setOverlayData(undefined)}>
-                <OverlayWindow className="w-1/2 h-4/5 [&>div]:border-b *:mb-2 rounded-md">
-                    <span className="text-4xl pl-1">{overlayData?.full_name}</span>
-                    <Setting title="Version">{overlayData?.version}</Setting>
-                    <Setting title="Post script name">{overlayData?.post_script_name}</Setting>
-                    <Setting title="Monospaced">{String(overlayData?.monospaced)}</Setting>
-                    <Setting title="Variable">{String(overlayData?.variable)}</Setting>
-                    <div className="grow border bg-layerB p-1 overflow-y-scroll select-text">{overlayData?.license}</div>
-                    <span className="w-full text-center">{overlayData?.copyright}</span>
+                <OverlayWindow className="w-1/2 h-4/5 rounded-md">
+                    <span className="text-4xl pl-1 hover:bg-hover rounded-md mb-2 duration-100 cursor-pointer" onClick={() => setShowInfo(!showInfo)}>{overlayData?.full_name}</span>
+                    <ViewGroup show={!showInfo}>
+                        WIP : タグ設定等
+                    </ViewGroup>
+                    <ViewGroup className="grow flex flex-col gap-2 [&>div]:border-b" show={showInfo}>
+                        <Setting title="Version">{overlayData?.version}</Setting>
+                        <Setting title="Family name">{overlayData?.family_name}</Setting>
+                        <Setting title="Sub family name">{overlayData?.subfamily_name}</Setting>
+                        <Setting title="Post script name">{overlayData?.post_script_name}</Setting>
+                        <Setting title="Monospaced">{String(overlayData?.monospaced)}</Setting>
+                        <Setting title="Variable">{String(overlayData?.variable)}</Setting>
+                        <div className="grow border bg-layerB p-1 overflow-y-scroll select-text">{overlayData?.license}</div>
+                        <span className="w-full text-center">{overlayData?.copyright}</span>
+                    </ViewGroup>
                 </OverlayWindow>
             </Overlay>
         </>
