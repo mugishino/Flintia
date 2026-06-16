@@ -9,10 +9,7 @@ use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
 pub mod flintia;
 use flintia::{debug as fdebug, font, invks, launcher, core as fcore};
 
-pub fn crash_handler() {
-    //! アプリ終了時の共通処理の記述から呼び出されています。
-    //! クラッシュ時にのみ行う処理が発生した場合は分離するなど対処してください。
-
+pub fn dispose_resources() {
     let _ = font::remove_all_font_resource().map_err(|e| {
         println!("Failed to collect font resource: {}", e)
     });
@@ -25,6 +22,8 @@ pub fn quit_application(app: &AppHandle<Wry>, restart: bool) {
         win.on_window_event(move |event| {
             if let WindowEvent::Destroyed = event {
                 if app_handle.webview_windows().is_empty() {
+                    dispose_resources();
+
                     if restart {
                         app_handle.request_restart();
                     } else {
@@ -89,7 +88,7 @@ pub fn run() {
         .on_window_event(|_, event| match event {
             tauri::WindowEvent::Destroyed => {
                 // アプリ終了時の共通処理
-                crash_handler();
+                dispose_resources();
             }
             _ => {}
         })

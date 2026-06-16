@@ -27,9 +27,12 @@ function Tile(props: CellObjProps & TileData) {
         if (props.exe_icon) return setImg(props.exe_icon);
         setImg(undefined);
     }, [props.exe_icon, props.custom_icon]);
+    
+    // uwp_appをそのままCellObjに渡すとエラー出すためここで消しとく
+    const {uwp_app, ...rest} = props;
 
     return (
-        <CellObj {...props} title={props.label.where(props.w <= 1)}>
+        <CellObj {...rest} title={props.label.where(props.w <= 1)}>
             <div className="bg-launcher-tile-bg h-full w-full relative active:bg-launcher-tile-bg-active hover:outline-3 outline-launcher-tile-hover-outline active:outline-0 -outline-offset-3">
                 <div className="flex justify-center items-center h-full w-full">
                     {img && <img className={`h-full w-full max-w-12 p-1 object-contain ${"pt-0".where(props.w > 1)}`} src={img}/>}
@@ -173,7 +176,7 @@ export function LaunchPanel() {
     const settingOpenCellData = data.get(settingKey);
 
     const settingIsTile    = settingOpenCellData?.type == "tile";
-    const isUWPApplication = settingOpenCellData?.exe?.startsWith("shell:AppsFolder\\");
+    const isUWPApplication = settingOpenCellData?.uwp_app ?? false;
 
     return (
         <div className="h-full w-full overflow-x-scroll overflow-y-scroll" style={{padding: GRID_SIZE+(MARGIN_SIZE*3) + "px"}}>
@@ -203,7 +206,13 @@ export function LaunchPanel() {
                             return <Tile  key={k} {...v} isOverlapping={v => isOverlapping(k, v)} onMoved={(x, y) => moveObject(k, v, x, y)} onWheelClick={async() => openCellSetting(k)} label={label} onClick={async() => {
                                 if (!v.exe) return;
                                 await (await FlintiaWindow.getCurrentWindow()).hide();
-                                await WInvoke.runExe(v.exe, v.args);
+                                if (v.uwp_app) {
+                                    const aumid = "shell:AppsFolder\\" + v.exe;
+                                    await WInvoke.runExe("explorer", `"${aumid}"`);
+                                }
+                                else {
+                                    await WInvoke.runExe(v.exe, v.args);
+                                }
                             }}/>
                         case "label":
                             return <Label key={k} {...v} isOverlapping={v => isOverlapping(k, v)} onMoved={(x, y) => moveObject(k, v, x, y)} onWheelClick={async() => openCellSetting(k)}/>
@@ -311,8 +320,9 @@ export function LaunchPanel() {
                                     uwp.display_name ?? String.empty,
                                     undefined,
                                     undefined,
-                                    "shell:AppsFolder\\" + uwp.aumid,
+                                    uwp.aumid,
                                     undefined,
+                                    true,
                                 );
                                 setAppSelectOverlay(false);
                             }}/>;

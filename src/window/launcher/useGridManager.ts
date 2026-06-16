@@ -13,6 +13,7 @@ export type TileData = {
     exe_icon?: string;
     args?: string;
     custom_icon?: string;
+    uwp_app?: boolean;
 } & CellData;
 
 export const DEFAULT_TILE_DATA: TileData = {
@@ -24,6 +25,7 @@ export const DEFAULT_TILE_DATA: TileData = {
     custom_icon: undefined,
     exe: undefined,
     exe_icon: undefined,
+    uwp_app: undefined,
 } as const;
 
 const datafile = await getAppdataDirFile("launcher.json");
@@ -89,12 +91,13 @@ export function useGridManager() {
         custom_icon?: string,
         exe?: string,
         exe_icon?: string,
+        uwp_app?: boolean,
     ) {
         // 同じ位置にあればキャンセル
         if (Array.from(data.values()).filter(v => v.y == -1).length > 0) return;
         moveObject(
             crypto.randomUUID(),
-            {h: 1, w: 1, x: 0, y: -1, label: label ?? String.empty, args, custom_icon, exe, exe_icon, type: type},
+            {h: 1, w: 1, x: 0, y: -1, label: label ?? String.empty, args, custom_icon, exe, exe_icon, type: type, uwp_app: uwp_app},
             0, -1,
         );
     }

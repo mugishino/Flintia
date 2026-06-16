@@ -76,16 +76,14 @@ pub fn run_exe(path: &str, args: &str) -> Result<(), String> {
         .map_err(|e| e.to_string())?;
 
     // flags
-    const CREATE_NO_WINDOW: u32 = 0x08000000;
     const DETACHED_PROCESS: u32 = 0x00000008;
 
-    Command::new("cmd")
-        .args(["/C", "start", "", path])
+    Command::new(path)
         .args(args_vec)
         .stdin(Stdio::null())
         .stdout(Stdio::null())
         .stderr(Stdio::null())
-        .creation_flags(CREATE_NO_WINDOW | DETACHED_PROCESS)
+        .creation_flags(DETACHED_PROCESS)
         .spawn()
         .map_err(|e| e.to_string())?;
 
