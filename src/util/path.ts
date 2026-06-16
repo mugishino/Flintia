@@ -53,6 +53,8 @@ export async function getCacheDirDir(dirname: string) {
 }
 
 export class Paths {
+    public static readonly exists = methodRedirect(exists);
+
     public static async notExists(path: string) {
         return !(await exists(path));
     }

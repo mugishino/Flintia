@@ -40,6 +40,13 @@ declare global {
          * @param put 負荷軽減のため遅延生成
          */
         getOrPut(key: K,put: () => V): V;
+        
+        /**
+         * このMapにそのkeyが存在するか確認します。
+         * @param key 存在を確認するキー
+         * @returns 存在していればtrue
+         */
+        containsKey(key: K): boolean;
     }
 
     interface MapConstructor {
@@ -89,6 +96,10 @@ Map.prototype.getOrPut = function<K, V>(key: K, put: () => V) {
     const gen = put();
     this.set(key, gen);
     return gen;
+}
+
+Map.prototype.containsKey = function<K>(key: K) {
+    return this.keys().toArray().contains(key);
 }
 
 Map.fromObject = function<T extends Record<string | number | symbol, any>>(data: T): Map<string, T[keyof T]> {

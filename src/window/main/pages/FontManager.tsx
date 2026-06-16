@@ -1,4 +1,5 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
+import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { useState } from "react";
 import { Overlay } from "~/components/Overlay";
@@ -9,7 +10,7 @@ import { ViewGroup } from "~/components/ViewGroup";
 import { IS_INITIAL } from "~/Data";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { FontMetadata, WInvoke } from "~/InvokeWrapper";
-import { getAppdataDirDir, getAppdataDirFile, getCacheDirDir, Paths } from "~/util/path";
+import { getAppdataDirDir, getCacheDirDir, getCacheDirFile, Paths } from "~/util/path";
 import { ifPresent, MOUSE_BUTTON_BITS, searchFilter } from "~/util/util";
 
 const FONT_EXTENSIONS = ["ttf", "otf", "ttc", "woff", "woff2"];
@@ -18,7 +19,7 @@ const PREVIEW_EXPORT_EXTENSION = ".webp";
 
 
 
-const FONT_DATA_FILE = await getAppdataDirFile("fonts.json");
+const METADATA_CACHE_FILE = await getCacheDirFile("font-metadata.json");
 const FONT_DIR = await getAppdataDirDir("fonts/");
 const FONT_PREVIEW_DIR = await getCacheDirDir("font_preview/");
 
@@ -31,9 +32,9 @@ function FontViewColumn(props: {
 }) {
     return (
         <div className={
-            `h-1/8 flex flex-col cursor-pointer py-2 m-2 mb-0
+            `min-h-1/8 flex flex-col cursor-pointer py-2 m-2 mb-0
             hover:bg-font-disable hover:rounded-md duration-75
-            hover:outline-border not-hover:border-b outline-1 outline-transparent
+            hover:outline-border not-hover:shadow-[0_1px] shadow-border outline-1 outline-transparent
             ${"bg-font-enable hover:bg-font-enable-outline hover:outline-font-enable-outline rounded-md".where(!!props.active)}`} 
             onClick={props.onClick}
             onAuxClick={e => {
@@ -45,8 +46,11 @@ function FontViewColumn(props: {
                 <span className="text-text-gray text-xs">{ifPresent(props.data?.variable, () => "Variable")}</span>
                 <span className="text-text-gray text-xs">{props.data?.version}</span>
             </div>
-            <div className="grow flex items-center">
-                <img src={props.imageSource ?? String.empty}/>
+            <div className={`grow flex items-center h-full min-h-0`}>
+                {props.imageSource
+                ? <img className="object-contain" src={props.imageSource} loading="lazy"/>
+                : <span className="text-2xl font-bold italic ml-8">Loading...</span>
+                }
             </div>
         </div>
     );
@@ -87,6 +91,7 @@ export function FontManager() {
     const [loadedFonts, setLoadedFonts] = useState<string[]>([]);
 
     // UI
+    const [imageReadyFonts, setImageReadyFonts] = useState<string[]>([]);
     const [search, setSearch] = useState(String.empty);
 
     // overlay
@@ -99,29 +104,52 @@ export function FontManager() {
         // 既に読み込み済みのフォントを登録
         (await WInvoke.getActiveFonts()).map(v => setLoadedFonts(v));
 
+        // load cache
+        const metadataCache = await readTextFile(METADATA_CACHE_FILE).then(v => JSON.toMap<string, FontMetadata>(v))
+        // 初回時はファイルない
+        .catch(() => new Map<string, FontMetadata>());
+
         // 読み込み
         const fontFiles = await getFontFiles();
 
+        const alreadyPostscript: string[] = [];
         const metadataList = fontFiles.map(async (font): Promise<FontViewData|undefined> => {
             // データ解析
-            const parseResult = await WInvoke.parseFontMetadata(font);
-            if (parseResult.isErr) {
+            const metadata = metadataCache.get(font) ?? (await WInvoke.parseFontMetadata(font)).unwrap();
+            if (!metadata) {
                 console.error("[Failed] parse font metadata: " + font);
-                return undefined;
+                return;
             }
-            const metadata = parseResult.unwrap()!;
+
+            // 検証
+            if (metadata.post_script_name == undefined) return;
+            const postScriptName = metadata.post_script_name;
+            
+            // キャッシュ
+            metadataCache.set(font, metadata);
+
+            // 重複チェック
+            if (alreadyPostscript.contains(metadata.post_script_name)) return;
+            alreadyPostscript.push(metadata.post_script_name);
 
             // プレビュー生成
             const output = Paths.join(FONT_PREVIEW_DIR, metadata.post_script_name + PREVIEW_EXPORT_EXTENSION);
-            if (await Paths.notExists(output)) {
-                await WInvoke.generateFontPreview(font, output, "メロスは激怒した。ABCDEFG 1234567890 +()!?@%&", 80, {
+            Paths.exists(output).then(async v => {
+                if (v) return setImageReadyFonts(prev => [...prev, postScriptName]);
+                const previewResult = await WInvoke.generateFontPreview(font, output, "メロスは激怒した。ABCDEFG 1234567890 +()!?@%&", 64, {
                     canvasWidth: 2048,
                 });
-            }
+                previewResult.map(() => {
+                    setImageReadyFonts(prev => [...prev, postScriptName]);
+                });
+            });
 
             return {...metadata, image: output, font_path: font};
         });
         setData((await Promise.all(metadataList)).nullFilter());
+
+        // キャッシュ保存
+        writeTextFile(METADATA_CACHE_FILE, JSON.fromMap(metadataCache));
     }, []);
 
     async function updateFontRegister() {
@@ -163,15 +191,14 @@ export function FontManager() {
         <>
             <div className="flex flex-row *:border-0 *:not-last:border-r border-b">
                 <Search value={search} onUpdate={setSearch} className="w-full"/>
-                <button disabled>検索フィルタ</button>
                 <button onClick={() => openPath(FONT_DIR)}>Open Font Folder</button>
-                <button className="text-enable" onClick={updateFontRegister}>フォント読み込みを確定する</button>
+                <button className="not-disabled:text-enable" onClick={updateFontRegister} disabled={selectFonts.length == 0}>フォント読み込みを確定する</button>
             </div>
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col h-full overflow-scroll">
                 {viewData.map(v =>
                     <FontViewColumn
                         key={v.post_script_name}
-                        imageSource={convertFileSrc(v.image)}
+                        imageSource={imageReadyFonts.contains(v.post_script_name) ? convertFileSrc(v.image) : String.empty}
                         active={v.select ? !v.loaded : v.loaded}
                         data={v}
                         onClick={() => {
@@ -200,7 +227,7 @@ export function FontManager() {
                         <Setting title="Post script name">{overlayData?.post_script_name}</Setting>
                         <Setting title="Monospaced">{String(overlayData?.monospaced)}</Setting>
                         <Setting title="Variable">{String(overlayData?.variable)}</Setting>
-                        <div className="grow border bg-layerB p-1 overflow-y-scroll select-text">{overlayData?.license}</div>
+                        <div className={`grow border bg-layerB p-1 overflow-y-scroll select-text ${overlayData?.license || "text-text-gray"}`}>{overlayData?.license ?? "NO LICENSE DESCRIPTION"}</div>
                         <span className="w-full text-center">{overlayData?.copyright}</span>
                     </ViewGroup>
                 </OverlayWindow>

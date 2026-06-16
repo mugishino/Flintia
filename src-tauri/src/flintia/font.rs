@@ -2,7 +2,7 @@ use std::{fs::File, io::Read, os::windows::ffi::OsStrExt, path::Path, sync::Mute
 use ab_glyph::{FontVec, PxScale};
 use image::{ImageBuffer, Rgba, codecs::webp::WebPEncoder, imageops};
 use imageproc::drawing::draw_text_mut;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use ttf_parser::name_id;
 use windows::{Win32::{Foundation::{LPARAM, WPARAM}, Graphics::Gdi::{AddFontResourceExW, FONT_RESOURCE_CHARACTERISTICS, RemoveFontResourceExW}, UI::WindowsAndMessaging::{HWND_BROADCAST, PostMessageW, WM_FONTCHANGE}}, core::{HSTRING, PCWSTR}};
 
@@ -65,18 +65,33 @@ pub fn parse_font_metadata(path: &str) -> Result<FontMetadata, String> {
     })
 }
 
-#[tauri::command]
-pub fn generate_font_preview(
-    font_path: &str,
-    output_path: &str,
-    text: &str,
+#[derive(Deserialize)]
+pub struct GenerateFontPreviewArgs {
+    font_path: String,
+    output_path: String,
+    text: String,
     font_size: f32,
     canvas_width: u32,
     canvas_height: u32,
     base_x: i32,
     base_y: i32,
     padding: u32,
-) -> Result<(), String> {
+}
+
+#[tauri::command]
+pub async fn generate_font_preview(args: GenerateFontPreviewArgs) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        generate_font_preview_sync(args)
+    })
+    .await
+    .map_err(|e| format!("{}", e))??;
+    Ok(())
+}
+
+pub fn generate_font_preview_sync(args: GenerateFontPreviewArgs) -> Result<(), String> {
+    // 引数展開
+    let GenerateFontPreviewArgs { font_path, output_path, text, font_size, canvas_width, canvas_height, base_x, base_y, padding } = args;
+
     // フォントファイルの読み込み
     let font_bytes = std::fs::read(&font_path).map_err(|e| e.to_string())?;
     let font = FontVec::try_from_vec(font_bytes).map_err(|e| e.to_string())?;
@@ -142,9 +157,17 @@ pub fn generate_font_preview(
 
 
     // webpに変換し、保存
-    let file = File::create(&output_path).map_err(|e| e.to_string())?;
-    let encoder = WebPEncoder::new_lossless(file);
-    encoder.encode(cropped_view.to_image().as_raw(), final_width, final_height, image::ExtendedColorType::Rgba8).map_err(|e| e.to_string())?;
+    let mut file = File::create(&output_path).map_err(|e| e.to_string())?;
+    let encoder = WebPEncoder::new_lossless(&mut file);
+    encoder.encode(
+        cropped_view.to_image().as_raw(),
+        final_width,
+        final_height,
+        image::ExtendedColorType::Rgba8,
+    ).map_err(|e| e.to_string())?;
+
+    // ファイルの書き込みがOSレベルで終わるまで待機
+    file.sync_all().map_err(|e| e.to_string())?;
     Ok(())
 }
 

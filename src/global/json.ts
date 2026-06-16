@@ -9,6 +9,13 @@ declare global {
          * @param stringJson 変換するJSON文字列
          */
         toMap<KT, VT>(stringJson: string): Map<KT, VT>;
+
+        /**
+         * MapからJSON文字列に変換します。
+         * @param mapdata JSONに変換するMap
+         * @returns Json文字列
+         */
+        fromMap<K, V>(mapdata: Map<K, V>): string;
     }
 }
 
@@ -16,4 +23,8 @@ JSON.toMap = function<KT, VT>(stringJson: string) {
     const raw = JSON.parse(stringJson);
     const obj = Object.entries(raw);
     return new Map<KT, VT>(obj as any);
+}
+
+JSON.fromMap = function<K, V>(mapdata: Map<K, V>) {
+    return JSON.stringify(Object.fromEntries(mapdata));
 }

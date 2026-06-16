@@ -18,7 +18,7 @@ export class Logger {
         if (!IS_DEVELOP_MODE && level <= LogLevel.Debug) return;
         const time = new Date().format("HH:mm:SS.ss", 3);
         const logType = type.padEnd(5);
-        const prefix = `[${logCount.toString().padStart(5)}][${time}][${logType}] `;
+        const prefix = `[${(logCount++).toString().padStart(5)}][${time}][${logType}] `;
         const result = text.split("\n").map(v => String.space.repeat(prefix.length) + v).join("\n").trimStart();
         WInvoke.consoleLog(color + prefix + result + "\x1b[0m");
         

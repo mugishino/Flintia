@@ -36,6 +36,18 @@ export interface FontMetadata {
     variable: boolean,
 }
 
+export interface GenerateFontPreviewArgs {
+    font_path: string,
+    output_path: string,
+    text: string,
+    font_size: number,
+    canvas_width: number,
+    canvas_height: number,
+    base_x: number,
+    base_y: number,
+    padding: number,
+}
+
 export class WInvoke {
     /**
      * ウィンドウを閉じたのち、Ctrl+Vを押します。
@@ -207,18 +219,19 @@ export class WInvoke {
             padding?: number,
         }
     ) {
-        return await Result.fromPromise<undefined, string>(invoke("generate_font_preview", {
-            fontPath,
-            outputPath,
+        const args: GenerateFontPreviewArgs = {
+            font_path: fontPath,
+            output_path: outputPath,
             text,
-            fontSize,
+            font_size: fontSize,
             // option
-            canvasWidth: Math.max(option?.canvasWidth ?? 1024, 1),
-            canvasHeight: Math.max(option?.canvasHeight ?? 128, 1),
-            baseX: option?.baseX ?? 16,
-            baseY: option?.baseY ?? 8,
+            canvas_width: Math.max(option?.canvasWidth ?? 1024, 1),
+            canvas_height: Math.max(option?.canvasHeight ?? 128, 1),
+            base_x: option?.baseX ?? 16,
+            base_y: option?.baseY ?? 8,
             padding: Math.max(option?.padding ?? 8, 0),
-        }));
+        };
+        return await Result.fromPromise<undefined, string>(invoke("generate_font_preview", {args: args}));
     }
 
     /**
