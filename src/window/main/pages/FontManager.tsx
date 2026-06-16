@@ -6,7 +6,6 @@ import { Overlay } from "~/components/Overlay";
 import { OverlayWindow } from "~/components/OverlayWindow";
 import { Search } from "~/components/Search";
 import { Setting } from "~/components/Setting";
-import { ViewGroup } from "~/components/ViewGroup";
 import { IS_INITIAL } from "~/Data";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { FontMetadata, WInvoke } from "~/InvokeWrapper";
@@ -96,7 +95,6 @@ export function FontManager() {
 
     // overlay
     const [overlayData, setOverlayData] = useState<FontViewData|undefined>(undefined);
-    const [showInfo, setShowInfo] = useState(false);
 
 
 
@@ -209,18 +207,14 @@ export function FontManager() {
                         }}
                         onRightClick={() => {
                             setOverlayData(v);
-                            setShowInfo(false);
                         }}
                     />
                 )}
             </div>
             <Overlay show={!!overlayData} setShow={() => setOverlayData(undefined)}>
                 <OverlayWindow className="w-1/2 h-4/5 rounded-md">
-                    <span className="text-4xl pl-1 hover:bg-hover rounded-md mb-2 duration-100 cursor-pointer" onClick={() => setShowInfo(!showInfo)}>{overlayData?.full_name}</span>
-                    <ViewGroup show={!showInfo}>
-                        WIP : タグ設定等
-                    </ViewGroup>
-                    <ViewGroup className="grow flex flex-col gap-2 [&>div]:border-b" show={showInfo}>
+                    <span className="text-4xl pl-1 mb-2">{overlayData?.full_name}</span>
+                    <div className="grow flex flex-col gap-2 [&>div]:border-b">
                         <Setting title="Version">{overlayData?.version}</Setting>
                         <Setting title="Family name">{overlayData?.family_name}</Setting>
                         <Setting title="Sub family name">{overlayData?.subfamily_name}</Setting>
@@ -229,7 +223,7 @@ export function FontManager() {
                         <Setting title="Variable">{String(overlayData?.variable)}</Setting>
                         <div className={`grow border bg-layerB p-1 overflow-y-scroll select-text ${overlayData?.license || "text-text-gray"}`}>{overlayData?.license ?? "NO LICENSE DESCRIPTION"}</div>
                         <span className="w-full text-center">{overlayData?.copyright}</span>
-                    </ViewGroup>
+                    </div>
                 </OverlayWindow>
             </Overlay>
         </>
