@@ -17,7 +17,7 @@ interface ReminderData {
 
 const SAVE_FILE = await getAppdataDirFile("reminder.json");
 
-export async function getReminders() {
+async function getReminders() {
     const json = JSON.parse(await readTextFile(SAVE_FILE));
     return json as ReminderData[];
 }

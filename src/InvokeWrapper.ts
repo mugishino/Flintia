@@ -36,7 +36,7 @@ export interface FontMetadata {
     variable: boolean,
 }
 
-export interface GenerateFontPreviewArgs {
+interface GenerateFontPreviewArgs {
     font_path: string,
     output_path: string,
     text: string,

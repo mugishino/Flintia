@@ -23,7 +23,7 @@ export async function readClipboardQRCode(): Promise<Result<string, string>> {
  * @param blob QRコード画像のBlob
  * @returns 読み取り結果。失敗した場合null
  */
-export async function tryZxing(blob: Blob) {
+async function tryZxing(blob: Blob) {
     const url = URL.createObjectURL(blob);
     const reader = new BrowserQRCodeReader();
     try {
@@ -39,7 +39,7 @@ export async function tryZxing(blob: Blob) {
  * @param blob QRコード画像のBlob
  * @returns 読み取り結果。失敗した場合null
  */
-export async function tryJsqr(blob: Blob) {
+async function tryJsqr(blob: Blob) {
     const bmp = await createImageBitmap(blob);
 
     const {ctx, canvas} = createCanvas(bmp.width, bmp.height);

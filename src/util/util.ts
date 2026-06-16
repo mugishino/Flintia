@@ -114,25 +114,3 @@ export function normalizeURL(text: string): Result<string, string> {
 export function methodRedirect<Args extends any[], Return>(targetFn: (...args: Args) => Return) {
     return (...args: Args) => targetFn(...args);
 }
-
-/**
- * 非同期処理内でのsleep用です。
- * @param ms 待機するミリ秒
- * @returns sleepするPromise
- */
-export function sleep(ms: number) {
-    return new Promise<undefined>(resolve => {setTimeout(resolve, ms)});
-}
-
-/**
- * 指定の回数分ループを実行します。
- * @param loop ループする回数
- * @param fn 実行する関数(ループ回数カウンタ, ブレイク用関数)
- */
-export function rangeLoop(loop: number, fn: (count: number, loopEnd: () => void) => void) {
-    let isBreak = false;
-    for (let i=0; i<loop; i++) {
-        fn(i, () => {isBreak = true});
-        if (isBreak) break;
-    }
-}

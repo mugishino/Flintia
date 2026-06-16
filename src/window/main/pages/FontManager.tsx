@@ -59,7 +59,7 @@ function FontViewColumn(props: {
  * フォントファイルのパスを全て取得します。
  * @returns 取得したフォントファイルの絶対パス
  */
-export async function getFontFiles() {
+async function getFontFiles() {
     const dirFiles = await WInvoke.getRecursiveFiles(FONT_DIR);
     const fontFiles = dirFiles.filter(item => {
         if (FONT_EXTENSIONS.contains(Paths.splitExt(item).ext)) return true;
