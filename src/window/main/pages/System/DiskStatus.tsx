@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Line } from "~/components/Line";
 import { OverlayWindow } from "~/components/OverlayWindow";
 import { Section } from "~/components/Section";
@@ -6,6 +7,7 @@ import { useStaticOverlay } from "~/hooks/useOverlay";
 import { WInvoke } from "~/InvokeWrapper";
 
 const ALL_DISK_INFO = await WInvoke.getAllDiskInfo();
+const GB = 1024**3;
 
 type StatusLevel = "SAFE" | "NORMAL" | "WARN" | "ERROR" | "CRITICAL";
 const LEVEL_DATA = new Map<StatusLevel, {color: string, waf: string, tooltip: string}>([
@@ -18,6 +20,7 @@ const LEVEL_DATA = new Map<StatusLevel, {color: string, waf: string, tooltip: st
 
 export function DiskStatus() {
     const [staticOverlay, setStaticOverlay] = useStaticOverlay();
+    const [viewType, setViewType] = useState(0);
 
     function openWafInfo() {
         setStaticOverlay(
@@ -54,7 +57,13 @@ export function DiskStatus() {
 
                 return (
                     <Setting title={disk.name} key={disk.name} childClassName={data?.color}>
-                        <span title={data?.tooltip + "\nWAF目安: "+data?.waf} onClick={openWafInfo} className="cursor-pointer">{usingPercent}% 使用中</span>
+                        <span title={data?.tooltip + "\nWAF目安: "+data?.waf} onAuxClick={openWafInfo} onClick={() => setViewType(viewType+1)} className="cursor-pointer">
+                            {[
+                                `${usingPercent}% 使用中`,
+                                `残り${Math.floorEx(disk.available_space / GB, 1)}GB`,
+                                `${Math.floorEx((disk.total_size - disk.available_space)/GB, 1)}GB 使用中`
+                            ].get(viewType % 3)}
+                        </span>
                     </Setting>
                 );
             })}
