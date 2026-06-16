@@ -88,6 +88,10 @@ export function VideoCut() {
     const [videoCodec, setVideoCodec] = useState<VideoCodec>("av1_nvenc");
     const [copied, setCopied] = useState(false);
 
+    // process overlay
+    const [processOverlay, setProcessOverlay] = useState(false);
+    const [stdout, setStdout] = useState(String.empty);
+
     useEffect(() => {
         DragProvider.setListener(DragType.Enter);
         DragProvider.setListener(DragType.Leave);
@@ -201,18 +205,30 @@ export function VideoCut() {
                         <button disabled={!outputFile} className={"hidden".where(!CommandExists.FFmpeg)} title={"Please select output file".where(!outputFile)} onClick={async () => {
                             const cmd = commandBuild(inputFile, outputFile, startTime, endTime, videoCodec, bitrate, false);
                             showOverlay(false);
-                            setStaticOverlay(
-                                <div className="h-full w-full flex flex-col text-center" onClick={e => e.stopPropagation()}>
-                                    <span className="m-auto text-4xl">処理中...</span>
-                                    <button className="inline-block opacity-100" onClick={() => setStaticOverlay(undefined)}>バックグラウンドで実行</button>
-                                </div>
-                            );
-                            await Command.create(cmd.alias, [...cmd.args, "-y"]).execute().finally(() => setStaticOverlay(undefined));
+                            setStdout(String.empty);
+                            setProcessOverlay(true);
+                            // run process
+                            const proc = Command.create(cmd.alias, [...cmd.args, "-y"]);
+                            const addStdout = (v: string) => setStdout(p => p + v);
+                            proc.stdout.on("data", addStdout);
+                            proc.stderr.on("data", addStdout);
+                            await proc.spawn();
                         }}>Run FFmpeg</button>
                     </div>
                     <div className="bg-bg p-4 border border-app-edge w-1/3 flex flex-col" onClick={e => e.stopPropagation()}>
                         <span className="text-center">BitrateCalc - 正確性は保証しません</span>
                         <BitrateCalc duration={Math.trunc((endTime - startTime)*10)/10}/>
+                    </div>
+                </div>
+            </Overlay>
+            <Overlay show={processOverlay} setShow={setProcessOverlay}>
+                <div className="h-full w-full flex flex-col">
+                    <div className="absolute left-2 top-2 text-white opacity-25 whitespace-pre-wrap ms-gothic overflow-clip bottom-0 flex flex-col-reverse">
+                        {stdout}
+                    </div>
+                    <div className="m-auto text-center z-10">
+                        <p className="text-4xl">処理中...</p>
+                        <p className="text-sm mt-4">クリックしてバックグランドで続行</p>
                     </div>
                 </div>
             </Overlay>

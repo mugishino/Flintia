@@ -241,4 +241,8 @@ body {
     .no-pointer-events * {
         pointer-events: none;
     }
+
+    .ms-gothic {
+        font-family: "MS Gothic";
+    }
 }

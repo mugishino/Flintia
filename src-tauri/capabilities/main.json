@@ -17,6 +17,9 @@
       {"path": "$APPDATA"},
       {"path": "$APPDATA/**"}
     ]},
+    {"identifier": "shell:allow-spawn", "allow": [
+      {"args": true, "name": "ffmpeg", "cmd": "ffmpeg"}
+    ]},
     {"identifier": "shell:allow-execute", "allow": [
       {"args": true, "name": "nvidia-smi", "cmd": "nvidia-smi"},
       {"args": true, "name": "ffmpeg", "cmd": "ffmpeg"},
