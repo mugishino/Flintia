@@ -6,6 +6,7 @@ import { isPermissionGranted, requestPermission, sendNotification } from "@tauri
 import { SVGButton } from "~/components/SVGButton";
 import { Overlay } from "~/components/Overlay";
 import { OverlayWindow } from "~/components/OverlayWindow";
+import { ifPresent } from "~/util/util";
 
 interface ReminderData {
     time: number,
@@ -57,7 +58,7 @@ export function Reminder() {
 
     const [time, setTime] = useState(Date.now());
     const [title, setTitle] = useState(String.empty);
-    const [description, setDescription] = useState<string|undefined>(String.empty);
+    const [description, setDescription] = useState(String.empty);
 
     const refEditIndex = useRef<undefined|number>(undefined);
 
@@ -71,7 +72,7 @@ export function Reminder() {
     function showRegister(time?: number, title?: string, description?: string, editIndex?: number) {
         setTime(time ?? Date.now());
         setTitle(title ?? String.empty);
-        setDescription(description);
+        setDescription(description ?? String.empty);
         refEditIndex.current = editIndex;
         setShowOverlay(true);
     }
@@ -89,7 +90,7 @@ export function Reminder() {
                         if (refEditIndex.current != undefined) {
                             reminders.remove(refEditIndex.current);
                         }
-                        reminders = [...reminders, {time: time, title: title, description: description, notified: false} as ReminderData].sort((a, b) => a.time - b.time);
+                        reminders = [...reminders, {time: time, title: title, description: ifPresent(description), notified: false} as ReminderData].sort((a, b) => a.time - b.time);
                         saveReminders();
                         setShowOverlay(false);
                     }}>リマインダーを{refEditIndex.current == undefined ? "作成" : "編集"}</button>
