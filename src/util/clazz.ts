@@ -37,6 +37,14 @@ export class Result<R, E> {
     public unwrap() {
         return this.value;
     }
+
+    public inspect() {
+        return this.value;
+    }
+
+    public inspect_err() {
+        return this.error;
+    }
 }
 
 export class IntVector2 {

@@ -43,8 +43,30 @@ export class SessionData {
      * @returns データがあった場合falseが戻り、データが無く新しくセットされた場合trueが戻ります。
      */
     public static setIfAbsent(key: string, value: any): boolean {
+        return this.setIfAbsentFn(key, () => value);
+    }
+
+    /**
+     * キーが存在していた場合なにもしません。でなければ、キーに値取得関数の戻り値を設定します。
+     * @param key 確認・設定するキー
+     * @param value 値取得関数
+     * @returns データがあった場合falseが戻り、データが無く新しくセットされた場合trueが戻ります。
+     */
+    public static setIfAbsentFn(key: string, valueFn: () => any): boolean {
         if (SessionData.exists(key)) return false;
-        SessionData.set(key, value);
+        SessionData.set(key, valueFn());
+        return true;
+    }
+
+    /**
+     * キーが存在していた場合なにもしません。でなければ、キーに値取得関数の戻り値を設定します。
+     * @param key 確認・設定するキー
+     * @param value 非同期の値取得関数
+     * @returns データがあった場合falseが戻り、データが無く新しくセットされた場合trueが戻ります。
+     */
+    public static async setIfAbsentFnAsync(key: string, valueFn: () => Promise<any>): Promise<boolean> {
+        if (SessionData.exists(key)) return false;
+        SessionData.set(key, await valueFn());
         return true;
     }
 }

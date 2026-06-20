@@ -46,7 +46,7 @@ declare global {
          * @param key 存在を確認するキー
          * @returns 存在していればtrue
          */
-        containsKey(key: K): boolean;
+        containsKey(key: unknown): boolean;
     }
 
     interface MapConstructor {
@@ -98,7 +98,7 @@ Map.prototype.getOrPut = function<K, V>(key: K, put: () => V) {
     return gen;
 }
 
-Map.prototype.containsKey = function<K>(key: K) {
+Map.prototype.containsKey = function(key: unknown) {
     return this.keys().toArray().contains(key);
 }
 

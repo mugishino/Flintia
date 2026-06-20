@@ -11,6 +11,9 @@ import { Command } from "@tauri-apps/plugin-shell";
 import { WInvoke } from "~/InvokeWrapper";
 import { DragProvider, DragType } from "./DragProvider";
 import { Line } from "~/components/Line";
+import { Logger } from "~/module/Logger";
+import { SessionData } from "~/util/session";
+import { Result } from "~/util/clazz";
 
 interface DragDropPayload {
     paths: string[];
@@ -29,9 +32,72 @@ const ExtensionMap = new Map<SupportedType, string[]>()
     .set(SupportedType.Audio, ["mp3", "wav", "flac", "ogg", "opus"])
     .set(SupportedType.Video, ["mp3", "wav", "flac", "ogg", "opus"])
     .set(SupportedType.Unsupported, [String.empty])
-    ;
+;
 
-const LOSSLESS_SUPPORTED_TYPE = ["webp", "jxl"];
+const LOSSLESS_DATA = new Map<string, string[]>()
+.set("webp", ["-lossless", "1"])
+.set("jxl" , ["-distance", "0"])
+.set("avif", ["-lossless", "1"])
+;
+
+/**
+ * ffmpegでの変換コマンドの引数を作成します。
+ * @param input 変換元ファイル
+ * @param inputType 変換元ファイルのタイプ
+ * @param outdir 変換出力ディレクトリ。未指定で変換元ファイルと同じディレクトリ。
+ * @param outputType 変換先の形式
+ * @param lossless 可逆圧縮にするかどうか
+ * @returns コマンドの引数
+ */
+async function makeCommandArgs(input: string, inputType: SupportedType, outdir: string|undefined, outputType: string, lossless: boolean): Promise<Result<string[], string>> {
+    const o_dir = outdir ?? Paths.getDirectory(input);
+    const o_name = Paths.splitExt(Paths.getBasename(input)).name;
+    const o = Paths.join(o_dir, `${o_name}.${outputType}`);
+    // 出力後が同じなら失敗扱いにする
+    if (Paths.equals(o, input)) {
+        return Result.Err("The output file is the same as the input file.");
+    }
+
+    // command build
+    const args: (string|undefined)[] = [];
+    switch (outputType) {
+        case "avif":
+            const AVIF_SESSIONDATA_KEY = "AVAILABLE-AV1-NVENC";
+            await SessionData.setIfAbsentFnAsync(AVIF_SESSIONDATA_KEY, async () => {
+                // AV1_NVENCが使用可能かを確認するコマンド
+                return await Command.create("ffmpeg", [
+                    "-f", "lavfi",
+                    "-i", "color=c=black:s=256x256:d=1", 
+                    "-c:v", "av1_nvenc", 
+                    "-f", "null", "-"
+                ]).execute().then(v => v.code == 0);
+            });
+            const useNVEnc = !lossless && SessionData.get(AVIF_SESSIONDATA_KEY);
+            args.push(
+                "-c:v", useNVEnc ? "av1_nvenc" : "libsvtav1",
+                "-color_range", "pc",
+                "-pix_fmt", useNVEnc ? "yuv420p10le" : "gbrap10le",
+                "-colorspace", "bt709",
+                "-color_primaries", "bt709",
+                "-color_trc", useNVEnc ? "bt709" : "iec61966-2-1",
+                ...lossless ? ["-lossless", "1"] : [],
+                ...useNVEnc
+                ? ["-rc", "constqp", "-cq", "18"]
+                : ["-crf", "18"],
+            );
+            break;
+        default:
+            args.push(
+                // 変換元が映像の場合、変換先が音声なので映像を削除してエンコードすることを明示。
+                "-vn".where(inputType == SupportedType.Video),
+                ...lossless ? [] : LOSSLESS_DATA.get(outputType) ?? []
+            );
+            break;
+    }
+    return Result.Ok(["-y", "-i", input, ...args, o].nullFilter());
+}
+
+
 
 export function FileConverter() {
     // overlay
@@ -49,11 +115,10 @@ export function FileConverter() {
     const [lossless, setLossless] = useState(false);
 
     // output
-    const [cmdlog, setCmdlog] = useState<string|undefined>();
+    const [cmdlog, setCmdlog] = useState<string>(String.empty);
 
     function addLog(text: string, ln: boolean=true) {
-        if (cmdlog == undefined) setCmdlog(String.empty);
-        setCmdlog(prev => prev + (ln ? "\n" : String.empty) + text);
+        setCmdlog(prev => prev + text + (ln ? "\n" : String.empty));
     }
 
     // update
@@ -107,40 +172,25 @@ export function FileConverter() {
     }, []);
 
     async function convertAndExport(outdir?: string) {
+        if (outputFileType == undefined) return Logger.error("outputFileType is undefined.");
+
         setConvertOverlay(false);
         setCmdlog(String.empty);
         files.forEach(async f => {
             addLog(Paths.getBasename(f) + " -> ", false);
-            const o_dir = outdir ?? Paths.getDirectory(f);
-            const o_name = Paths.splitExt(Paths.getBasename(f)).name;
-            const o = Paths.join(o_dir, `${o_name}.${outputFileType}`);
-            // 出力後が同じならスキップ
-            if (Paths.equals(o, f)) {
-                addLog("Skip[equals] " + o)
-            }
-
-            // command build
-            const arg_vn = "-vn".where(inputFileType == SupportedType.Video);
-            const arg_lossless = (() => {
-                if (!lossless) return [];
-                if (!LOSSLESS_SUPPORTED_TYPE.contains(outputFileType)) return [];
-                switch (outputFileType) {
-                    case "webp": return ["-lossless", "1"];
-                    case "jxl" : return ["-distance", "0"];
+            const args = await makeCommandArgs(f, inputFileType, outdir, outputFileType, lossless);
+            args.map_err(err => addLog("Failed: " + err)).map(async args => {
+                // run
+                const cmd = Command.create("ffmpeg", args);
+                const result = await cmd.execute();
+                if (result.code == 0) {
+                    addLog("Success");
+                    if (isTrash) await WInvoke.fileTrash([f]);
+                } else {
+                    addLog("Failed: code " + result.code);
+                    addLog(result.stdout);
                 }
-                return []
-            })();
-            const args = ["-y", "-i", f, arg_vn, ...arg_lossless, o].nullFilter();
-
-            // run
-            const cmd = Command.create("ffmpeg", args);
-            const result = await cmd.execute();
-            if (result.code == 0) {
-                addLog("Success: " + o_name+"."+outputFileType);
-                if (isTrash) await WInvoke.fileTrash([f]);
-            } else {
-                addLog("Failed: code " + result.code + "\n" + result.stdout);
-            }
+            });
         });
     }
 
@@ -151,7 +201,7 @@ export function FileConverter() {
             <Overlay show={dropOverlay} setShow={() => {}}>
                 <div className={`h-full w-full flex justify-center items-center`}>ドロップしてファイルを変換</div>
             </Overlay>
-            <Overlay show={cmdlog != undefined} setShow={() => setCmdlog(undefined)}>
+            <Overlay show={!!cmdlog} setShow={() => setCmdlog(String.empty)}>
                 <div className="h-full w-full flex flex-col justify-between">
                     {cmdlog}
                 </div>
@@ -175,7 +225,7 @@ export function FileConverter() {
                             <span className="grow">元ファイルをゴミ箱に移動</span>
                             <input type="checkbox" checked={isTrash} onChange={e => setIsTrash(e.currentTarget.checked)}/>
                         </div>
-                        {LOSSLESS_SUPPORTED_TYPE.contains(outputFileType) && <>
+                        {LOSSLESS_DATA.containsKey(outputFileType) && <>
                             <Line className="my-0"/>
                             <Setting title="無劣化" childClassName="flex justify-end">
                                 <input type="checkbox" checked={lossless} onChange={e => setLossless(e.currentTarget.checked)}/>

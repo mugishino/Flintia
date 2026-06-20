@@ -10,7 +10,7 @@ export const HOME_DIR = await homeDir();
 export const IS_INITIAL = SessionData.setIfAbsent("APP_INITIALIZED", true);
 
 export const CommandExists = {
-    FFmpeg: await Command.create("where", ["ffmpeg"]).execute().then(v => v.code == 0).catch(() => false),
+    FFmpeg: await SessionData.setIfAbsentFnAsync("COMMAND-EXISTS_FFMPEG", async() => await Command.create("where", ["ffmpeg"]).execute().then(v => v.code == 0).catch(() => false)),
 } as const;
 
 export const DefaultFileName = {
