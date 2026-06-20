@@ -2,6 +2,14 @@
 @import "./window.css";
 
 @theme default {
+    /* debug */
+    --color-debugA: #b00;
+    --color-debugB: #0b0;
+    --color-debugC: #00b;
+    --color-debugD: #bb0;
+    --color-debugE: #b0b;
+    --color-debugF: #0bb;
+
     /* core colors */
     --color-text: var(--color-neutral-50);
     --color-text-gray: var(--color-neutral-400);
