@@ -1,6 +1,6 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { TOTP } from "otpauth";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Config } from "~/Config";
 import { Paths } from "~/util/path";
 import { Clipboards } from "~/util/clipboard";
@@ -15,19 +15,20 @@ import { Pair } from "~/util/clazz";
 import { readClipboardQRCode } from "~/module/QRCode";
 import { Search } from "~/components/Search";
 
-type AuthData = {
+interface AuthData {
     label: string,
     code: string,
     disable?: boolean,
 };
 
-const UPDATE_RATE = 1000/60; // 60FPS
+const UPDATE_RATE = 1000/60; // 画面の更新頻度(ms)
+const PERIOD_TIME = 30; // コード自体の更新頻度
 
 function secretToNumber(secret: string) {
     const res = new TOTP({
         secret: secret,
         digits: 6,
-        period: 30,
+        period: PERIOD_TIME,
         algorithm: "SHA1",
     });
     return {
@@ -42,8 +43,8 @@ function CodeView(props: {
     onAuxClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void,
 }) {
     const [code, setCode] = useState<string|null>(null);
+    // 単位はミリ秒です
     const [time, setTime] = useState(0);
-    const isHover = useRef(false);
 
     setTimeout(() => {
         setTime(time-UPDATE_RATE);
@@ -54,22 +55,25 @@ function CodeView(props: {
         }
     }, UPDATE_RATE);
 
-    const colorLeft  = isHover.current ? "var(--color-auth-accent-hover)" : "var(--color-auth-accent)";
-    const colorRight = isHover.current ? "var(--color-auth-hover)" : "var(--color-auth)";
+    const remainingPercent = time / (PERIOD_TIME*10);
 
     return (
         <div
-        className="flex flex-row h-10 border-b px-2 justify-between cursor-pointer"
-        style={{background: `linear-gradient(to right, ${colorLeft} ${time / 300}%, ${colorRight} 0)`}}
-        onMouseOver ={() => isHover.current = true }
-        onMouseLeave={() => isHover.current = false}
+        className="h-10 border-b px-2 relative cursor-pointer group"
         onAuxClick={e => props.onAuxClick(e)}
         onClick={() => {
             if (code == null) return;
             Clipboards.copyText(code, true);
-        }}>
-            <div className="flex items-center">{props.title}</div>
-            <div className="my-auto text-3xl">{(code ?? String.empty).insert(String.space, 3)}</div>
+        }}
+        >
+            <div className="absolute flex flex-row left-0 top-0 h-full w-full">
+                <div className="bg-auth-accent group-hover:bg-auth-accent-hover " style={{width: remainingPercent + "%"}}/>
+                <div className="bg-auth group-hover:bg-auth-hover grow"/>
+            </div>
+            <div className="h-full w-full flex flex-row justify-between *:z-10">
+                <div className="flex items-center">{props.title}</div>
+                <div className="my-auto text-3xl">{(code ?? String.empty).insert(String.space, 3)}</div>
+            </div>
         </div>
     );
 }
