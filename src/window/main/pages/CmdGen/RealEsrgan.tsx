@@ -5,17 +5,26 @@ import { Setting } from "~/components/Setting";
 import { Dialogs, IMAGE_EXTENSIONS } from "~/module/Dialogs";
 import { DESKTOP_DIR } from "~/Data";
 import { ifPresent } from "~/util/util";
+import { Select } from "~/components/Select";
 
-const Model = {
-    "GAN x4Plus Anime": "RealESRGAN-x4plus-anime",
-    "GAN x4Plus": "RealESRGAN-x4plus",
-    "AnimeVideo x2": "RealESR-animevideov3-x2",
-    "AnimeVideo x3": "RealESR-animevideov3-x3",
-    "AnimeVideo x4": "RealESR-animevideov3-x4",
-} as const;
+type Model =
+    "RealESRGAN-x4plus-anime"
+    |"RealESRGAN-x4plus"
+    |"RealESR-animevideov3-x2"
+    |"RealESR-animevideov3-x3"
+    |"RealESR-animevideov3-x4"
+;
+
+const SelectData = new Map<string, Model>()
+.set("GAN x4Plus Anime", "RealESRGAN-x4plus-anime")
+.set("GAN x4Plus", "RealESRGAN-x4plus")
+.set("AnimeVideo x2", "RealESR-animevideov3-x2")
+.set("AnimeVideo x3", "RealESR-animevideov3-x3")
+.set("AnimeVideo x4", "RealESR-animevideov3-x4")
+;
 
 export function RealEsrgan() {
-    const [model, setModel] = useState<keyof typeof Model>("GAN x4Plus Anime");
+    const [model, setModel] = useState<Model>("RealESRGAN-x4plus-anime");
     const [files, setFiles] = useState<string[]>([]);
     const [outdir, setOutdir] = useState<string|null>(null);
 
@@ -24,9 +33,7 @@ export function RealEsrgan() {
     return (
         <>
             <Setting title="Model">
-                <select value={model} onChange={e => setModel(e.currentTarget.value as keyof typeof Model)}>
-                    {Object.keys(Model).map(v => <option key={v}>{v}</option>)}
-                </select>
+                <Select value={SelectData} onSelectChange={e => setModel(e)}/>
             </Setting>
 
             <Setting title="Input Files">
@@ -52,7 +59,7 @@ export function RealEsrgan() {
             <button onClick={() => {
                 const cmd = files.map(f => {
                     const outFileName = Paths.splitExt(Paths.getBasename(f)).name;
-                    return `realesrgan-ncnn-vulkan -i "${f}" -o "${outdir}/REG_${outFileName}.png" -n ${Model[model]}`;
+                    return `realesrgan-ncnn-vulkan -i "${f}" -o "${outdir}/REG_${outFileName}.png" -n ${model}`;
                 }).join("&");
                 Clipboards.copyText(cmd);
                 // コピー通知、コマンド長が8192を超えてれば長めに出す

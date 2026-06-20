@@ -139,7 +139,7 @@ body {
         border-color: var(--color-border);
     }
 
-    button, select, input {
+    button, select, input, .interactives, .interactives_nohover {
         @apply px-1 py-0.5 min-h-7;
         color: var(--color-text);
         width: 100%;
@@ -155,7 +155,7 @@ body {
         }
     }
 
-    button, select {
+    button, select, .interactives:not(.interactives_nohover) {
         &:not(:disabled) {
             &:hover {
                 background-color: var(--color-button-hover);
