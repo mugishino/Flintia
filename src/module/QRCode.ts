@@ -1,6 +1,6 @@
 import { BrowserQRCodeReader } from "@zxing/browser";
 import jsQR from "jsqr";
-import { Result } from "~/util/clazz";
+import { Result } from "~/util/class/Result";
 import { Clipboards } from "~/util/clipboard";
 import { createCanvas } from "~/util/util";
 

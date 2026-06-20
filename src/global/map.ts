@@ -1,4 +1,4 @@
-import { Pair } from "~/util/clazz";
+import { Pair } from "~/util/class/Pair";
 
 export {};
 

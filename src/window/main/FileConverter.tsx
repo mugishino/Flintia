@@ -13,7 +13,7 @@ import { DragProvider, DragType } from "./DragProvider";
 import { Line } from "~/components/Line";
 import { Logger } from "~/module/Logger";
 import { SessionData } from "~/util/session";
-import { Result } from "~/util/clazz";
+import { Result } from "~/util/class/Result";
 import { useMapState } from "~/hooks/useMapState";
 
 interface DragDropPayload {
@@ -68,8 +68,8 @@ async function makeCommandArgs(input: string, inputType: SupportedType, outdir: 
                 // AV1_NVENCが使用可能かを確認するコマンド
                 return await Command.create("ffmpeg", [
                     "-f", "lavfi",
-                    "-i", "color=c=black:s=256x256:d=1", 
-                    "-c:v", "av1_nvenc", 
+                    "-i", "color=c=black:s=256x256:d=1",
+                    "-c:v", "av1_nvenc",
                     "-f", "null", "-"
                 ]).execute().then(v => v.code == 0);
             });

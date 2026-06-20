@@ -1,4 +1,4 @@
-import { Result } from "./clazz";
+import { Result } from "./class/Result";
 import { Falsy, Nullable } from "./type";
 
 /**

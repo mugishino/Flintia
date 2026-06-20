@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { IS_DEVELOP_MODE } from "./Data";
-import { Result } from "./util/clazz";
+import { Result } from "./util/class/Result";
 
 export interface DiskInfo {
     name: string;

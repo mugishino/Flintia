@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
-import { Integer, IntVector2 } from "~/util/clazz";
+import { Integer } from "~/util/class/Integer";
+import { IntVector2 } from "~/util/class/IntVector2";
 import { parseMouseButtons } from "~/util/util";
 
 export const GRID_SIZE = screen.width / 43;

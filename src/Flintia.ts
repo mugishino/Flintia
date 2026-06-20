@@ -3,7 +3,7 @@ import { SessionData } from "./util/session";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { WInvoke } from "./InvokeWrapper";
 import { Event, listen } from "@tauri-apps/api/event";
-import { Pair } from "./util/clazz";
+import { Pair } from "./util/class/Pair";
 
 // ウィンドウごとに一意、listenからアクセス可能なのがトップレベルぐらいしかない
 /** WindowLabel: Hotkey  */

@@ -11,7 +11,7 @@ import { OverlayWindow } from "~/components/OverlayWindow";
 import { Line } from "~/components/Line";
 import { useMapState } from "~/hooks/useMapState";
 import { useStaticOverlay } from "~/hooks/useOverlay";
-import { Pair } from "~/util/clazz";
+import { Pair } from "~/util/class/Pair";
 import { readClipboardQRCode } from "~/module/QRCode";
 import { Search } from "~/components/Search";
 
