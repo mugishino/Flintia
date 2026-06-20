@@ -29,8 +29,18 @@ export class Result<R, E> {
         return this;
     }
 
+    public async map_err_async(call: (err: E) => Promise<void>) {
+        if (this.isErr) await call(this.error!);
+        return this;
+    }
+
     public map(call: (value: R) => void) {
         if (!this.isErr) call(this.value!);
+        return this;
+    }
+
+    public async map_async(call: (value: R) => Promise<void>) {
+        if (!this.isErr) await call(this.value!);
         return this;
     }
 

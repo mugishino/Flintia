@@ -14,6 +14,7 @@ import { Line } from "~/components/Line";
 import { Logger } from "~/module/Logger";
 import { SessionData } from "~/util/session";
 import { Result } from "~/util/clazz";
+import { useMapState } from "~/hooks/useMapState";
 
 interface DragDropPayload {
     paths: string[];
@@ -115,10 +116,9 @@ export function FileConverter() {
     const [lossless, setLossless] = useState(false);
 
     // output
-    const [cmdlog, setCmdlog] = useState<string>(String.empty);
-
-    function addLog(text: string, ln: boolean=true) {
-        setCmdlog(prev => prev + text + (ln ? "\n" : String.empty));
+    const [convertStatus, setConvertStatusRaw] = useMapState<string, string>();
+    function setConvStat(key: string, value: string) {
+        setConvertStatusRaw(m => m.set(key, value));
     }
 
     // update
@@ -175,20 +175,21 @@ export function FileConverter() {
         if (outputFileType == undefined) return Logger.error("outputFileType is undefined.");
 
         setConvertOverlay(false);
-        setCmdlog(String.empty);
+        setConvertStatusRaw(new Map());
         files.forEach(async f => {
-            addLog(Paths.getBasename(f) + " -> ", false);
-            const args = await makeCommandArgs(f, inputFileType, outdir, outputFileType, lossless);
-            args.map_err(err => addLog("Failed: " + err)).map(async args => {
+            const logKey = Paths.getBasename(f);
+            (await makeCommandArgs(f, inputFileType, outdir, outputFileType, lossless))
+            .map_err(err => setConvStat(logKey, "Failed: " + err))
+            .map(async args => {
+                setConvStat(logKey, "Converting...");
                 // run
                 const cmd = Command.create("ffmpeg", args);
                 const result = await cmd.execute();
                 if (result.code == 0) {
-                    addLog("Success");
+                    setConvStat(logKey, "Done");
                     if (isTrash) await WInvoke.fileTrash([f]);
                 } else {
-                    addLog("Failed: code " + result.code);
-                    addLog(result.stdout);
+                    setConvStat(logKey, "Failed: code " + result.code);
                 }
             });
         });
@@ -201,9 +202,9 @@ export function FileConverter() {
             <Overlay show={dropOverlay} setShow={() => {}}>
                 <div className={`h-full w-full flex justify-center items-center`}>ドロップしてファイルを変換</div>
             </Overlay>
-            <Overlay show={!!cmdlog} setShow={() => setCmdlog(String.empty)}>
-                <div className="h-full w-full flex flex-col justify-between">
-                    {cmdlog}
+            <Overlay show={!convertStatus.isEmpty()} setShow={() => setConvertStatusRaw(new Map())}>
+                <div className="h-full w-full flex flex-col p-1 justify-between">
+                    {convertStatus.map((k, v) => <div key={k}>{k}: {v}</div>)}
                 </div>
             </Overlay>
             <Overlay show={convertOverlay} setShow={setConvertOverlay}>
