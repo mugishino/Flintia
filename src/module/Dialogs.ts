@@ -76,9 +76,20 @@ export class Dialogs {
      * @returns 指定されたファイル
      */
     public static async save(title: string, extensions?: DialogFilter[], defaultPath?: string) {
+        // DialogFilterを分解し、構築
+        const filters: DialogFilter[] = [];
+        extensions?.forEach(v => {
+            v.extensions.forEach(ext => {
+                filters.push({
+                    name: "",
+                    extensions: [ext],
+                })
+            });
+        });
+
         const result = await dialog.save({
             title: title,
-            filters: extensions,
+            filters: filters,
             defaultPath: defaultPath ?? DESKTOP_DIR,
         });
         FlintiaWindow.getCurrentWindow().then(v => v.show());
