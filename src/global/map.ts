@@ -40,13 +40,27 @@ declare global {
          * @param put 負荷軽減のため遅延生成
          */
         getOrPut(key: K,put: () => V): V;
-        
+
         /**
          * このMapにそのkeyが存在するか確認します。
          * @param key 存在を確認するキー
          * @returns 存在していればtrue
          */
         containsKey(key: unknown): boolean;
+
+        /**
+         * 値からKeyを逆引きします。
+         * @param value キーを探す値
+         */
+        reverseLookup(value: V): K|undefined;
+
+        /**
+         * 条件式がtrueであれば値をsetします。
+         * @param key 設定するキー
+         * @param value 設定する値
+         * @param conditional 条件式
+         */
+        setIf(key: K, value: V, conditional: boolean): this;
     }
 
     interface MapConstructor {
@@ -55,6 +69,12 @@ declare global {
          * @param data 連想配列
          */
         fromObject<T extends Record<string|number|symbol, any>>(data: T): Map<string, T[keyof T]>;
+
+        /**
+         * マップを作成します。new Map().set()のチェーンより高度な作成が可能です。
+         * @param proc 作成処理
+         */
+        create<K, V>(proc: (map: Map<K, V>) => void): Map<K, V>;
     }
 }
 
@@ -102,6 +122,26 @@ Map.prototype.containsKey = function(key: unknown) {
     return this.keys().toArray().contains(key);
 }
 
+Map.prototype.reverseLookup = function<V>(value: V) {
+    for (const [k, v] of this.entries()) {
+        if (value == v) return k;
+    }
+    return undefined;
+}
+
+Map.prototype.setIf = function<K, V>(key: K, value: V, conditional: boolean) {
+    if (conditional) {
+        this.set(key, value);
+    }
+    return this;
+}
+
 Map.fromObject = function<T extends Record<string | number | symbol, any>>(data: T): Map<string, T[keyof T]> {
     return new Map(Object.entries(data));
+}
+
+Map.create = function<K, V>(proc: (map: Map<K, V>) => void) {
+    const map = new Map<K, V>();
+    proc(map);
+    return map;
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AudioCodec, BuildFFmpegCommand, Preset, QualityMode, VideoCodec } from "./CommandBuilder";
 import { Clipboards } from "~/util/clipboard";
 import { FlintiaWindow } from "~/Flintia";
@@ -6,11 +6,11 @@ import { Setting } from "~/components/Setting";
 import { Paths } from "~/util/path";
 import { Dialogs, VIDEO_EXTENSIONS } from "~/module/Dialogs";
 import { ifPresent } from "~/util/util";
+import { Select } from "~/components/Select";
 
 const SUPPORTED_VIDEO_EXTENSION = ["mp4", "mkv", "mov", "webm"] as const;
 
 type VideoExt = typeof SUPPORTED_VIDEO_EXTENSION[number];
-type Choices<T> = Record<string, T>;
 
 export function Video() {
     const [sInputFile, setInputFile] = useState<string|null>(null);
@@ -21,75 +21,58 @@ export function Video() {
     const [sQualityValue, setQualityValue] = useState(0);
     const [sOutputFile, setOutputFile] = useState<string|null>(null);
 
-    function Selector<Enum extends object>(props: {
-        title: string,
-        defaultValue: string | number | readonly string[] | undefined,
-        onChange: (v: string) => void,
-        options: Enum,
-        hide?: boolean,
-        sort?: boolean,
-    }) {
-        let data = Object.entries(props.options);
-        if (props.sort) data = data.sort();
-        return (
-            <Setting title={props.title} hide={props.hide}>
-                <select className="inline-block" defaultValue={props.defaultValue} onChange={v => props.onChange(v.target.value)}>
-                    {data.map(([k, v], i) => v&&k ? <option key={i} value={v}>{k}</option> : undefined)}
-                </select>
-            </Setting>
-        );
-    }
-
     useEffect(() => setQualityValue(sQualityMode == "cbr" ? 1024*16 : 20), [sQualityMode]);
 
     const OUTPUT_FILE_EXT = Paths.splitExt(sOutputFile ?? String.empty).ext as VideoExt;
 
     // 選択肢用意
     const isntWebm = OUTPUT_FILE_EXT != "webm";
-    const oVideoCodec: Choices<VideoCodec|undefined> = {
-        h264: "h264_nvenc".where(isntWebm),
-        HEVC: "hevc_nvenc".where(isntWebm),
-        AV1: "av1_nvenc",
-        copy: "copy",
-    };
+    const oVideoCodec = useMemo(() => Map.create<string, VideoCodec>(m => {
+        m
+        .setIf("h264", "h264_nvenc", isntWebm)
+        .setIf("HEVC", "hevc_nvenc", isntWebm)
+        .set("AV1", "av1_nvenc")
+        .set("copy", "copy")
+        ;
+    }), [isntWebm]);
 
-    const oPreset: Choices<Preset> = {
-        auto: "auto",
-        ultraslow: "p1",
-        veryslow: "p2",
-        slow: "p3",
-        medium: "p4",
-        fast: "p5",
-        veryfast: "p6",
-        ultrafast: "p7",
-    }
+    const oPreset = useMemo(() => new Map<string, Preset>()
+        .set("auto", "auto")
+        .set("ultraslow", "p1")
+        .set("veryslow", "p2")
+        .set("slow", "p3")
+        .set("medium", "p4")
+        .set("fast", "p5")
+        .set("veryfast", "p6")
+        .set("ultrafast", "p7")
+    , []);
 
-    const oAudioCodec: Choices<AudioCodec|undefined> = {
-        aac: "aac".where(isntWebm),
-        opus: "libopus",
-        vorbis: "libvorbis",
-        flac: "flac".where(isntWebm),
-        mp3: "libmp3lame".where(isntWebm),
-        auto: "auto".where(isntWebm),
-        copy: "copy",
-    }
+    const oAudioCodec = useMemo(() => Map.create<string, AudioCodec>(m => {
+        m
+        .setIf("aac", "aac", isntWebm)
+        .set("opus", "libopus")
+        .set("vorbis", "libvorbis")
+        .setIf("flac", "flac", isntWebm)
+        .setIf("mp3", "libmp3lame", isntWebm)
+        .setIf("auto", "auto", isntWebm)
+        .set("copy", "copy")
+        ;
+    }), [isntWebm]);
 
-    const oQualityMode: Choices<QualityMode> = {
-        CQP: "constqp",
-        CBR: "cbr",
-        CQVBR: "cq",
-    };
+    const oQualityMode = useMemo(() => new Map<string, QualityMode>()
+        .set("CQP", "constqp")
+        .set("CBR", "cbr")
+        .set("CQVBR", "cq")
+    , []);
 
 
 
     // 消えた選択肢を選択していた場合の処理
+    //! Selectの現状の機能的に動作しません。改善予定。
     if (OUTPUT_FILE_EXT == "webm") {
         if (!sVideoCodec.contains("av1_nvenc", "copy")) {
             setVideoCodec("av1_nvenc");
         }
-    }
-
-    if (sVideoCodec == "av1_nvenc") {
         if (!sAudioCodec.contains("libopus", "libvorbis")) {
             setAudioCodec("libopus");
         }
@@ -106,10 +89,18 @@ export function Video() {
                     FlintiaWindow.getCurrentWindow().then(v => v.show());
                 }}>{sInputFile?.split("\\").slice(-1)[0] ?? "Browse..."}</button>
             </Setting>
-            <Selector title="VideoCodec"    defaultValue={sVideoCodec   } onChange={v => setVideoCodec  (v as VideoCodec    )} options={oVideoCodec  }/>
-            <Selector title="Preset"        defaultValue={sPreset       } onChange={v => setPreset      (v as Preset        )} options={oPreset      } hide={sVideoCodec == "copy"}/>
-            <Selector title="AudioCodec"    defaultValue={sAudioCodec   } onChange={v => setAudioCodec  (v as AudioCodec    )} options={oAudioCodec  }/>
-            <Selector title="QualityMode"   defaultValue={sQualityMode  } onChange={v => setQualityMode (v as QualityMode   )} options={oQualityMode } hide={sVideoCodec == "copy"}/>
+            <Setting title="VideoCodec">
+                <Select<VideoCodec> value={oVideoCodec} onSelectChange={v => setVideoCodec(v)} defaultSelect={sVideoCodec}/>
+            </Setting>
+            <Setting title="Preset" hide={sVideoCodec == "copy"}>
+                <Select<Preset> value={oPreset} onSelectChange={v => setPreset(v)} defaultSelect={sPreset}/>
+            </Setting>
+            <Setting title="AudioCodec">
+                <Select<AudioCodec> value={oAudioCodec} onSelectChange={setAudioCodec} defaultSelect={sAudioCodec}/>
+            </Setting>
+            <Setting title="QualityMode" hide={sVideoCodec == "copy"}>
+                <Select<QualityMode> value={oQualityMode} onSelectChange={setQualityMode} defaultSelect={sQualityMode} />
+            </Setting>
             <Setting title={sQualityMode == "cbr" ? "Bitrate" : "QualityLevel"} hide={sVideoCodec == "copy"}>
                 <input type="number"
                     className="pl-1"

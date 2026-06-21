@@ -11,10 +11,13 @@ interface Props<T> {
      * @param value 内部値
      */
     onSelectChange: (value: T) => void,
+    /** デフォルトの値を設定します。表示名で指定してください。 */
+    defaultSelect?: T,
+
     /** ドロップダウン全体のclassNameを制御します。 */
     dropdownClassName?: string,
     /** アイテム自体のclassNameを制御します。 */
-    itemClassName?: string
+    itemClassName?: string,
 }
 
 /**
@@ -22,7 +25,11 @@ interface Props<T> {
  * onChangeを型付きで戻せます。
  */
 export function Select<T>(props: React.PropsWithChildren<Props<T>> & React.ComponentPropsWithoutRef<"div">) {
-    const {value, onSelectChange, className, dropdownClassName, itemClassName, ...rest} = props;
+    const {
+        value: rawValue, onSelectChange, defaultSelect,
+        className, dropdownClassName, itemClassName,
+        ...rest
+    } = props;
 
     const [data, setData] = useState<Map<string, T>>(new Map());
     const [selected, setSelected] = useState<string|undefined>(undefined);
@@ -33,18 +40,24 @@ export function Select<T>(props: React.PropsWithChildren<Props<T>> & React.Compo
     useEffect(() => {
         // valueには配列とMapどちらでも渡せるようになっているため、それの展開
         const newData = new Map<string, T>();
-        if (value instanceof Array) {
-            value.forEach(v => newData.set(String(v), v));
+        if (rawValue instanceof Array) {
+            rawValue.forEach(v => newData.set(String(v), v));
         } else {
-            value.forEach((v, k) => newData.set(k, v));
+            rawValue.forEach((v, k) => newData.set(k, v));
         }
         setData(newData);
-    }, [value]);
+    }, [rawValue]);
 
     useEffect(() => {
-        // 初回だけ一番上のものをデフォルト値に。valueの変更があった場合は未検討
-        setSelected(data.keys().toArray().get(0));
-    }, []);
+        if (selected != undefined) return;
+        // defaultSelectがある場合、dataからキーを逆引きしてSelectedにいれる
+        if (defaultSelect != undefined) {
+            const key = data.reverseLookup(defaultSelect);
+            if (key != undefined) setSelected(key);
+        } else {
+            setSelected(data.keys().toArray().get(0));
+        }
+    }, [data]);
 
     const itemClassNameCache = twMerge("hover:bg-layerC pl-1", itemClassName);
 

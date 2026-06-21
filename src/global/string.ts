@@ -16,7 +16,7 @@ declare global {
         insert(text: string, pos: number): string;
 
         /**
-         * 値が含まれるか確認します。
+         * thisがargに含まれるか確認します。
          * @param this 型拡張補完用(使用側では出ない)
          * @param arg 確認リスト
          * @returns 含まれる場合true
