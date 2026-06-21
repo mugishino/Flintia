@@ -15,12 +15,12 @@ type Model =
     |"RealESR-animevideov3-x4"
 ;
 
-const SelectData = new Map<string, Model>()
-.set("GAN x4Plus Anime", "RealESRGAN-x4plus-anime")
-.set("GAN x4Plus", "RealESRGAN-x4plus")
-.set("AnimeVideo x2", "RealESR-animevideov3-x2")
-.set("AnimeVideo x3", "RealESR-animevideov3-x3")
-.set("AnimeVideo x4", "RealESR-animevideov3-x4")
+const SelectData = new Map<Model, string>()
+.set("RealESRGAN-x4plus-anime", "GAN x4Plus Anime")
+.set("RealESRGAN-x4plus", "GAN x4Plus")
+.set("RealESR-animevideov3-x2", "AnimeVideo x2")
+.set("RealESR-animevideov3-x3", "AnimeVideo x3")
+.set("RealESR-animevideov3-x4", "AnimeVideo x4")
 ;
 
 export function RealEsrgan() {
@@ -33,7 +33,7 @@ export function RealEsrgan() {
     return (
         <>
             <Setting title="Model">
-                <Select value={SelectData} onSelectChange={e => setModel(e)}/>
+                <Select list={SelectData} select={model} onSelectChange={setModel}/>
             </Setting>
 
             <Setting title="Input Files">

@@ -8,7 +8,7 @@ declare global {
          * データを全て処理し、配列として返します。
          * @param call データ処理内容
          */
-        map<T>(call: (k: K, v: V) => T): T[];
+        map<T>(call: (k: K, v: V, i: number) => T): T[];
 
         /**
          * データをJson文字列にします。
@@ -78,9 +78,10 @@ declare global {
     }
 }
 
-Map.prototype.map = function<K, V, T>(call: (k: K, v: V) => T) {
+Map.prototype.map = function<K, V, T>(call: (k: K, v: V, i: number) => T) {
     const result: T[] = [];
-    this.forEach((v, k) => result.push(call(k, v)));
+    let i = 0;
+    this.forEach((v, k) => result.push(call(k, v, i++)));
     return result;
 }
 

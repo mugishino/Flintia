@@ -1,18 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { ViewGroup } from "./ViewGroup";
 import { useOutsideClick } from "~/hooks/useOutsideClick";
 
 interface Props<T> {
-    /** 表示名: 内部値 */
-    value: Map<string, T> | T[],
+    /** 内部値: 表示名 */
+    list: Map<T, string> | T[],
+    /** 現在選択中のもの */
+    select: T,
     /**
      * 値の変更があった際に実行されるコールバック。
      * @param value 内部値
+     * @param index 選択された値のindex
      */
-    onSelectChange: (value: T) => void,
-    /** デフォルトの値を設定します。表示名で指定してください。 */
-    defaultSelect?: T,
+    onSelectChange: (value: T, index: number) => void,
 
     /** ドロップダウン全体のclassNameを制御します。 */
     dropdownClassName?: string,
@@ -26,61 +27,68 @@ interface Props<T> {
  */
 export function Select<T>(props: React.PropsWithChildren<Props<T>> & React.ComponentPropsWithoutRef<"div">) {
     const {
-        value: rawValue, onSelectChange, defaultSelect,
+        list: rawList, select, onSelectChange,
         className, dropdownClassName, itemClassName,
         ...rest
     } = props;
 
-    const [data, setData] = useState<Map<string, T>>(new Map());
-    const [selected, setSelected] = useState<string|undefined>(undefined);
+    const [data, setData] = useState<Map<T, string>>(new Map());
     const [open, setOpenRaw] = useState(false);
+    const [isOverflowX, setIsOverflowX] = useState(false);
+    const [isOverflowY, setIsOverflowY] = useState(false);
     const outside = useOutsideClick(() => open && setOpenRaw(false));
+    const itemsRef = useRef<HTMLDivElement>(null);
+
 
 
     useEffect(() => {
         // valueには配列とMapどちらでも渡せるようになっているため、それの展開
-        const newData = new Map<string, T>();
-        if (rawValue instanceof Array) {
-            rawValue.forEach(v => newData.set(String(v), v));
+        const newData = new Map<T, string>();
+        if (rawList instanceof Array) {
+            rawList.forEach(v => newData.set(v, String(v)));
         } else {
-            rawValue.forEach((v, k) => newData.set(k, v));
+            rawList.forEach((v, k) => newData.set(k, v));
         }
         setData(newData);
-    }, [rawValue]);
-
-    useEffect(() => {
-        if (selected != undefined) return;
-        // defaultSelectがある場合、dataからキーを逆引きしてSelectedにいれる
-        if (defaultSelect != undefined) {
-            const key = data.reverseLookup(defaultSelect);
-            if (key != undefined) setSelected(key);
-        } else {
-            setSelected(data.keys().toArray().get(0));
-        }
-    }, [data]);
+    }, [rawList]);
 
     const itemClassNameCache = twMerge("hover:bg-layerC pl-1", itemClassName);
 
+    useLayoutEffect(() => {
+        // 位置計算
+        if (!itemsRef.current) return;
+        const rect = itemsRef.current.getBoundingClientRect();
+        setIsOverflowX(rect.right > window.innerWidth);
+        setIsOverflowY(rect.bottom > window.innerHeight);
+    }, [open]);
+
     return (
-        <div className="relative cursor-pointer" ref={outside}>
             <div
-            className={twMerge("border interactives flex flex-row justify-between", className)}
+            className={twMerge(`border interactives flex flex-row justify-between relative cursor-pointer`, className)}
             onClick={() => setOpenRaw(v => !v)}
-            {...rest}>
-                {selected}
+            {...rest}
+            ref={outside}
+            >
+                {select && data.get(select)}
                 <div className={`${open ? "rotate-270" :"rotate-90"} scale-x-50 absolute right-2`}>{">"}</div>
+
+                <ViewGroup show={open}>
+                    <div ref={itemsRef} className={twMerge(
+                        `absolute
+                        min-w-full w-max max-h-[50vh]
+                        overflow-y-scroll overflow-x-hidden
+                        border bg-layerB z-50 text-left
+                        ${isOverflowY ? "bottom-full" : "top-full"} ${isOverflowX ? "-right-px" : "-left-px"}`,
+                        dropdownClassName
+                    )}>
+                        {data.map((key, view, i) =>
+                            <div className={itemClassNameCache} key={view+key} onClick={() => {
+                                setOpenRaw(false);
+                                onSelectChange(key, i);
+                            }}>{view}</div>
+                        )}
+                    </div>
+                </ViewGroup>
             </div>
-            <ViewGroup show={open}>
-                <div className={twMerge("absolute top-full w-full border bg-layerB z-50 text-left", dropdownClassName)}>
-                    {data.map((k, v) =>
-                        <div className={itemClassNameCache} key={k} onClick={() => {
-                            setSelected(k);
-                            setOpenRaw(false);
-                            onSelectChange(v);
-                        }}>{k}</div>
-                    )}
-                </div>
-            </ViewGroup>
-        </div>
     );
 }

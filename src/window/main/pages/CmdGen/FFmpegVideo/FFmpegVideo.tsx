@@ -9,8 +9,7 @@ import { ifPresent } from "~/util/util";
 import { Select } from "~/components/Select";
 
 const SUPPORTED_VIDEO_EXTENSION = ["mp4", "mkv", "mov", "webm"] as const;
-
-type VideoExt = typeof SUPPORTED_VIDEO_EXTENSION[number];
+type SupportedVideoExtension = typeof SUPPORTED_VIDEO_EXTENSION[number];
 
 export function Video() {
     const [sInputFile, setInputFile] = useState<string|null>(null);
@@ -23,53 +22,52 @@ export function Video() {
 
     useEffect(() => setQualityValue(sQualityMode == "cbr" ? 1024*16 : 20), [sQualityMode]);
 
-    const OUTPUT_FILE_EXT = Paths.splitExt(sOutputFile ?? String.empty).ext as VideoExt;
+    const OutputFileExt = Paths.splitExt(sOutputFile ?? String.empty).ext as SupportedVideoExtension;
 
     // 選択肢用意
-    const isntWebm = OUTPUT_FILE_EXT != "webm";
-    const oVideoCodec = useMemo(() => Map.create<string, VideoCodec>(m => {
+    const isntWebm = OutputFileExt != "webm";
+    const oVideoCodec = useMemo(() => Map.create<VideoCodec, string>(m => {
         m
-        .setIf("h264", "h264_nvenc", isntWebm)
-        .setIf("HEVC", "hevc_nvenc", isntWebm)
-        .set("AV1", "av1_nvenc")
+        .setIf("h264_nvenc", "h264", isntWebm)
+        .setIf("hevc_nvenc", "HEVC", isntWebm)
+        .set("av1_nvenc", "AV1")
         .set("copy", "copy")
         ;
     }), [isntWebm]);
 
-    const oPreset = useMemo(() => new Map<string, Preset>()
+    const oPreset = useMemo(() => new Map<Preset, string>()
         .set("auto", "auto")
-        .set("ultraslow", "p1")
-        .set("veryslow", "p2")
-        .set("slow", "p3")
-        .set("medium", "p4")
-        .set("fast", "p5")
-        .set("veryfast", "p6")
-        .set("ultrafast", "p7")
+        .set("p1", "ultraslow")
+        .set("p2", "veryslow")
+        .set("p3", "slow")
+        .set("p4", "medium")
+        .set("p5", "fast")
+        .set("p6", "veryfast")
+        .set("p7", "ultrafast")
     , []);
 
-    const oAudioCodec = useMemo(() => Map.create<string, AudioCodec>(m => {
+    const oAudioCodec = useMemo(() => Map.create<AudioCodec, string>(m => {
         m
         .setIf("aac", "aac", isntWebm)
-        .set("opus", "libopus")
-        .set("vorbis", "libvorbis")
+        .set("libopus", "opus")
+        .set("libvorbis", "vorbis")
         .setIf("flac", "flac", isntWebm)
-        .setIf("mp3", "libmp3lame", isntWebm)
+        .setIf("libmp3lame", "mp3", isntWebm)
         .setIf("auto", "auto", isntWebm)
         .set("copy", "copy")
         ;
     }), [isntWebm]);
 
-    const oQualityMode = useMemo(() => new Map<string, QualityMode>()
-        .set("CQP", "constqp")
-        .set("CBR", "cbr")
-        .set("CQVBR", "cq")
+    const oQualityMode = useMemo(() => new Map<QualityMode, string>()
+        .set("constqp", "CQP")
+        .set("cbr", "CBR")
+        .set("cq", "CQVBR")
     , []);
 
 
 
     // 消えた選択肢を選択していた場合の処理
-    //! Selectの現状の機能的に動作しません。改善予定。
-    if (OUTPUT_FILE_EXT == "webm") {
+    if (OutputFileExt == "webm") {
         if (!sVideoCodec.contains("av1_nvenc", "copy")) {
             setVideoCodec("av1_nvenc");
         }
@@ -90,16 +88,16 @@ export function Video() {
                 }}>{sInputFile?.split("\\").slice(-1)[0] ?? "Browse..."}</button>
             </Setting>
             <Setting title="VideoCodec">
-                <Select<VideoCodec> value={oVideoCodec} onSelectChange={v => setVideoCodec(v)} defaultSelect={sVideoCodec}/>
+                <Select<VideoCodec> list={oVideoCodec} select={sVideoCodec} onSelectChange={setVideoCodec}/>
             </Setting>
             <Setting title="Preset" hide={sVideoCodec == "copy"}>
-                <Select<Preset> value={oPreset} onSelectChange={v => setPreset(v)} defaultSelect={sPreset}/>
+                <Select<Preset> list={oPreset} select={sPreset} onSelectChange={setPreset}/>
             </Setting>
             <Setting title="AudioCodec">
-                <Select<AudioCodec> value={oAudioCodec} onSelectChange={setAudioCodec} defaultSelect={sAudioCodec}/>
+                <Select<AudioCodec> list={oAudioCodec} select={sAudioCodec} onSelectChange={setAudioCodec}/>
             </Setting>
             <Setting title="QualityMode" hide={sVideoCodec == "copy"}>
-                <Select<QualityMode> value={oQualityMode} onSelectChange={setQualityMode} defaultSelect={sQualityMode} />
+                <Select<QualityMode> list={oQualityMode} select={sQualityMode} onSelectChange={setQualityMode}/>
             </Setting>
             <Setting title={sQualityMode == "cbr" ? "Bitrate" : "QualityLevel"} hide={sVideoCodec == "copy"}>
                 <input type="number"
