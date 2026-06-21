@@ -17,7 +17,7 @@ export function Other() {
                 const hotfix = await WInvoke.getWindowsHotfix()
                 setHotfixData(
                     hotfix.sort((a, b) => a.HotFixID.localeCompare(b.HotFixID)).map(q =>
-                        <button onClick={async() => await openUrl(`https://www.google.com/search?q=${q.HotFixID}`)}>{q.HotFixID}</button>
+                        <button key={q.HotFixID} onClick={async() => await openUrl(`https://www.google.com/search?q=${q.HotFixID}`)}>{q.HotFixID}</button>
                     )
                 );
             }}>Show Windows Hotfix List</button>
