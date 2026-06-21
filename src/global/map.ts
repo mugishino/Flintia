@@ -61,6 +61,12 @@ declare global {
          * @param conditional 条件式
          */
         setIf(key: K, value: V, conditional: boolean): this;
+
+        /**
+         * getの拡張版。取得するキーにanyを使用できます。
+         * @param key 取得を試みるキー
+         */
+        getAny(key: any): V|undefined;
     }
 
     interface MapConstructor {
@@ -135,6 +141,10 @@ Map.prototype.setIf = function<K, V>(key: K, value: V, conditional: boolean) {
         this.set(key, value);
     }
     return this;
+}
+
+Map.prototype.getAny = function(key: any) {
+    return this.get(key);
 }
 
 Map.fromObject = function<T extends Record<string | number | symbol, any>>(data: T): Map<string, T[keyof T]> {
