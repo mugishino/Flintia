@@ -26,6 +26,9 @@ const windowLabel = getCurrentWindow().label;
 // ウィンドウラベルごとにスタイルを与える
 document.body.classList.add(windowLabel);
 
+// 右クリックを無効化 - index.htmlでもしているが効かない状況があった為
+window.addEventListener("contextmenu", e => e.preventDefault());
+
 // デバッグ時にわかりやすいようにスタイル設定
 if (IS_DEVELOP_MODE) {
     document.body.style.borderColor = "#800";

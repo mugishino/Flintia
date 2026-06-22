@@ -18,6 +18,7 @@ import { Launcher } from "./window/launcher/Launcher";
 import { Logger } from "./module/Logger";
 import { Roulette } from "./window/main/pages/Roulette";
 import { FontManager } from "./window/main/pages/FontManager";
+import { JSX } from "react/jsx-runtime";
 
 type SidebarPosition = "Top"|"Bottom";
 interface Page {

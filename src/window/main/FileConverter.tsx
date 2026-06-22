@@ -51,6 +51,8 @@ const LOSSLESS_DATA = new Map<string, string[]>()
  * @returns コマンドの引数
  */
 async function makeCommandArgs(input: string, inputType: SupportedType, outdir: string|undefined, outputType: string, lossless: boolean): Promise<Result<string[], string>> {
+    const i_ext = Paths.splitExt(input).ext;
+
     const o_dir = outdir ?? Paths.getDirectory(input);
     const o_name = Paths.splitExt(Paths.getBasename(input)).name;
     const o = Paths.join(o_dir, `${o_name}.${outputType}`);
@@ -73,7 +75,11 @@ async function makeCommandArgs(input: string, inputType: SupportedType, outdir: 
                     "-f", "null", "-"
                 ]).execute().then(v => v.code == 0);
             });
-            const useNVEnc = !lossless && SessionData.get(AVIF_SESSIONDATA_KEY);
+            const useNVEnc =
+            SessionData.get(AVIF_SESSIONDATA_KEY) // AV1-NVENCが使用可能かどうか
+            && !lossless // losslessの場合、nevncは使用できない
+            && i_ext != "jxl" // av1_nvencはjxlに非対応
+            ;
             args.push(
                 "-c:v", useNVEnc ? "av1_nvenc" : "libsvtav1",
                 "-color_range", "pc",

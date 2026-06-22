@@ -7,7 +7,9 @@ use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
 
 pub mod flintia;
-use flintia::{debug as fdebug, font, invks, launcher, core as fcore};
+use flintia::{font, invks, launcher, core as fcore};
+#[cfg(debug_assertions)]
+use flintia::{debug as fdebug};
 
 pub fn dispose_resources() {
     let _ = font::remove_all_font_resource().map_err(|e| {

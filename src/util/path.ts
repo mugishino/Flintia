@@ -63,6 +63,13 @@ export class Paths {
         return file.split("\\").get(-1)?.split("/").get(-1) ?? String.empty;
     }
 
+    /**
+     * ファイル名と拡張子を分割します。
+     * ファイルパスを入れた場合はファイル名側にパスもつきます。
+     * 戻り値には拡張子と分割するドットはつきません。
+     * @param filename 拡張子と分割するファイル名
+     * @returns \{ファイル名, 拡張子}
+     */
     public static splitExt(filename: string) {
         const split = filename.split(".");
         const ext = split.splice(-1)[0];
