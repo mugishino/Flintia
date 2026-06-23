@@ -67,6 +67,9 @@ async function makeCommandArgs(
     outputType: string,
     lossless: boolean,
     quality: number,
+    option: {
+        drawingMode?: boolean,
+    },
 ): Promise<Result<string[], string>> {
     const o_dir = outdir ?? Paths.getDirectory(input);
     const o_name = Paths.splitExt(Paths.getBasename(input)).name;
@@ -91,6 +94,9 @@ async function makeCommandArgs(
                 "-crf", "18",
             );
             break;
+        // @ts-expect-error: fall through
+        case "webp":
+            if (option.drawingMode) args.push("-preset", "drawing");
         default:
             const qualityData = QUALITY_DATA.get(outputType);
             args.push(
@@ -102,7 +108,7 @@ async function makeCommandArgs(
             break;
     }
     const result = ["-y", "-i", input, ...args, o].nullFilter();
-    Logger.debug(result.join(" "));
+    Logger.debug("ffmpeg " + result.join(" "));
     return Result.Ok(result);
 }
 
@@ -123,6 +129,8 @@ export function FileConverter() {
     // option
     const [lossless, setLossless] = useState(false);
     const [quality, setQuality] = useState(0);
+    // webp option
+    const [drawingMode, setDrawingMode] = useState(false);
 
     // output
     const [convertStatus, setConvertStatusRaw] = useMapState<string, string>();
@@ -193,7 +201,17 @@ export function FileConverter() {
         setConvertStatusRaw(new Map());
         files.forEach(async f => {
             const logKey = Paths.getBasename(f);
-            (await makeCommandArgs(f, inputFileType, outdir, outputFileType, lossless, quality))
+            (await makeCommandArgs(
+                f,
+                inputFileType,
+                outdir,
+                outputFileType,
+                lossless,
+                quality,
+                {
+                    drawingMode: drawingMode,
+                }
+            ))
             .map_err(err => setConvStat(logKey, "Failed: " + err))
             .map(async args => {
                 setConvStat(logKey, "Converting...");
@@ -253,11 +271,16 @@ export function FileConverter() {
                             let label = quality.toString();
                             if (outputFileType == "jxl" && quality == 0) label = "無劣化";
                             return (
-                                <Setting title={`クオリティ= ${label}`} tooltip={data.title}>
-                                    <input type="range" min={data.min} max={data.max} value={quality} onChange={e => setQuality(e.currentTarget.valueAsNumber)}/>
+                                <Setting title={`クオリティ= ${label}`} tooltip={data.title} childClassName="">
+                                    <input type="range" min={data.min} max={data.max} value={quality} onChange={e => setQuality(e.currentTarget.valueAsNumber)} className="align-top"/>
                                 </Setting>
                             );
                         })()}
+                        {outputFileType == "webp" && <>
+                            <Setting title="DrawingMode" tooltip="イラストなどアニメ塗りに向いた変換をします" childClassName="flex justify-end">
+                                <input type="checkbox" checked={drawingMode} onChange={e => setDrawingMode(e.currentTarget.checked)}/>
+                            </Setting>
+                        </>}
                         <button onClick={async() => await convertAndExport()}>同じディレクトリに出力</button>
                         <button onClick={async() => {
                             const dirpath = await Dialogs.openSingleDirectory("Select output directory", DESKTOP_DIR);
