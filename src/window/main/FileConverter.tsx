@@ -47,8 +47,8 @@ interface QualityData {
     defaultValue: number,
     arg: string,
 }
-const QUALITY_DATA = new Map<string, QualityData & {title?: string}>()
-.set("webp", {min: 0, max: 80, defaultValue: 80, arg: "-quality", title: "losslessを有効化するとこのパラメータは圧縮率になります"})
+const QUALITY_DATA = new Map<string, QualityData>()
+.set("webp", {min: 0, max: 80, defaultValue: 80, arg: "-quality"})
 .set("jxl" , {min: 0, max: 15, defaultValue: 1, arg: "-distance"})
 ;
 
@@ -267,10 +267,16 @@ export function FileConverter() {
                         {(() => {
                             const data = QUALITY_DATA.getAny(outputFileType);
                             if (data == undefined) return;
+
+                            // 表示条件
+                            if (lossless) return;
+
+                            // ラベルを設定
                             let label = quality.toString();
                             if (outputFileType == "jxl" && quality == 0) label = "無劣化";
+
                             return (
-                                <Setting title={`クオリティ= ${label}`} tooltip={data.title} childClassName="">
+                                <Setting title={`クオリティ= ${label}`}>
                                     <input type="range" min={data.min} max={data.max} value={quality} onChange={e => setQuality(e.currentTarget.valueAsNumber)} className="align-top"/>
                                 </Setting>
                             );
