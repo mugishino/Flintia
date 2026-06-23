@@ -15,6 +15,7 @@ import { Logger } from "~/module/Logger";
 import { Result } from "~/util/class/Result";
 import { useMapState } from "~/hooks/useMapState";
 import { ifPresent } from "~/util/util";
+import { Select } from "~/components/Select";
 
 interface DragDropPayload {
     paths: string[];
@@ -251,9 +252,7 @@ export function FileConverter() {
                         </>
                     : <>
                         <Setting title="変換先">
-                            <select value={outputFileType} onChange={v => setOutputFileType(v.currentTarget.value)}>
-                                {ExtensionMap.get(inputFileType)?.map(v => <option key={v} value={v}>{v}</option>)}
-                            </select>
+                            <Select list={ExtensionMap.get(inputFileType) ?? []} select={outputFileType} onSelectChange={v => setOutputFileType(v)} />
                         </Setting>
                         <div className="flex flex-row justify-between pl-1">
                             <span className="grow">元ファイルをゴミ箱に移動</span>

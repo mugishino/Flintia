@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { ViewGroup } from "./ViewGroup";
 import { useOutsideClick } from "~/hooks/useOutsideClick";
@@ -32,25 +32,22 @@ export function Select<T>(props: React.PropsWithChildren<Props<T>> & React.Compo
         ...rest
     } = props;
 
-    const [data, setData] = useState<Map<T, string>>(new Map());
-    const [open, setOpenRaw] = useState(false);
+    const data = useMemo(() => {
+        const result = new Map<T, string>();
+        if (rawList instanceof Array) {
+            rawList.forEach(v => result.set(v, String(v)));
+        } else {
+            rawList.forEach((v, k) => result.set(k, v));
+        }
+        return result;
+    }, [rawList]);
+    const [open, setOpen] = useState(false);
     const [isOverflowX, setIsOverflowX] = useState(false);
     const [isOverflowY, setIsOverflowY] = useState(false);
-    const outside = useOutsideClick(() => open && setOpenRaw(false));
+    const outside = useOutsideClick(() => open && setOpen(false));
     const itemsRef = useRef<HTMLDivElement>(null);
 
 
-
-    useEffect(() => {
-        // valueには配列とMapどちらでも渡せるようになっているため、それの展開
-        const newData = new Map<T, string>();
-        if (rawList instanceof Array) {
-            rawList.forEach(v => newData.set(v, String(v)));
-        } else {
-            rawList.forEach((v, k) => newData.set(k, v));
-        }
-        setData(newData);
-    }, [rawList]);
 
     const itemClassNameCache = twMerge("hover:bg-layerC pl-1", itemClassName);
 
@@ -65,7 +62,7 @@ export function Select<T>(props: React.PropsWithChildren<Props<T>> & React.Compo
     return (
             <div
             className={twMerge(`border interactives flex flex-row justify-between relative cursor-pointer`, className)}
-            onClick={() => setOpenRaw(v => !v)}
+            onClick={() => setOpen(v => !v)}
             {...rest}
             ref={outside}
             >
@@ -75,16 +72,17 @@ export function Select<T>(props: React.PropsWithChildren<Props<T>> & React.Compo
                 <ViewGroup show={open}>
                     <div ref={itemsRef} className={twMerge(
                         `absolute
-                        min-w-full w-max max-h-[50vh]
+                        min-w-[calc(100%+2px)] w-max max-h-[50vh]
                         overflow-y-scroll overflow-x-hidden
                         border bg-layerB z-50 text-left
                         ${isOverflowY ? "bottom-full" : "top-full"} ${isOverflowX ? "-right-px" : "-left-px"}`,
-                        dropdownClassName
+                        dropdownClassName,
                     )}>
                         {data.map((key, view, i) =>
-                            <div className={itemClassNameCache} key={view+key} onClick={() => {
-                                setOpenRaw(false);
+                            <div className={itemClassNameCache} key={view+key} onClick={e => {
+                                setOpen(false);
                                 onSelectChange(key, i);
+                                e.stopPropagation();
                             }}>{view}</div>
                         )}
                     </div>
