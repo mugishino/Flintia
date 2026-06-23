@@ -12,9 +12,9 @@ import { WInvoke } from "~/InvokeWrapper";
 import { DragProvider, DragType } from "./DragProvider";
 import { Line } from "~/components/Line";
 import { Logger } from "~/module/Logger";
-import { SessionData } from "~/util/session";
 import { Result } from "~/util/class/Result";
 import { useMapState } from "~/hooks/useMapState";
+import { ifPresent } from "~/util/util";
 
 interface DragDropPayload {
     paths: string[];
@@ -37,8 +37,18 @@ const ExtensionMap = new Map<SupportedType, string[]>()
 
 const LOSSLESS_DATA = new Map<string, string[]>()
 .set("webp", ["-lossless", "1"])
-.set("jxl" , ["-distance", "0"])
 .set("avif", ["-lossless", "1"])
+;
+
+interface QualityData {
+    max: number,
+    min: number,
+    defaultValue: number,
+    arg: string,
+}
+const QUALITY_DATA = new Map<string, QualityData & {title?: string}>()
+.set("webp", {min: 0, max: 80, defaultValue: 80, arg: "-quality", title: "losslessを有効化するとこのパラメータは圧縮率になります"})
+.set("jxl" , {min: 0, max: 15, defaultValue: 1, arg: "-distance"})
 ;
 
 /**
@@ -50,9 +60,14 @@ const LOSSLESS_DATA = new Map<string, string[]>()
  * @param lossless 可逆圧縮にするかどうか
  * @returns コマンドの引数
  */
-async function makeCommandArgs(input: string, inputType: SupportedType, outdir: string|undefined, outputType: string, lossless: boolean): Promise<Result<string[], string>> {
-    const i_ext = Paths.splitExt(input).ext;
-
+async function makeCommandArgs(
+    input: string,
+    inputType: SupportedType,
+    outdir: string|undefined,
+    outputType: string,
+    lossless: boolean,
+    quality: number,
+): Promise<Result<string[], string>> {
     const o_dir = outdir ?? Paths.getDirectory(input);
     const o_name = Paths.splitExt(Paths.getBasename(input)).name;
     const o = Paths.join(o_dir, `${o_name}.${outputType}`);
@@ -65,43 +80,30 @@ async function makeCommandArgs(input: string, inputType: SupportedType, outdir: 
     const args: (string|undefined)[] = [];
     switch (outputType) {
         case "avif":
-            const AVIF_SESSIONDATA_KEY = "AVAILABLE-AV1-NVENC";
-            await SessionData.setIfAbsentFnAsync(AVIF_SESSIONDATA_KEY, async () => {
-                // AV1_NVENCが使用可能かを確認するコマンド
-                return await Command.create("ffmpeg", [
-                    "-f", "lavfi",
-                    "-i", "color=c=black:s=256x256:d=1",
-                    "-c:v", "av1_nvenc",
-                    "-f", "null", "-"
-                ]).execute().then(v => v.code == 0);
-            });
-            const useNVEnc =
-            SessionData.get(AVIF_SESSIONDATA_KEY) // AV1-NVENCが使用可能かどうか
-            && !lossless // losslessの場合、nevncは使用できない
-            && i_ext != "jxl" // av1_nvencはjxlに非対応
-            ;
             args.push(
-                "-c:v", useNVEnc ? "av1_nvenc" : "libsvtav1",
+                "-c:v", "libsvtav1",
                 "-color_range", "pc",
-                "-pix_fmt", useNVEnc ? "yuv420p10le" : "gbrap10le",
+                "-pix_fmt", "gbrap10le",
                 "-colorspace", "bt709",
                 "-color_primaries", "bt709",
-                "-color_trc", useNVEnc ? "bt709" : "iec61966-2-1",
+                "-color_trc", "iec61966-2-1",
                 ...lossless ? ["-lossless", "1"] : [],
-                ...useNVEnc
-                ? ["-rc", "constqp", "-cq", "18"]
-                : ["-crf", "18"],
+                "-crf", "18",
             );
             break;
         default:
+            const qualityData = QUALITY_DATA.get(outputType);
             args.push(
                 // 変換元が映像の場合、変換先が音声なので映像を削除してエンコードすることを明示。
                 "-vn".where(inputType == SupportedType.Video),
-                ...lossless ? [] : LOSSLESS_DATA.get(outputType) ?? []
+                ...lossless ? [] : LOSSLESS_DATA.get(outputType) ?? [],
+                ...qualityData ? [qualityData.arg, quality.toString()] : [],
             );
             break;
     }
-    return Result.Ok(["-y", "-i", input, ...args, o].nullFilter());
+    const result = ["-y", "-i", input, ...args, o].nullFilter();
+    Logger.debug(result.join(" "));
+    return Result.Ok(result);
 }
 
 
@@ -115,16 +117,23 @@ export function FileConverter() {
     // converter
     const [inputFileType, setInputFileType] = useState<SupportedType>(SupportedType.Unsupported);
     const [files, setFiles] = useState<string[]>([]);
-    const [outputFileType, setOutputFileType] = useState<string|undefined>();
+    const [outputFileType, setOutputFileTypeRaw] = useState<string|undefined>();
     const [isTrash, setIsTrash] = useState(false);
 
     // option
     const [lossless, setLossless] = useState(false);
+    const [quality, setQuality] = useState(0);
 
     // output
     const [convertStatus, setConvertStatusRaw] = useMapState<string, string>();
     function setConvStat(key: string, value: string) {
         setConvertStatusRaw(m => m.set(key, value));
+    }
+
+    function setOutputFileType(value: string|undefined) {
+        setOutputFileTypeRaw(value);
+        if (value == undefined) return;
+        ifPresent(QUALITY_DATA.get(value), v => setQuality(v.defaultValue));
     }
 
     // update
@@ -184,7 +193,7 @@ export function FileConverter() {
         setConvertStatusRaw(new Map());
         files.forEach(async f => {
             const logKey = Paths.getBasename(f);
-            (await makeCommandArgs(f, inputFileType, outdir, outputFileType, lossless))
+            (await makeCommandArgs(f, inputFileType, outdir, outputFileType, lossless, quality))
             .map_err(err => setConvStat(logKey, "Failed: " + err))
             .map(async args => {
                 setConvStat(logKey, "Converting...");
@@ -232,12 +241,23 @@ export function FileConverter() {
                             <span className="grow">元ファイルをゴミ箱に移動</span>
                             <input type="checkbox" checked={isTrash} onChange={e => setIsTrash(e.currentTarget.checked)}/>
                         </div>
+                        <Line className="my-0"/>
                         {LOSSLESS_DATA.containsKey(outputFileType) && <>
-                            <Line className="my-0"/>
                             <Setting title="無劣化" childClassName="flex justify-end">
                                 <input type="checkbox" checked={lossless} onChange={e => setLossless(e.currentTarget.checked)}/>
                             </Setting>
                         </>}
+                        {(() => {
+                            const data = QUALITY_DATA.getAny(outputFileType);
+                            if (data == undefined) return;
+                            let label = quality.toString();
+                            if (outputFileType == "jxl" && quality == 0) label = "無劣化";
+                            return (
+                                <Setting title={`クオリティ= ${label}`} tooltip={data.title}>
+                                    <input type="range" min={data.min} max={data.max} value={quality} onChange={e => setQuality(e.currentTarget.valueAsNumber)}/>
+                                </Setting>
+                            );
+                        })()}
                         <button onClick={async() => await convertAndExport()}>同じディレクトリに出力</button>
                         <button onClick={async() => {
                             const dirpath = await Dialogs.openSingleDirectory("Select output directory", DESKTOP_DIR);

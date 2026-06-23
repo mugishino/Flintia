@@ -7,6 +7,7 @@ export function Setting({
     className,
     titleClassName,
     childClassName,
+    tooltip,
 }: {
     title: string,
     hide?: boolean,
@@ -14,9 +15,10 @@ export function Setting({
     className?: string
     titleClassName?: string,
     childClassName?: string,
+    tooltip?: string,
 }) {
     return (
-        <div className={twMerge(`flex flex-row justify-between`, "hidden".where(hide??false), className)}>
+        <div className={twMerge(`flex flex-row justify-between`, "hidden".where(hide??false), className)} title={tooltip}>
             <span className={twMerge("pl-1", titleClassName)}>{title}</span>
             <div className={twMerge("min-w-1/2", childClassName)}>{children}</div>
         </div>
