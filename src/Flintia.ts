@@ -132,7 +132,7 @@ export class FlintiaWindow {
         // 登録
         const id = this.rawWindow.label;
         const res = await WInvoke.registerHotkey(hotkey, id);
-        res.map(() => {
+        res.onSuccess(() => {
             hotkeyCallback = new Pair(id, callback);
         });
 

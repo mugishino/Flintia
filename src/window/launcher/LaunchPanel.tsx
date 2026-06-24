@@ -126,8 +126,8 @@ export function LaunchPanel() {
         if (uwpApps.length == 0) {
             const apps = await WInvoke.getUwpApps();
             apps
-            .map(v => setUwpApps(v))
-            .map_err(v => Logger.warning("Failed: " + v))
+            .onSuccess(v => setUwpApps(v))
+            .onFailure(v => Logger.warning("Failed: " + v))
             ;
         }
 
@@ -305,30 +305,30 @@ export function LaunchPanel() {
                             const name = Paths.splitExt(Paths.getBasename(path)).name;
                             if (!searchFilter(appSearch, name)) return;
                             return <AppSelect key={path} title={name} onClick={async() => {
-                                const lnkResult = await WInvoke.parseLnk(path);
-                                if (lnkResult.isErr) {
-                                    Logger.warning("[Failed] lnk parse: " + lnkResult.inspect_err());
-                                    return;
-                                }
-                                const lnk = lnkResult.unwrap()!;
-                                const custom_icon = await WInvoke.getFileIconBase64(path);
-                                if (custom_icon.isErr) {
+                                const lnk = (await WInvoke.parseLnk(path)).onFailure(e => {
+                                    Logger.warning("[Failed] lnk parse: " + e);
+                                }).unwrap();
+                                if (lnk == undefined) return;
+
+                                const custom_icon = (await WInvoke.getFileIconBase64(path)).onFailure(e => {
                                     Logger.warning(`[Failed] getFileIconBase64 - CustomIcon`);
                                     Logger.warning("Path: " + path);
-                                    Logger.warning("InspectErr: " + custom_icon.inspect_err());
-                                    return;
-                                }
-                                const exe_iconResult = await WInvoke.getFileIconBase64(lnk.link_info.local_base_path);
-                                if (exe_iconResult.isErr) {
+                                    Logger.warning("InspectErr: " + e);
+                                }).unwrap();
+                                if (custom_icon == undefined) return;
+
+                                const exe_icon = (await WInvoke.getFileIconBase64(lnk.link_info.local_base_path)).onFailure(e => {
                                     Logger.warning("[Failed] getFileIconBase64 - ExeIcon");
-                                    Logger
-                                }
-                                const exe_icon = exe_iconResult.unwrap()!;
+                                    Logger.warning("Path: " + lnk.link_info.local_base_path);
+                                    Logger.warning("IspectErr: " + e);
+                                }).unwrap();
+                                if (exe_icon == undefined) return;
+
                                 addObject(
                                     "tile",
                                     name,
                                     lnk.string_data.command_line_arguments ?? undefined,
-                                    exe_icon == custom_icon.unwrap() ? undefined : custom_icon.unwrap(),
+                                    exe_icon == custom_icon ? undefined : custom_icon,
                                     lnk.link_info.local_base_path,
                                     exe_icon,
                                 );

@@ -11,8 +11,8 @@ export function QRCode() {
     async function readFromClipboard() {
         const read = await readClipboardQRCode();
         setSuccess(!read.isErr);
-        read.map_err(e => setResult(e))
-            .map    (r => setResult(r));
+        read.onFailure(e => setResult(e))
+            .onSuccess    (r => setResult(r));
     }
 
     async function createFromClipboard() {

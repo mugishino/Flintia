@@ -34,7 +34,7 @@ function FontViewColumn(props: {
             `min-h-1/8 flex flex-col cursor-pointer py-2 m-2 mb-0
             hover:bg-font-disable hover:rounded-md duration-75
             hover:outline-border not-hover:shadow-[0_1px] shadow-border outline-1 outline-transparent
-            ${"bg-font-enable hover:bg-font-enable-outline hover:outline-font-enable-outline rounded-md".where(!!props.active)}`} 
+            ${"bg-font-enable hover:bg-font-enable-outline hover:outline-font-enable-outline rounded-md".where(!!props.active)}`}
             onClick={props.onClick}
             onAuxClick={e => {
                 if (e.button == MOUSE_BUTTON_BITS.RIGHT) props.onRightClick?.();
@@ -100,7 +100,7 @@ export function FontManager() {
 
     useEffectAsync(async() => {
         // 既に読み込み済みのフォントを登録
-        (await WInvoke.getActiveFonts()).map(v => setLoadedFonts(v));
+        (await WInvoke.getActiveFonts()).onSuccess(v => setLoadedFonts(v));
 
         // load cache
         const metadataCache = await readTextFile(METADATA_CACHE_FILE).then(v => JSON.toMap<string, FontMetadata>(v))
@@ -122,7 +122,7 @@ export function FontManager() {
             // 検証
             if (metadata.post_script_name == undefined) return;
             const postScriptName = metadata.post_script_name;
-            
+
             // キャッシュ
             metadataCache.set(font, metadata);
 
@@ -137,7 +137,7 @@ export function FontManager() {
                 const previewResult = await WInvoke.generateFontPreview(font, output, "メロスは激怒した。ABCDEFG 1234567890 +()!?@%&", 64, {
                     canvasWidth: 2048,
                 });
-                previewResult.map(() => {
+                previewResult.onSuccess(() => {
                     setImageReadyFonts(prev => [...prev, postScriptName]);
                 });
             });

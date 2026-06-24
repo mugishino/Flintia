@@ -213,8 +213,8 @@ export function FileConverter() {
                     drawingMode: drawingMode,
                 }
             ))
-            .map_err(err => setConvStat(logKey, "Failed: " + err))
-            .map(async args => {
+            .onFailure(err => setConvStat(logKey, "Failed: " + err))
+            .onSuccess(async args => {
                 setConvStat(logKey, "Converting...");
                 // run
                 const cmd = Command.create("ffmpeg", args);

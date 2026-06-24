@@ -158,8 +158,8 @@ export function Auth() {
                 <OverlayWindow className="w-2/3 gap-1">
                     <button className={"text-fail".where(!!readQRMsg)} onClick={async () => {
                         const read = await readClipboardQRCode();
-                        read.map_err(e => setReadQRMsg(e))
-                            .map(r => {
+                        read.onFailure(e => setReadQRMsg(e))
+                            .onSuccess(r => {
                                 const uri = new URL(r);
                                 if (uri.protocol != "otpauth:") return setReadQRMsg("TOTPのQRコードではありません。");
                                 const label = uri.pathname.substring(1);

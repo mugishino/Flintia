@@ -16,8 +16,8 @@ export function Other() {
                 if (hotfixData != null) return;
                 const hotfix = await WInvoke.getWindowsHotfix();
                 hotfix
-                .map_err(v => setHotfixData(<div className="text-fail">{v}</div>))
-                .map(fix => {
+                .onFailure(v => setHotfixData(<div className="text-fail">{v}</div>))
+                .onSuccess(fix => {
                     setHotfixData(
                         fix.sort((a, b) => a.HotFixID.localeCompare(b.HotFixID)).map(q =>
                             <button key={q.HotFixID} onClick={async() => await openUrl(`https://www.google.com/search?q=${q.HotFixID}`)}>{q.HotFixID}</button>
