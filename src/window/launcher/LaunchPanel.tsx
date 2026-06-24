@@ -18,6 +18,7 @@ import { OverlayWindow } from "~/components/OverlayWindow";
 import { Search } from "~/components/Search";
 import { HOME_DIR } from "~/Data";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
+import { Logger } from "~/module/Logger";
 
 function Tile(props: CellObjProps & TileData) {
     const [img, setImg] = useState<string|undefined>(undefined);
@@ -27,7 +28,7 @@ function Tile(props: CellObjProps & TileData) {
         if (props.exe_icon) return setImg(props.exe_icon);
         setImg(undefined);
     }, [props.exe_icon, props.custom_icon]);
-    
+
     // uwp_appをそのままCellObjに渡すとエラー出すためここで消しとく
     const {uwp_app, ...rest} = props;
 
@@ -122,7 +123,13 @@ export function LaunchPanel() {
         if (!appSelectOverlay) return;
 
         // get UWP apps
-        if (uwpApps.length == 0) WInvoke.getUwpApps().then(v => setUwpApps(v));
+        if (uwpApps.length == 0) {
+            const apps = await WInvoke.getUwpApps();
+            apps
+            .map(v => setUwpApps(v))
+            .map_err(v => Logger.warning("Failed: " + v))
+            ;
+        }
 
         // shortcuts
         if (appLnkFiles.length == 0) {
@@ -298,15 +305,31 @@ export function LaunchPanel() {
                             const name = Paths.splitExt(Paths.getBasename(path)).name;
                             if (!searchFilter(appSearch, name)) return;
                             return <AppSelect key={path} title={name} onClick={async() => {
-                                const data = await WInvoke.parseLnk(path);
-                                const custom_icon = (await WInvoke.getFileIconBase64(path)).unwrap();
-                                const exe_icon = (await WInvoke.getFileIconBase64(data.link_info.local_base_path)).unwrap();
+                                const lnkResult = await WInvoke.parseLnk(path);
+                                if (lnkResult.isErr) {
+                                    Logger.warning("[Failed] lnk parse: " + lnkResult.inspect_err());
+                                    return;
+                                }
+                                const lnk = lnkResult.unwrap()!;
+                                const custom_icon = await WInvoke.getFileIconBase64(path);
+                                if (custom_icon.isErr) {
+                                    Logger.warning(`[Failed] getFileIconBase64 - CustomIcon`);
+                                    Logger.warning("Path: " + path);
+                                    Logger.warning("InspectErr: " + custom_icon.inspect_err());
+                                    return;
+                                }
+                                const exe_iconResult = await WInvoke.getFileIconBase64(lnk.link_info.local_base_path);
+                                if (exe_iconResult.isErr) {
+                                    Logger.warning("[Failed] getFileIconBase64 - ExeIcon");
+                                    Logger
+                                }
+                                const exe_icon = exe_iconResult.unwrap()!;
                                 addObject(
                                     "tile",
                                     name,
-                                    data.string_data.command_line_arguments ?? undefined,
-                                    exe_icon == custom_icon ? undefined : custom_icon,
-                                    data.link_info.local_base_path,
+                                    lnk.string_data.command_line_arguments ?? undefined,
+                                    exe_icon == custom_icon.unwrap() ? undefined : custom_icon.unwrap(),
+                                    lnk.link_info.local_base_path,
                                     exe_icon,
                                 );
                                 setAppSelectOverlay(false);

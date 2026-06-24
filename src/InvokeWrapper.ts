@@ -77,9 +77,11 @@ export class WInvoke {
      * インストールされているWindowsHotfixを取得します。
      * @returns 取得したHotfixリスト
      */
-    public static async getWindowsHotfix(): Promise<{HotFixID: string}[]> {
-        const data = await invoke("get_windows_hotfix");
-        return JSON.parse(data as string);
+    public static async getWindowsHotfix(): Promise<Result<{HotFixID: string}[], string>> {
+        return await invoke<string>("get_windows_hotfix")
+        .then(v => Result.Ok(JSON.parse(v)))
+        .catch((v: string) => Result.Err(v))
+        ;
     }
 
     /**
@@ -110,8 +112,8 @@ export class WInvoke {
      * @param args 実行引数
      * @returns エラーまたは成功
      */
-    public static async runExe(path: string, args?: string): Promise<string> {
-        return await invoke("run_exe", {path: path, args: args ?? String.empty});
+    public static async runExe(path: string, args?: string): Promise<Result<undefined, string>> {
+        return await Result.fromPromise<undefined, string>(invoke("run_exe", {path: path, args: args ?? String.empty}));
     }
 
     /**
@@ -126,8 +128,8 @@ export class WInvoke {
      * Windowsのアクセントカラーを取得します。
      * @returns 取得したアクセントカラーまたはエラー
      */
-    public static async getWindowsAccentColor(): Promise<{R: number, G: number, B: number, A: number}> {
-        return await invoke("get_windows_accent_color");
+    public static async getWindowsAccentColor(): Promise<Result<{R: number, G: number, B: number, A: number}, string>> {
+        return await Result.fromPromise(invoke("get_windows_accent_color"));
     }
 
     /**
@@ -143,8 +145,8 @@ export class WInvoke {
      * ファイルをゴミ箱に送る
      * @param files ゴミ箱に送るファイルリスト
      */
-    public static async fileTrash(files: string[]) {
-        await invoke("file_trash", {files: files});
+    public static async fileTrash(files: string[]): Promise<Result<undefined, string>> {
+        return await Result.fromPromise(invoke("file_trash", {files: files}));
     }
 
     /**
@@ -152,17 +154,16 @@ export class WInvoke {
      * @param path 解析するlnkファイル
      * @returns 解析データ
      */
-    public static async parseLnk(path: string) {
-        const data = await invoke("parse_lnk", {path: path});
-        return data as LinkData;
+    public static async parseLnk(path: string): Promise<Result<LinkData, string>> {
+        return await Result.fromPromise<LinkData, string>(invoke("parse_lnk", {path: path}));
     }
 
     /**
      * UWPのアプリを全て取得します。
      * @returns 取得したUWPのアプリ
      */
-    public static async getUwpApps() {
-        return await invoke("get_uwp_apps") as UWPAppInfo[];
+    public static async getUwpApps(): Promise<Result<UWPAppInfo[], string>> {
+        return await Result.fromPromise<UWPAppInfo[], string>(invoke("get_uwp_apps"));
     }
 
     /**
@@ -170,7 +171,7 @@ export class WInvoke {
      * @param hotkey 登録するホットキー
      * @param id listen時に返ってくる識別用ID
      */
-    public static async registerHotkey(hotkey: string, id: string) {
+    public static async registerHotkey(hotkey: string, id: string): Promise<Result<string, string>> {
         return await Result.fromPromise<string, string>(invoke("register_hotkey", {hotkey, id}));
     }
 
@@ -180,7 +181,7 @@ export class WInvoke {
      * @param path 取得するディレクトリ
      * @returns 取得したファイル
      */
-    public static async getRecursiveFiles(path: string) {
+    public static async getRecursiveFiles(path: string): Promise<string[]> {
         return await invoke("get_recursive_files", {path}) as string[];
     }
 
@@ -189,7 +190,7 @@ export class WInvoke {
      * @param path フォントファイルのパス
      * @returns Result<データ, エラー>
      */
-    public static async parseFontMetadata(path: string) {
+    public static async parseFontMetadata(path: string): Promise<Result<FontMetadata, string>> {
         return await Result.fromPromise<FontMetadata, string>(invoke("parse_font_metadata", {path}));
     }
 
