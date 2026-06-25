@@ -28,7 +28,14 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: data: http://asset.localhost/;",
+      "csp": {
+        "default-src": "'self'",
+        "script-src": "'self'",
+        "style-src": "'self'",
+        "connect-src": "'self' http://ipc.localhost/",
+        "img-src": "* blob: data: asset: http://asset.localhost/",
+        "media-src": "* blob: data: asset: http://asset.localhost/"
+      },
       "assetProtocol": {
         "enable": true,
         "scope": ["**"]
