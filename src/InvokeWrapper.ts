@@ -58,6 +58,15 @@ export class WInvoke {
     }
 
     /**
+     * ディスク上のファイルをクリップボードにコピーします。
+     * @param path コピーするファイル
+     * @returns 失敗時にエラー文が戻ります
+     */
+    public static async clipboardCopyfile(path: string) {
+        return await Result.fromPromise<undefined, string>(invoke("clipboard_copyfile", {path: path}));
+    }
+
+    /**
      * PCの起動時間を取得します。
      * @returns 秒
      */

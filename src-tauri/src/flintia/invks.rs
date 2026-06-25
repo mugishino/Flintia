@@ -1,4 +1,4 @@
-use std::{os::windows::process::CommandExt, path::{self}, process::{Command, Stdio}};
+use std::{os::windows::{process::CommandExt}, path::{self, Path}, process::{Command, Stdio}};
 use enigo::{Enigo, Key, Keyboard, Settings};
 use walkdir::WalkDir;
 
@@ -17,6 +17,21 @@ pub fn paste(enter: bool, win: tauri::WebviewWindow) {
     if enter {
         enigo.key(Key::Return, enigo::Direction::Click).unwrap();
     }
+}
+
+#[tauri::command]
+pub fn clipboard_copyfile(path: &str) -> Result<(), String> {
+    let p = Path::new(path).canonicalize().map_err(|e| e.to_string())?;
+    if !p.exists() {
+        return Err(format!("File not found: {}", path));
+    }
+    let fullpath = p.to_string_lossy().into_owned();
+
+    clipboard_win::raw::open().map_err(|e| e.to_string())?;
+    clipboard_win::raw::empty().map_err(|e| e.to_string())?;
+    clipboard_win::raw::set_file_list(&vec![fullpath]).map_err(|e| e.to_string())?;
+    clipboard_win::raw::close().map_err(|e| e.to_string())?;
+    Ok(())
 }
 
 #[tauri::command]

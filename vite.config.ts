@@ -1,7 +1,8 @@
-import { defineConfig } from "vite";
+import { defineConfig, ViteDevServer } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import tailwindcss from '@tailwindcss/vite';
+import { IncomingMessage, ServerResponse } from "http";
 
 const host = process.env.TAURI_DEV_HOST;
 
@@ -10,6 +11,27 @@ export default defineConfig(async () => ({
   plugins: [
     react(),
     tailwindcss(),
+    {
+      name: 'configure-csp-dev',
+      configureServer: function(server: ViteDevServer) {
+        server.middlewares.use((req: IncomingMessage, res: ServerResponse, next: () => void) => {
+          // 開発環境用のカスタムCSPをここに定義
+          const cspPolicy = [
+            "default-src 'self'",
+            // Viteに必須
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+            "style-src 'self' 'unsafe-inline'",
+            // tauriに必須
+            "connect-src 'self' ws://localhost:* http://*.localhost:*",
+            // 開発時でもcspのテストが可能です。
+            "img-src 'self' blob: data: assets: http://asset.localhost/;",
+          ].join('; ');
+          // レスポンスヘッダーにCSPを設定
+          res.setHeader('Content-Security-Policy', cspPolicy);
+          next();
+        });
+      },
+    }
   ],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`

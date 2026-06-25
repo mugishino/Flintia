@@ -64,6 +64,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             fcore::register_hotkey,
             invks::paste,
+            invks::clipboard_copyfile,
             invks::get_system_uptime,
             invks::get_all_disk_info,
             invks::get_windows_hotfix,

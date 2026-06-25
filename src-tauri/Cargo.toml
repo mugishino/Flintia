@@ -32,6 +32,8 @@ serde_json = "1"
 tokio = { version ="1.50.0", features = ["process"] }
 # キー操作
 enigo = "0.3.0"
+# クリップボード操作
+clipboard-win = "5.4.1"
 # システム情報取得
 sysinfo = "0.36.1"
 # exeアイコン取得
