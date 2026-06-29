@@ -59,7 +59,7 @@ export function DiskStatus() {
                     <Setting title={disk.name} key={disk.name} childClassName={data?.color}>
                         <span title={data?.tooltip + "\nWAF目安: "+data?.waf} onAuxClick={openWafInfo} onClick={() => setViewType(viewType+1)} className="cursor-pointer">
                             {[
-                                `${usingPercent}% 使用中`,
+                                `${Math.floorEx(usingPercent, 1)}% 使用中`,
                                 `残り${Math.floorEx(disk.available_space / GB, 1)}GB`,
                                 `${Math.floorEx((disk.total_size - disk.available_space)/GB, 1)}GB 使用中`
                             ].get(viewType % 3)}
