@@ -16,6 +16,7 @@ import { Result } from "~/util/class/Result";
 import { useMapState } from "~/hooks/useMapState";
 import { ifPresent } from "~/util/util";
 import { Select } from "~/components/Select";
+import { Pair } from "~/util/class/Pair";
 
 interface DragDropPayload {
     paths: string[];
@@ -113,6 +114,8 @@ async function makeCommandArgs(
     return Result.Ok(result);
 }
 
+type ConvertStatus = "Processing" | "Failed" | "Done";
+
 
 
 export function FileConverter() {
@@ -134,8 +137,8 @@ export function FileConverter() {
     const [drawingMode, setDrawingMode] = useState(false);
 
     // output
-    const [convertStatus, setConvertStatusRaw] = useMapState<string, string>();
-    function setConvStat(key: string, value: string) {
+    const [convertStatus, setConvertStatusRaw] = useMapState<string, Pair<ConvertStatus, string|undefined>>();
+    function setConvStat(key: string, value: Pair<ConvertStatus, string|undefined>) {
         setConvertStatusRaw(m => m.set(key, value));
     }
 
@@ -213,17 +216,17 @@ export function FileConverter() {
                     drawingMode: drawingMode,
                 }
             ))
-            .onFailure(err => setConvStat(logKey, "Failed: " + err))
+            .onFailure(err => setConvStat(logKey, new Pair("Failed", "code: " + err)))
             .onSuccess(async args => {
-                setConvStat(logKey, "Converting...");
+                setConvStat(logKey, new Pair("Processing", undefined));
                 // run
                 const cmd = Command.create("ffmpeg", args);
                 const result = await cmd.execute();
                 if (result.code == 0) {
-                    setConvStat(logKey, "Done");
+                    setConvStat(logKey, new Pair("Done", undefined));
                     if (isTrash) await WInvoke.fileTrash([f]);
                 } else {
-                    setConvStat(logKey, "Failed: code " + result.code);
+                    setConvStat(logKey, new Pair("Failed", "code: " + result.code));
                 }
             });
         });
@@ -237,8 +240,8 @@ export function FileConverter() {
                 <div className={`h-full w-full flex justify-center items-center`}>ドロップしてファイルを変換</div>
             </Overlay>
             <Overlay show={!convertStatus.isEmpty()} setShow={() => setConvertStatusRaw(new Map())}>
-                <div className="h-full w-full flex flex-col p-1 justify-between">
-                    {convertStatus.map((k, v) => <div key={k}>{k}: {v}</div>)}
+                <div className="h-full w-full flex flex-col p-1">
+                    {convertStatus.map((k, v) => <div key={k} className={`${"text-done".where(v.left == "Done")} ${"text-fail".where(v.left == "Failed")}`}>{k}: {v.left}{ifPresent(v.right, it => " - "+it)}</div>)}
                 </div>
             </Overlay>
             <Overlay show={convertOverlay} setShow={setConvertOverlay}>
