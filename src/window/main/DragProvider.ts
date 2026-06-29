@@ -1,4 +1,5 @@
 import { Event, listen, TauriEvent } from "@tauri-apps/api/event";
+import { Logger } from "~/module/Logger";
 
 export enum DragType {
     Enter,
@@ -15,10 +16,10 @@ interface DragDropPayload {
 type DragEventListener = (e: Event<DragDropPayload>) => void;
 
 // listen開始
-listen<DragDropPayload>(TauriEvent.DRAG_ENTER, e => DragProvider.call(DragType.Enter, e));
-listen<DragDropPayload>(TauriEvent.DRAG_LEAVE, e => DragProvider.call(DragType.Leave, e));
-listen<DragDropPayload>(TauriEvent.DRAG_OVER , e => DragProvider.call(DragType.Over , e));
-listen<DragDropPayload>(TauriEvent.DRAG_DROP , e => DragProvider.call(DragType.Drop , e));
+listen<DragDropPayload>(TauriEvent.DRAG_ENTER, e => DragProvider.call(DragType.Enter, e)).catch(e => Logger.warning("DragProvider - LISTEN-DRAG_ENTER: " + e));
+listen<DragDropPayload>(TauriEvent.DRAG_LEAVE, e => DragProvider.call(DragType.Leave, e)).catch(e => Logger.warning("DragProvider - LISTEN-DRAG_LEAVE: " + e));
+listen<DragDropPayload>(TauriEvent.DRAG_OVER , e => DragProvider.call(DragType.Over , e)).catch(e => Logger.warning("DragProvider - LISTEN-DRAG_OVER: " + e));
+listen<DragDropPayload>(TauriEvent.DRAG_DROP , e => DragProvider.call(DragType.Drop , e)).catch(e => Logger.warning("DragProvider - LISTEN-DRAG_DROP: " + e));
 
 export class DragProvider {
     private static readonly data = new Map<string, Map<DragType, DragEventListener>>();

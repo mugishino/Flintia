@@ -69,4 +69,48 @@ export class SessionData {
         SessionData.set(key, await valueFn());
         return true;
     }
+
+    /**
+     * キーが存在していた場合はそのキーの値を戻します。でなければ、デフォルトの値を設定します。
+     * ジェネリクスは型保管補助であり、正確性は保証しません。
+     * @param key 取得・設定するキー
+     * @param fallback データが存在しなかった場合に設定する値
+     * @returns 取得したデータまたはデフォルトの値
+     */
+    public static getOrPut<T>(key: string, fallback: T): T {
+        const data = SessionData.get(key);
+        if (data) return data;
+        SessionData.set(key, fallback);
+        return fallback;
+    }
+
+    /**
+     * キーが存在していた場合はそのキーの値を戻します。でなければ、デフォルトの値を関数から取得して設定します。
+     * ジェネリクスは型保管補助であり、正確性は保証しません。
+     * @param key 取得・設定するキー
+     * @param fallback データが存在しなかった場合に設定する値を取得する関数
+     * @returns 取得したデータまたはデフォルトの値
+     */
+    public static getOrPutFn<T>(key: string, fallback: () => T): T {
+        const data = SessionData.get(key);
+        if (data) return data;
+        const fb = fallback();
+        SessionData.set(key, fb);
+        return fb;
+    }
+
+    /**
+     * キーが存在していた場合はそのキーの値を戻します。でなければ、デフォルトの値を非同期関数から取得して設定します。
+     * ジェネリクスは型保管補助であり、正確性は保証しません。
+     * @param key 取得・設定するキー
+     * @param fallback データが存在しなかった場合に設定する値を取得する非同期関数
+     * @returns 取得したデータまたはデフォルトの値
+     */
+    public static async getOrPutFnAsync<T>(key: string, fallback: () => Promise<T>): Promise<T> {
+        const data = SessionData.get(key);
+        if (data) return data;
+        const fb = await fallback();
+        SessionData.set(key, fb);
+        return fb;
+    }
 }
