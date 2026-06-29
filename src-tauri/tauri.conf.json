@@ -36,6 +36,11 @@
         "img-src": "* blob: data: asset: http://asset.localhost/",
         "media-src": "* blob: data: asset: http://asset.localhost/"
       },
+      "devCsp": {
+        "script-src": "'unsafe-inline' 'unsafe-eval'",
+        "style-src": "'unsafe-inline'",
+        "connect-src": "ws://localhost:*"
+      },
       "assetProtocol": {
         "enable": true,
         "scope": ["**"]
