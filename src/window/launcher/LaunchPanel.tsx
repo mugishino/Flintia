@@ -10,7 +10,6 @@ import { SVGButton } from "~/components/SVGButton";
 import { Line } from "~/components/Line";
 import { createCanvas, ifPresent, normalizeURL, searchFilter } from "~/util/util";
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { ReactSVG } from "react-svg";
 import { DEFAULT_TILE_DATA, TileData, useGridManager } from "./useGridManager";
 import { Paths } from "~/util/path";
 import { ALL_EXTENSIONS, Dialogs, IMAGE_EXTENSIONS } from "~/module/Dialogs";
@@ -19,6 +18,7 @@ import { Search } from "~/components/Search";
 import { HOME_DIR } from "~/Data";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { Logger } from "~/module/Logger";
+import { SVGIcon } from "~/components/SVGIcon";
 
 function Tile(props: CellObjProps & TileData) {
     const [img, setImg] = useState<string|undefined>(undefined);
@@ -200,7 +200,7 @@ export function LaunchPanel() {
                     {...{type: "label", x: -1, y: (screen.availHeight/getCellSize())-1, w: 1, h: 1}}
                     locked={true}
                     className="bg-launcher-label-bg-locked hover:bg-launcher-label-bg-locked-hover"
-                ><ReactSVG src="/settings.svg" className="h-full aspect-square fill-svg p-1"/></CellObj>}
+                ><SVGIcon src="settings" className="h-full aspect-square fill-svg p-1"/></CellObj>}
                 {data && data.map((k, v) => {
                     switch (v.type) {
                         case "tile":

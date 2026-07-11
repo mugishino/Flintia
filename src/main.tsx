@@ -19,6 +19,7 @@ import { NotFoundPage } from "./window/main/pages/404";
 import { IS_DEVELOP_MODE } from "./Data";
 import { AppStorage } from "./module/AppStorage";
 import { Config } from "./Config";
+import { SVGDefinitions } from "./components/SVGIcon";
 
 const config = await AppStorage.load(new Config());
 const windowLabel = getCurrentWindow().label;
@@ -52,6 +53,7 @@ const page = {
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
         <BrowserRouter>
+            <SVGDefinitions/>
             {page ?? <NotFoundPage/>}
         </BrowserRouter>
     </React.StrictMode>,
