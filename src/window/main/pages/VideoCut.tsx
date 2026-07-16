@@ -14,6 +14,7 @@ import { BitrateCalc } from "./Tools/BitrateCalc";
 import { Dialogs, VIDEO_EXTENSIONS } from "~/module/Dialogs";
 import { DragProvider, DragType } from "../DragProvider";
 import { ifPresent } from "~/util/util";
+import { Select } from "~/components/Select";
 
 function secondToTime(sec: number) {
     const h = (sec/3600).toInt().toStringZero(2);
@@ -68,6 +69,12 @@ function commandBuild(
         full: [alias, ...args].join(String.space),
     };
 }
+
+const CODEC_SELECT_MAP = new Map<VideoCodec, string>()
+.set("h264_nvenc", "H.264")
+.set("hevc_nvenc", "HEVC")
+.set("av1_nvenc", "AV1")
+;
 
 export function VideoCut() {
     const [overlay, showOverlay] = useState(false);
@@ -186,13 +193,9 @@ export function VideoCut() {
                         <span>{outputFile ?? "No output file selected"}{videoCodec == "av1_nvenc" ? ".webm" : ".mp4"}</span>
                         <hr className="mb-3"></hr>
                         <Setting title="Codec">
-                            <select value={videoCodec} onChange={v => setVideoCodec(v.currentTarget.value as VideoCodec)}>
-                                <option value={"h264_nvenc"}>h264</option>
-                                <option value={"hevc_nvenc"}>HEVC</option>
-                                <option value={"av1_nvenc"}>AV1</option>
-                            </select>
+                            <Select list={CODEC_SELECT_MAP} select={videoCodec} onSelectChange={v => setVideoCodec(v)}/>
                         </Setting>
-                        <Setting title="Bitrate">
+                        <Setting title="Bitrate" childClassName="max-w-1/2">
                             <input type="number" min={128} step={128} value={bitrate} onChange={v => setBitrate(v.currentTarget.valueAsNumber.orDefault(1))}/>
                         </Setting>
                         <hr className="mb-3"/>
