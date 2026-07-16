@@ -212,6 +212,9 @@ export function VideoCut() {
                             const addStdout = (v: string) => setStdout(p => p + v);
                             proc.stdout.on("data", addStdout);
                             proc.stderr.on("data", addStdout);
+                            proc.on("close", data => {
+                                if (data.code == 0) setProcessOverlay(false);
+                            });
                             await proc.spawn();
                         }}>Run FFmpeg</button>
                     </div>
