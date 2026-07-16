@@ -13,6 +13,7 @@ import { Line } from "~/components/Line";
 import { useMapState } from "~/hooks/useMapState";
 import { useStaticOverlay } from "~/hooks/useOverlay";
 import { Search } from "~/components/Search";
+import { UUIDGenerator } from "./Tools/UUIDGenerator";
 
 interface PassRecord {
     title   ?: string;
@@ -68,7 +69,7 @@ function EditUI(props: {
     const isArchive = editData.archive;
 
     return (
-        <OverlayWindow className="flex flex-col gap-1 w-2/3">
+        <>
             {staticOverlay}
             <div className="flex flex-row justify-between">
                 <span className="m-auto">{props.isEdit ? "データ編集" : "新規追加"}</span>
@@ -100,7 +101,7 @@ function EditUI(props: {
                 if (!editData) return;
                 props.onConfirmed(editData);
             }}>保存</button>
-        </OverlayWindow>
+        </>
     );
 }
 
@@ -189,16 +190,22 @@ export function Password() {
                 <button onClick={() => openEditUI(undefined)}>Add Password</button>
                 <ToggleSwitch label="Paste" value={paste} onChange={() => setPaste(!paste)}/>
             </div>
-            <Overlay show={editOverlay} setShow={showEditOverlay}>
-                <EditUI
-                initEditData={passwordData.getAny(editDataKey.current) ?? {}}
-                isEdit={!!editDataKey.current}
-                onConfirmed={res => {
-                    setPasswordData(prev => prev?.set(editDataKey.current ?? crypto.randomUUID(), res));
-                    showEditOverlay(false);
-                }}
-                key={editSession.current}
-                />
+            <Overlay show={editOverlay} setShow={showEditOverlay} className="flex-col justify-center items-center gap-4">
+                <OverlayWindow className="flex flex-col gap-1 w-2/3 m-0">
+                    <EditUI
+                    initEditData={passwordData.getAny(editDataKey.current) ?? {}}
+                    isEdit={!!editDataKey.current}
+                    onConfirmed={res => {
+                        setPasswordData(prev => prev?.set(editDataKey.current ?? crypto.randomUUID(), res));
+                        showEditOverlay(false);
+                    }}
+                    key={editSession.current}
+                    />
+                </OverlayWindow>
+                <OverlayWindow className="m-0 w-2/3">
+                    <p className="text-center">Util</p>
+                    <UUIDGenerator/>
+                </OverlayWindow>
             </Overlay>
         </>
     );
