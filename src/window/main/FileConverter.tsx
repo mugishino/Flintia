@@ -240,8 +240,13 @@ export function FileConverter() {
                 <div className={`h-full w-full flex justify-center items-center`}>ドロップしてファイルを変換</div>
             </Overlay>
             <Overlay show={!convertStatus.isEmpty()} setShow={() => setConvertStatusRaw(new Map())}>
-                <div className="h-full w-full flex flex-col p-1">
-                    {convertStatus.map((k, v) => <div key={k} className={`${"text-done".where(v.left == "Done")} ${"text-fail".where(v.left == "Failed")}`}>{k}: {v.left}{ifPresent(v.right, it => " - "+it)}</div>)}
+                <div className="h-full w-full flex flex-col p-1 overflow-scroll">
+                    {convertStatus.map((k, v) =>
+                        <div key={k} className={`${"text-done".where(v.left == "Done")} ${"text-fail".where(v.left == "Failed")} w-full flex flex-row text-nowrap`}>
+                            <span className="w-1/6 shrink-0">{v.left}</span>
+                            <span title={v.right}>{k}</span>
+                        </div>
+                    )}
                 </div>
             </Overlay>
             <Overlay show={convertOverlay} setShow={setConvertOverlay}>
