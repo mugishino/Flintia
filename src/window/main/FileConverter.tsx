@@ -17,6 +17,7 @@ import { useMapState } from "~/hooks/useMapState";
 import { ifPresent } from "~/util/util";
 import { Select } from "~/components/Select";
 import { Pair } from "~/util/class/Pair";
+import { CheckBox } from "~/components/CheckBox";
 
 interface DragDropPayload {
     paths: string[];
@@ -264,12 +265,12 @@ export function FileConverter() {
                         </Setting>
                         <div className="flex flex-row justify-between pl-1">
                             <span className="grow">元ファイルをゴミ箱に移動</span>
-                            <input type="checkbox" checked={isTrash} onChange={e => setIsTrash(e.currentTarget.checked)}/>
+                            <CheckBox checked={isTrash} onClick={() => setIsTrash(!isTrash)}/>
                         </div>
                         <Line className="my-0"/>
                         {LOSSLESS_DATA.containsKey(outputFileType) && <>
                             <Setting title="無劣化" childClassName="flex justify-end">
-                                <input type="checkbox" checked={lossless} onChange={e => setLossless(e.currentTarget.checked)}/>
+                                <CheckBox checked={lossless} onClick={() => setLossless(!lossless)}/>
                             </Setting>
                         </>}
                         {(() => {
@@ -291,7 +292,7 @@ export function FileConverter() {
                         })()}
                         {outputFileType == "webp" && <>
                             <Setting title="DrawingMode" tooltip="イラストなどアニメ塗りに向いた変換をします" childClassName="flex justify-end">
-                                <input type="checkbox" checked={drawingMode} onChange={e => setDrawingMode(e.currentTarget.checked)}/>
+                                <CheckBox checked={drawingMode} onClick={() => setDrawingMode(!drawingMode)}/>
                             </Setting>
                         </>}
                         <button onClick={async() => await convertAndExport()}>同じディレクトリに出力</button>
