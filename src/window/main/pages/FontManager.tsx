@@ -92,6 +92,7 @@ export function FontManager() {
     // UI
     const [imageReadyFonts, setImageReadyFonts] = useState<string[]>([]);
     const [search, setSearch] = useState(String.empty);
+    const [onlyLoaded, setOnlyLoaded] = useState(false);
 
     // overlay
     const [overlayData, setOverlayData] = useState<FontViewData|undefined>(undefined);
@@ -179,6 +180,7 @@ export function FontManager() {
         if (!searchFilter(search, data.full_name ?? String.empty)) return undefined;
 
         const loaded = loadedFonts.contains(data.font_path);
+        if (onlyLoaded && !loaded) return undefined;
         const select = selectFonts.contains(data.font_path);
         return {...data, loaded, select};
     })
@@ -190,6 +192,7 @@ export function FontManager() {
             <div className="flex flex-row *:border-0 *:not-last:border-r border-b">
                 <Search value={search} onUpdate={setSearch} className="w-full"/>
                 <button onClick={() => openPath(FONT_DIR)}>Open Font Folder</button>
+                <button className={onlyLoaded ? `text-enable` : "text-disable"} onClick={() => setOnlyLoaded(!onlyLoaded)}>Only Loaded</button>
                 <button className="not-disabled:text-enable" onClick={updateFontRegister} disabled={selectFonts.length == 0}>フォント読み込みを確定する</button>
             </div>
             <div className="flex flex-col h-full overflow-scroll">
