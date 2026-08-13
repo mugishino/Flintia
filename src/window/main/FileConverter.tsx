@@ -181,7 +181,7 @@ export function FileConverter() {
             setConvertOverlay(true);
 
             // 拡張子に変換し、サポートしているかを確認
-            const extensions = files.map(v => Paths.splitExt(v).ext);
+            const extensions = files.map(v => Paths.splitExt(v).ext.toLowerCase());
             const fileTypes = extensions.map(v => {
                 if (IMAGE_EXTENSIONS.extensions.includes(v)) return SupportedType.Image;
                 if (AUDIO_EXTENSIONS.extensions.includes(v)) return SupportedType.Audio;
@@ -233,6 +233,18 @@ export function FileConverter() {
         });
     }
 
+    const status_processing = convertStatus.filter((_, v) => v.left == "Processing" ).size;
+    const status_failed     = convertStatus.filter((_, v) => v.left == "Failed"     ).size;
+    const status_done       = convertStatus.filter((_, v) => v.left == "Done"       ).size;
+
+    const progress = (status_failed + status_done) / convertStatus.size;
+    const progressbar = (() => {
+        const SIZE = 33;
+        const proc = SIZE * progress;
+        const text = "-".repeat(proc-1) + " ".repeat(33-proc);
+        return text.insert(">", proc-1);
+    })();
+
 
 
     return (
@@ -242,6 +254,15 @@ export function FileConverter() {
             </Overlay>
             <Overlay show={!convertStatus.isEmpty()} setShow={() => setConvertStatusRaw(new Map())}>
                 <div className="h-full w-full flex flex-col p-1 overflow-scroll">
+                    <div className="flex justify-between">
+                        <div className="font-mono whitespace-pre">{`${Math.ceil(progress*100).toString().padStart(3, " ")}%[${progressbar}]`}</div>
+                        <div className="grow flex flex-row">
+                            <span className="grow text-right px-1 bg-white text-black">{status_processing}</span>
+                            <span className="grow text-right px-1 bg-fail  text-white">{status_failed}</span>
+                            <span className="grow text-right px-1 bg-done  text-white">{status_done}</span>
+                        </div>
+                    </div>
+                    <Line/>
                     {convertStatus.map((k, v) =>
                         <div key={k} className={`${"text-done".where(v.left == "Done")} ${"text-fail".where(v.left == "Failed")} w-full flex flex-row text-nowrap`}>
                             <span className="w-1/6 shrink-0">{v.left}</span>
