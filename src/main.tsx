@@ -20,6 +20,8 @@ import { IS_DEVELOP_MODE } from "./Data";
 import { AppStorage } from "./module/AppStorage";
 import { Config } from "./Config";
 import { SVGDefinitions } from "./components/SVGIcon";
+import { ErrorBoundary } from "react-error-boundary";
+import { Line } from "./components/Line";
 
 const config = await AppStorage.load(new Config());
 const windowLabel = getCurrentWindow().label;
@@ -50,11 +52,29 @@ const page = {
 
 
 
+function ErrorFallbackUI(props: {error: unknown, resetErrorBoundary: (...args: unknown[]) => void}) {
+    return (
+        <div className="flex flex-col p-4 w-full wrap-anywhere gap-2">
+            <h1 className="text-4xl text-error">Application Crashed!</h1>
+            <Line/>
+            <div className="whitespace-pre-wrap">{String(props.error)}</div>
+            <div className="flex flex-row gap-2 *:p-2">
+                <button onClick={props.resetErrorBoundary}>Retry</button>
+                <button onClick={() => navigation.navigate("/")}>Retrun Home</button>
+            </div>
+        </div>
+    );
+}
+
+
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
-        <BrowserRouter>
-            <SVGDefinitions/>
-            {page ?? <NotFoundPage/>}
-        </BrowserRouter>
+        <ErrorBoundary fallbackRender={ErrorFallbackUI}>
+            <BrowserRouter>
+                <SVGDefinitions/>
+                {page ?? <NotFoundPage/>}
+            </BrowserRouter>
+        </ErrorBoundary>
     </React.StrictMode>,
 );
