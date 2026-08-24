@@ -4,6 +4,7 @@ import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { LaunchPanel } from "./LaunchPanel";
 import { currentMonitor } from "@tauri-apps/api/window";
 import { Logger } from "~/module/Logger";
+import { getCursorMonitorCenterWidnowPosition } from "~/util/util";
 
 const FULLSCREEN = false;
 
@@ -42,7 +43,17 @@ export function Launcher() {
         await win.rawWindow.setSize(phySize);
         await win.rawWindow.setPosition(win.getDefaultPosition() ?? new LogicalPosition(100, 100));
 
-        await win.registerHotkey(false, false, true, false, "Space", async() => await win.toggleVisible());
+        await win.registerHotkey(
+            false,
+            false,
+            true,
+            false,
+            "Space",
+            async() => {
+                const pos = await getCursorMonitorCenterWidnowPosition(win);
+                await win.toggleVisible(pos);
+            }
+        );
 
         win.rawWindow.onFocusChanged(({payload}) => {
             if (!payload) win.hide();

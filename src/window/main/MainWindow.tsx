@@ -6,6 +6,7 @@ import { Logger } from "~/module/Logger";
 import { Routing } from "~/Routing";
 import { Sidebar } from "~/window/main/Sidebar";
 import { FileConverter } from "./FileConverter";
+import { getCursorMonitorCenterWidnowPosition } from "~/util/util";
 
 export function MainWindow() {
     useEffectAsync(async() => {
@@ -16,7 +17,17 @@ export function MainWindow() {
         }
 
         AppStorage.load(new Config()).then(async config => {
-            await mainWindow.registerHotkey(config.hotkey_shift, config.hotkey_ctrl, config.hotkey_alt, config.hotkey_win, config.hotkey_main, async () => mainWindow.toggleVisible());
+            await mainWindow.registerHotkey(
+                config.hotkey_shift,
+                config.hotkey_ctrl,
+                config.hotkey_alt,
+                config.hotkey_win,
+                config.hotkey_main,
+                async () => {
+                    const pos = await getCursorMonitorCenterWidnowPosition(mainWindow);
+                    mainWindow.toggleVisible(pos);
+                }
+            );
         });
 
         document.addEventListener("keydown", e => {

@@ -1,5 +1,7 @@
+import { FlintiaWindow } from "~/Flintia";
 import { Result } from "./class/Result";
 import { Falsy, Nullable } from "./type";
+import { cursorPosition, LogicalPosition, monitorFromPoint } from "@tauri-apps/api/window";
 
 /**
  * setIntervalのラッパー。呼び出し時にもコールバックが実行される。
@@ -113,4 +115,22 @@ export function normalizeURL(text: string): Result<string, string> {
  */
 export function methodRedirect<Args extends any[], Return>(targetFn: (...args: Args) => Return) {
     return (...args: Args) => targetFn(...args);
+}
+
+/**
+ * マルチモニター環境で、カーソル位置のモニターの中央にウィンドウを配置する際のLogicalPositionを取得する
+ * @param fwin 中央に配置したいウィンドウ
+ * @returns 中央に配置するためのLogicalPositon。失敗時undefined
+ */
+export async function getCursorMonitorCenterWidnowPosition(fwin: FlintiaWindow) {
+    const cursor = await cursorPosition();
+    const monitor = await monitorFromPoint(cursor.x, cursor.y);
+    let pos = undefined;
+    if (monitor) {
+        const winSize = await fwin.rawWindow.outerSize();
+        const x = monitor.position.x + Math.round((monitor.workArea.size.width  - winSize.width ) / 2);
+        const y = monitor.position.y + Math.round((monitor.workArea.size.height - winSize.height) / 2);
+        pos = new LogicalPosition(x, y);
+    }
+    return pos;
 }

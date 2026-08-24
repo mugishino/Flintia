@@ -139,8 +139,8 @@ export class FlintiaWindow {
         return !res.isErr;
     }
 
-    public async toggleVisible() {
-        await this.rawWindow.isVisible() ? this.hide() : this.show();
+    public async toggleVisible(pos?: LogicalPosition) {
+        await this.rawWindow.isVisible() ? this.hide() : this.show(pos);
     }
 
     /**
