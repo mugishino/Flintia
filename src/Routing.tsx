@@ -21,12 +21,16 @@ import { FontManager } from "./window/main/pages/FontManager";
 import { JSX } from "react/jsx-runtime";
 
 type SidebarPosition = "Top"|"Bottom";
-interface Page {
+export interface Page {
     element: JSX.Element;
     size?: LogicalSize;
     sidebar?: {
         label: string;
         pos: SidebarPosition;
+    },
+    option?: {
+        /** 親ページのパスを指定することで、サイドバーで親ページがアクティブ表示になります。 */
+        parentPage?: string;
     },
 }
 
@@ -46,7 +50,6 @@ export class Routing {
         .set("/Note"         , {element: <Note        />, sidebar: {pos: "Top", label: "Note"}})
         .set("/ToDo"         , {element: <ToDo        />, sidebar: {pos: "Top", label: "ToDo"}})
         .set("/QRCode"       , {element: <QRCode      />, sidebar: {pos: "Top", label: "QRCode"}})
-        .set("/Auth"         , {element: <Auth        />, sidebar: {pos: "Top", label: "Auth"}})
         .set("/MemeStock"    , {element: <MemeStock   />, sidebar: {pos: "Top", label: "MemeStock"}, size: new LogicalSize(1280, 720)})
         .set("/VideoCut"     , {element: <VideoCut    />, sidebar: {pos: "Top", label: "VideoCut"}, size: new LogicalSize(1280, 720)})
         .set("/Reminder"     , {element: <Reminder    />, sidebar: {pos: "Top", label: "Reminder"}})
@@ -54,6 +57,7 @@ export class Routing {
         .set("/FontManager"  , {element: <FontManager />, sidebar: {pos: "Top", label: "FontManager"}, size: new LogicalSize(1280, 720)})
         .set("/System"       , {element: <System      />, sidebar: {pos: "Bottom", label: "System"}})
 
+        .set("/Auth"         , {element: <Auth        />, option: {parentPage: "/Password"}})
         .set("/Launcher"     , {element: <Launcher    />})
         ;
 

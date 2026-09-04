@@ -14,6 +14,7 @@ import { useStaticOverlay } from "~/hooks/useOverlay";
 import { Pair } from "~/util/class/Pair";
 import { readClipboardQRCode } from "~/module/QRCode";
 import { Search } from "~/components/Search";
+import { useFlintiaNavigate } from "~/Routing";
 
 interface AuthData {
     label: string,
@@ -98,6 +99,8 @@ export function Auth() {
     // delete overlay
     const [staticOverlay, setStaticOverlay] = useStaticOverlay();
 
+    const navi = useFlintiaNavigate();
+
 
 
     // load
@@ -142,7 +145,10 @@ export function Auth() {
     return (
         <>
             {staticOverlay}
-            <Search value={search} onUpdate={v => setSearch(v)} className="border-0 border-b"/>
+            <div className="flex flex-row">
+                <Search value={search} onUpdate={v => setSearch(v)} className="border-0 border-b"/>
+                <button className="w-1/2" onClick={() => navi("/Password")}>戻る</button>
+            </div>
             <div className="h-full overflow-y-scroll">
                 <div className="text-fail">{errMsg}</div>
                 {viewData.map((k, v) => <CodeView key={k} secret={v.code} title={v.label} onAuxClick={() => {

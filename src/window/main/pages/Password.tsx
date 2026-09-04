@@ -14,6 +14,7 @@ import { useMapState } from "~/hooks/useMapState";
 import { useStaticOverlay } from "~/hooks/useOverlay";
 import { Search } from "~/components/Search";
 import { UUIDGenerator } from "./Tools/UUIDGenerator";
+import { useFlintiaNavigate } from "~/Routing";
 
 interface PassRecord {
     title   ?: string;
@@ -122,6 +123,8 @@ export function Password() {
     const editDataKey = useRef<string|undefined>(undefined);
     const editSession = useRef(0);
 
+    const navi = useFlintiaNavigate();
+
 
 
     /**
@@ -180,7 +183,10 @@ export function Password() {
 
     return (
         <>
-            <Search value={search} onUpdate={v => setSearch(v)} className="border-0 border-b" autoFocus/>
+            <div className="flex flex-row">
+                <Search value={search} onUpdate={v => setSearch(v)} className="border-0 border-b grow" autoFocus/>
+                <button className="w-1/2" onClick={() => navi("/Auth")}>TOTP</button>
+            </div>
             <div className="overflow-y-scroll grow">
                 <span className="text-fail">{errorMessage}</span>
                 {view.map((k, v) => <DataRow data={v} key={v.title} onAuxClick={() => openEditUI(k)} paste={paste}/>)}
