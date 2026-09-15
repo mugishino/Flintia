@@ -1,9 +1,6 @@
 import { useState } from "react";
-import { Line } from "~/components/Line";
-import { OverlayWindow } from "~/components/OverlayWindow";
 import { Section } from "~/components/Section";
 import { Setting } from "~/components/Setting";
-import { useStaticOverlay } from "~/hooks/useOverlay";
 import { WInvoke } from "~/InvokeWrapper";
 
 const ALL_DISK_INFO = await WInvoke.getAllDiskInfo();
@@ -19,28 +16,7 @@ const LEVEL_DATA = new Map<StatusLevel, {color: string, waf: string, tooltip: st
 ]);
 
 export function DiskStatus() {
-    const [staticOverlay, setStaticOverlay] = useStaticOverlay();
     const [viewType, setViewType] = useState(0);
-
-    function openWafInfo() {
-        setStaticOverlay(
-            <OverlayWindow>
-                <h1>WAFとは？</h1>
-                <Line/>
-                <span>WAF(Write Amplification Factor)はSSDへの書き込み効率です。</span>
-                <span>1.0に近ければ近いほど書き込み効率が良く、GC効率も高いです。</span>
-                <span>値が高いと書き込み速度の低下、ストレージ寿命の減少が発生します。</span>
-                <Line/>
-                <div className="text-[0.7rem] flex flex-row gap-4 justify-center">
-                    <span className="text-safe">超安全: 60%未満</span>
-                    <span className="text-safe">安全: 75%未満</span>
-                    <span className="text-warn">注意: 85%未満</span>
-                    <span className="text-error">危険: 95%未満</span>
-                    <span className="text-purple-600">致命的: 96%以上</span>
-                </div>
-            </OverlayWindow>
-        );
-    }
 
     return (
         <Section title="Disk Status">
@@ -57,17 +33,15 @@ export function DiskStatus() {
 
                 return (
                     <Setting title={disk.name} key={disk.name} childClassName={data?.color}>
-                        <span title={data?.tooltip + "\nWAF目安: "+data?.waf} onAuxClick={openWafInfo} onClick={() => setViewType(viewType+1)} className="cursor-pointer">
+                        <span title={data?.tooltip + "\nWAF目安: "+data?.waf} onClick={() => setViewType(viewType+1)} className="cursor-pointer">
                             {[
                                 `${Math.floorEx(usingPercent, 1)}% 使用中`,
-                                `残り${Math.floorEx(disk.available_space / GB, 1)}GB`,
                                 `${Math.floorEx((disk.total_size - disk.available_space)/GB, 1)}GB 使用中`
-                            ].get(viewType % 3)}
+                            ].get(viewType % 2)}
                         </span>
                     </Setting>
                 );
             })}
-            {staticOverlay}
         </Section>
     );
 }
