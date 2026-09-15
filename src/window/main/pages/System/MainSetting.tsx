@@ -11,6 +11,7 @@ import { ReloadTheme } from "~/Theme";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { Section } from "~/components/Section";
 import { CreateLauncherWindow } from "~/window/launcher/Launcher";
+import { TabSwitch } from "./MainSetting/TabSwitch";
 
 export function MainSetting() {
     const [THEMES, setThemes] = useState<DirEntry[]>([]);
@@ -29,6 +30,8 @@ export function MainSetting() {
     const [theme, setTheme] = useState<string>("Default_Dark");
 
     const [enableLauncher, setEnableLauncher] = useState(true);
+
+    const [showTabSwitch, setShowTabSwtich] = useState(false);
 
     const config = flintiaConfig.read();
 
@@ -133,6 +136,10 @@ export function MainSetting() {
                         FlintiaWindow.get("launcher").then(v => v?.rawWindow.close());
                     }
                 }}/>
+            </Setting>
+            <Setting title="TabSwitch">
+                <button onClick={() => setShowTabSwtich(true)}>Open</button>
+                <TabSwitch show={showTabSwitch} setShow={() => setShowTabSwtich(false)}/>
             </Setting>
         </Section>
     );

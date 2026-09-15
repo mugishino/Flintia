@@ -1,6 +1,8 @@
 import { useLocation } from "react-router";
 import { Page, Routing, useFlintiaNavigate } from "../../Routing";
 import { twMerge } from "tailwind-merge";
+import { flintiaConfig } from "~/Config";
+import { useEffect, useState } from "react";
 
 function PageButton(props: {active: boolean, label: string, onClick: () => void}) {
     return <button
@@ -14,11 +16,23 @@ function PageButton(props: {active: boolean, label: string, onClick: () => void}
     >{props.label}</button>;
 }
 
+
 type SidebarState = Page & {active: boolean};
 
 export function Sidebar() {
     const navigate = useFlintiaNavigate();
     const locate = useLocation();
+    const [disableTabs, setDisableTabs] = useState(() => flintiaConfig.read().disableTabs);
+
+    useEffect(() => {
+        const id = flintiaConfig.addEditListener(config => {
+            setDisableTabs(config.disableTabs);
+        });
+
+        return () => {
+            flintiaConfig.removeEditListener(id);
+        };
+    }, []);
 
     function AutoSideButton(data: Map<string, SidebarState>) {
         return data.map((path, data) =>
@@ -31,6 +45,7 @@ export function Sidebar() {
 
     const pathname = Routing.Data.get(locate.pathname)?.option?.parentPage ?? locate.pathname;
     Routing.Data.forEach((data, path) => {
+        if (disableTabs.contains(path)) return;
         const active = path == pathname;
         if (data.sidebar?.pos == "Top"   ) top.set(path, {...data, active});
         if (data.sidebar?.pos == "Bottom") bot.set(path, {...data, active});

@@ -17,6 +17,8 @@ class Config implements Savedata {
     theme: string = "Default_Dark";
 
     enable_launcher = true;
+
+    disableTabs: string[] = [];
 }
 
 export const flintiaConfig = await SaveFile.load(new Config());

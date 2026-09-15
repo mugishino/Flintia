@@ -45,6 +45,9 @@ export class SaveFile<T extends Savedata> {
      */
     public edit(fn: (data: T) => void) {
         fn(this.data);
+        // リスナー呼び出し
+        const n = structuredClone(this.data);
+        this.listener.map((_,v) => v(n));
         return this;
     }
 
