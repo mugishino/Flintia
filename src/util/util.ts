@@ -1,7 +1,7 @@
 import { FlintiaWindow } from "~/Flintia";
 import { Result } from "./class/Result";
 import { Falsy, Nullable } from "./type";
-import { cursorPosition, LogicalPosition, monitorFromPoint } from "@tauri-apps/api/window";
+import { cursorPosition, monitorFromPoint, PhysicalPosition } from "@tauri-apps/api/window";
 
 /**
  * setIntervalのラッパー。呼び出し時にもコールバックが実行される。
@@ -128,9 +128,9 @@ export async function getCursorMonitorCenterWidnowPosition(fwin: FlintiaWindow) 
     let pos = undefined;
     if (monitor) {
         const winSize = await fwin.rawWindow.outerSize();
-        const x = monitor.position.x + Math.round((monitor.workArea.size.width  - winSize.width ) / 2);
-        const y = monitor.position.y + Math.round((monitor.workArea.size.height - winSize.height) / 2);
-        pos = new LogicalPosition(x, y);
+        const phyX = monitor.position.x + Math.round((monitor.workArea.size.width  - winSize.width ) / 2);
+        const phyY = monitor.position.y + Math.round((monitor.workArea.size.height - winSize.height) / 2);
+        pos = new PhysicalPosition(phyX, phyY).toLogical(monitor.scaleFactor);
     }
     return pos;
 }
