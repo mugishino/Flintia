@@ -96,7 +96,6 @@
 }
 
 html {
-    font-size: 2.1vh;
     height: 100vh;
     width: 100vw;
 }
@@ -138,6 +137,10 @@ body {
 @layer base {
     * {
         border-color: var(--color-border);
+    }
+
+    html {
+        font-size: 2.1vh;
     }
 
     button, select, input, .interactives, .interactives_nohover {
