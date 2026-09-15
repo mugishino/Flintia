@@ -3,19 +3,16 @@ import * as AutoStart from "@tauri-apps/plugin-autostart";
 import { useEffect, useState } from "react";
 import { Setting } from "~/components/Setting";
 import { ToggleSwitch } from "~/components/ToggleSwitch";
-import { Config } from "~/Config";
+import { flintiaConfig } from "~/Config";
 import { FlintiaWindow, HOTKEY_MAINKEYS, HotkeyMainKeys } from "~/Flintia";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { getAppdataDirFile, Paths } from "~/util/path";
 import { ReloadTheme } from "~/Theme";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { Section } from "~/components/Section";
-import { AppStorage } from "~/module/AppStorage";
 import { CreateLauncherWindow } from "~/window/launcher/Launcher";
 
 export function MainSetting() {
-    const [config, setConfig] = useState<Config|undefined>(undefined);
-
     const [THEMES, setThemes] = useState<DirEntry[]>([]);
 
     const [autostart, setAutostart] = useState(false);
@@ -33,16 +30,16 @@ export function MainSetting() {
 
     const [enableLauncher, setEnableLauncher] = useState(true);
 
+    const config = flintiaConfig.read();
+
     // config自体の読み込み
     useEffectAsync(async () => {
         setThemes(await readDir(await getAppdataDirFile("themes/")));
         setAutostart(await AutoStart.isEnabled());
-        setConfig(await AppStorage.load(new Config()));
     }, []);
 
     // configデータの読み込み
     useEffect(() => {
-        if (config == undefined) return;
         setShift(config.hotkey_shift);
         setCtrl (config.hotkey_ctrl );
         setAlt  (config.hotkey_alt  );
@@ -51,34 +48,24 @@ export function MainSetting() {
 
         setTheme(config.theme);
         setEnableLauncher(config.enable_launcher);
-    }, [config]);
+    }, []);
 
     useEffectAsync(async() => {
-        if (config == undefined) return;
         const flintia = await FlintiaWindow.getCurrentWindow();
         flintia.registerHotkey(shift, ctrl, alt, win, key as HotkeyMainKeys, () => flintia.toggleVisible()).then(isError => setHotkeyOk(isError));
-        AppStorage.load(new Config()).then(config => {
+        flintiaConfig.edit(config => {
             config.hotkey_shift = shift;
             config.hotkey_ctrl  = ctrl ;
             config.hotkey_alt   = alt  ;
             config.hotkey_win   = win  ;
             config.hotkey_main  = key as HotkeyMainKeys;
-            AppStorage.save(config);
-        });
+        }).save();
     }, [shift, ctrl, alt, win, key]);
 
     useEffectAsync(async() => {
-        if (config == undefined) return;
-        AppStorage.load(new Config()).then(config => {
+        flintiaConfig.edit(config => {
             config.enable_launcher = enableLauncher;
-            AppStorage.save(config);
-        });
-
-        if (enableLauncher) {
-            CreateLauncherWindow();
-        } else {
-            FlintiaWindow.get("launcher").then(v => v?.rawWindow.close());
-        }
+        }).save();
     }, [enableLauncher]);
 
     return(
@@ -121,9 +108,7 @@ export function MainSetting() {
                     const value = v.currentTarget.value;
                     setTheme(value);
 
-                    const config = await AppStorage.load(new Config());
-                    config.theme = value;
-                    await AppStorage.save(config);
+                    flintiaConfig.edit(c => c.theme = value).save();
                     ReloadTheme();
                 }}>
                     <option value={"Default_Dark"}>Default</option>
@@ -139,7 +124,15 @@ export function MainSetting() {
                 </select>
             </Setting>
             <Setting title="Enable Launcher">
-                <ToggleSwitch value={enableLauncher} onChange={v => setEnableLauncher(v)}/>
+                <ToggleSwitch value={enableLauncher} onChange={v => {
+                    setEnableLauncher(v);
+                    // ウィンドウを作成または消す
+                    if (v) {
+                        CreateLauncherWindow();
+                    } else {
+                        FlintiaWindow.get("launcher").then(v => v?.rawWindow.close());
+                    }
+                }}/>
             </Setting>
         </Section>
     );

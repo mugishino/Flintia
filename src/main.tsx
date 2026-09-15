@@ -17,13 +17,12 @@ import { CreateLauncherWindow, Launcher } from "./window/launcher/Launcher";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { NotFoundPage } from "./window/main/pages/404";
 import { IS_DEVELOP_MODE } from "./Data";
-import { AppStorage } from "./module/AppStorage";
-import { Config } from "./Config";
+import { flintiaConfig } from "./Config";
 import { SVGDefinitions } from "./components/SVGIcon";
 import { ErrorBoundary } from "react-error-boundary";
 import { Line } from "./components/Line";
 
-const config = await AppStorage.load(new Config());
+const config = flintiaConfig.read();
 const windowLabel = getCurrentWindow().label;
 
 // ウィンドウラベルごとにスタイルを与える

@@ -1,7 +1,7 @@
 import { HotkeyMainKeys } from "./Flintia";
-import { AppSavedata } from "./module/AppStorage";
+import { Savedata, SaveFile } from "./module/SaveFile";
 
-export class Config implements AppSavedata {
+class Config implements Savedata {
     filename = "config.json";
 
     passfile = "";
@@ -18,3 +18,5 @@ export class Config implements AppSavedata {
 
     enable_launcher = true;
 }
+
+export const flintiaConfig = await SaveFile.load(new Config());

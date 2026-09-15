@@ -3,10 +3,9 @@ import { ToggleSwitch } from "~/components/ToggleSwitch";
 import { Search } from "~/components/Search";
 import { PageSelect } from "~/components/PageSelect";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
-import { AppStorage } from "~/module/AppStorage";
 import { Paths } from "~/util/path";
 import { useStaticOverlay } from "~/hooks/useOverlay";
-import { Config } from "~/Config";
+import { flintiaConfig } from "~/Config";
 import { readDir } from "@tauri-apps/plugin-fs";
 import { searchFilter } from "~/util/util";
 import { convertFileSrc } from "@tauri-apps/api/core";
@@ -32,14 +31,14 @@ export function MemeStock() {
 
 
     useEffectAsync(async() => {
-        const config = await AppStorage.load(new Config());
-        const imagedirNotFound = await Paths.notExists(config.imagedir);
+        const imagedir = flintiaConfig.read().imagedir;
+        const imagedirNotFound = await Paths.notExists(imagedir);
         if (imagedirNotFound) return setErrMsg("Directory not found");
 
-        const data = (await readDir(config.imagedir)).map(v => {
+        const data = (await readDir(imagedir)).map(v => {
             if (!v.isFile) return;
             if (!SUPPORT_EXTENSION.includes(Paths.splitExt(v.name).ext)) return;
-            return `${config.imagedir}/${v.name}`;
+            return `${imagedir}/${v.name}`;
         });
         setImageList(data.filter(v => v != undefined));
     }, []);

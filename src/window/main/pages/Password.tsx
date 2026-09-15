@@ -1,12 +1,11 @@
 import { useRef, useState } from "react";
-import { Config } from "~/Config";
+import { flintiaConfig } from "~/Config";
 import { Clipboards } from "~/util/clipboard";
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { Paths } from "~/util/path";
 import { ToggleSwitch } from "~/components/ToggleSwitch";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { SVGButton } from "~/components/SVGButton";
-import { AppStorage } from "~/module/AppStorage";
 import { Overlay } from "~/components/Overlay";
 import { OverlayWindow } from "~/components/OverlayWindow";
 import { Line } from "~/components/Line";
@@ -141,7 +140,7 @@ export function Password() {
 
     // load
     useEffectAsync(async() => {
-        const path = (await AppStorage.load(new Config())).passfile;
+        const path = flintiaConfig.read().passfile;
         if (path == String.empty || await Paths.notExists(path)) {
             setErrorMessage("Password file not found");
             return;
@@ -157,7 +156,7 @@ export function Password() {
     useEffectAsync(async() => {
         if (passwordData.isEmpty()) return;
 
-        const path = (await AppStorage.load(new Config())).passfile;
+        const path = flintiaConfig.read().passfile;
         const json = passwordData.toJson(4);
         try {
             await writeTextFile(path, json);

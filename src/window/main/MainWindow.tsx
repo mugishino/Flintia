@@ -1,5 +1,4 @@
-import { AppStorage } from "~/module/AppStorage";
-import { Config } from "~/Config";
+import { flintiaConfig } from "~/Config";
 import { FlintiaWindow } from "~/Flintia";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { Logger } from "~/module/Logger";
@@ -17,19 +16,18 @@ export function MainWindow() {
             return;
         }
 
-        AppStorage.load(new Config()).then(async config => {
-            await mainWindow.registerHotkey(
-                config.hotkey_shift,
-                config.hotkey_ctrl,
-                config.hotkey_alt,
-                config.hotkey_win,
-                config.hotkey_main,
-                async () => {
-                    const pos = await getCursorMonitorCenterWidnowPosition(mainWindow);
-                    mainWindow.toggleVisible(pos);
-                }
-            );
-        });
+        const config = flintiaConfig.read();
+        await mainWindow.registerHotkey(
+            config.hotkey_shift,
+            config.hotkey_ctrl,
+            config.hotkey_alt,
+            config.hotkey_win,
+            config.hotkey_main,
+            async () => {
+                const pos = await getCursorMonitorCenterWidnowPosition(mainWindow);
+                mainWindow.toggleVisible(pos);
+            }
+        );
 
         document.addEventListener("keydown", e => {
             if (e.code == "Escape") {

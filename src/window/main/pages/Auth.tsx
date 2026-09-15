@@ -1,11 +1,10 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { TOTP } from "otpauth";
 import { useEffect, useState } from "react";
-import { Config } from "~/Config";
+import { flintiaConfig } from "~/Config";
 import { Paths } from "~/util/path";
 import { Clipboards } from "~/util/clipboard";
 import { useEffectAsync } from "~/hooks/useEffectAsync";
-import { AppStorage } from "~/module/AppStorage";
 import { Overlay } from "~/components/Overlay";
 import { OverlayWindow } from "~/components/OverlayWindow";
 import { Line } from "~/components/Line";
@@ -106,7 +105,7 @@ export function Auth() {
     // load
     useEffectAsync(async() => {
         setErrMsg(String.empty);
-        const file = (await AppStorage.load(new Config())).authfile;
+        const file = flintiaConfig.read().authfile;
         if (await Paths.notExists(file)) return setErrMsg("Auth file not found");
         const read = await readTextFile(file);
         try {
@@ -120,7 +119,7 @@ export function Auth() {
     // save
     useEffectAsync(async() => {
         if (loadData.size == 0) return;
-        const file = (await AppStorage.load(new Config())).authfile;
+        const file = flintiaConfig.read().authfile;
         const json = loadData.toJson(4);
         await writeTextFile(file, json);
     }, [loadData]);
