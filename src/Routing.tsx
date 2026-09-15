@@ -1,5 +1,5 @@
 import { LogicalSize } from "@tauri-apps/api/dpi";
-import { Route, Routes, useNavigate as useReactRouterNavigate } from "react-router";
+import { useNavigate as useReactRouterNavigate } from "react-router";
 import { FlintiaWindow } from "./Flintia";
 import { NotFoundPage } from "./window/main/pages/404";
 import { LandingPage } from "./window/main/pages/Landing";
@@ -60,15 +60,6 @@ export class Routing {
         .set("/Auth"         , {element: <Auth        />, option: {parentPage: "/Password"}})
         .set("/Launcher"     , {element: <Launcher    />})
         ;
-
-    /**
-     * ルーティング要素を返します。
-     * @returns \<Routes>を返すので直接使えます。
-     */
-    public static getRoutes() {
-        const value = this.Data.map((k, v) => <Route key={k} path={k} element={v.element}/>);
-        return <Routes>{value}</Routes>;
-    }
 
     public static useNavigate() {
         const navi = useReactRouterNavigate();

@@ -7,6 +7,7 @@ import { Routing } from "~/Routing";
 import { Sidebar } from "~/window/main/Sidebar";
 import { FileConverter } from "./FileConverter";
 import { getCursorMonitorCenterWidnowPosition } from "~/util/util";
+import { Route, Routes } from "react-router";
 
 export function MainWindow() {
     useEffectAsync(async() => {
@@ -47,7 +48,9 @@ export function MainWindow() {
         <>
             <Sidebar/>
             <main className="flex flex-col grow min-w-0">
-                {Routing.getRoutes()}
+                <Routes>
+                    {Routing.Data.map((k, v) => <Route key={k} path={k} element={v.element}/>)}
+                </Routes>
             </main>
             <FileConverter/>
         </>
