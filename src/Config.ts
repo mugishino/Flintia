@@ -16,7 +16,7 @@ class Config implements Savedata {
 
     theme: string = "Default_Dark";
 
-    enable_launcher = true;
+    enable_launcher = false;
 
     disableTabs: string[] = [];
 }
