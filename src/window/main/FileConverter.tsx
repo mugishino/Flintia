@@ -241,8 +241,8 @@ export function FileConverter() {
     const progressbar = (() => {
         const SIZE = 33;
         const proc = SIZE * progress;
-        const text = "-".repeat(proc-1) + " ".repeat(33-proc);
-        return text.insert(">", proc-1);
+        const text = "-".repeat(proc) + " ".repeat(33-proc);
+        return text;
     })();
 
 
