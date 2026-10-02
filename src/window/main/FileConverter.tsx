@@ -115,7 +115,7 @@ async function makeCommandArgs(
     return Result.Ok(result);
 }
 
-type ConvertStatus = "Processing" | "Failed" | "Done";
+type ConvertStatus = "Awaiting" | "Processing" | "Failed" | "Done";
 
 
 
@@ -130,6 +130,7 @@ export function FileConverter() {
     const [files, setFiles] = useState<string[]>([]);
     const [outputFileType, setOutputFileTypeRaw] = useState<string|undefined>();
     const [isTrash, setIsTrash] = useState(false);
+    const [isParallelMode, setParallelMode] = useState(false);
 
     // option
     const [lossless, setLossless] = useState(false);
@@ -172,6 +173,7 @@ export function FileConverter() {
             // reset
             onDragEvent(false, e);
             setIsTrash(false);
+            setParallelMode(false);
 
             // ファイルを取得
             const files = e.payload.paths;
@@ -204,9 +206,10 @@ export function FileConverter() {
 
         setConvertOverlay(false);
         setConvertStatusRaw(new Map());
-        files.forEach(async f => {
+
+        const convertFile = async(f: string) => {
             const logKey = Paths.getBasename(f);
-            (await makeCommandArgs(
+            const argsResult = await makeCommandArgs(
                 f,
                 inputFileType,
                 outdir,
@@ -216,9 +219,10 @@ export function FileConverter() {
                 {
                     drawingMode: drawingMode,
                 }
-            ))
+            );
+            await argsResult
             .onFailure(err => setConvStat(logKey, new Pair("Failed", "code: " + err)))
-            .onSuccess(async args => {
+            .onSuccessAsync(async args => {
                 setConvStat(logKey, new Pair("Processing", undefined));
                 // run
                 const cmd = Command.create("ffmpeg", args);
@@ -230,9 +234,18 @@ export function FileConverter() {
                     setConvStat(logKey, new Pair("Failed", "code: " + result.code));
                 }
             });
-        });
+        }
+
+        if (isParallelMode) {
+            files.forEach(convertFile);
+        } else {
+            for (const f of files) await convertFile(f);
+            // 全てのファイルをAwaiting表記にする。これがないと待っているファイルが一覧に表示されない。
+            files.forEach(f => setConvStat(Paths.getBasename(f), new Pair("Awaiting", undefined)));
+        }
     }
 
+    const status_awaiting   = convertStatus.filter((_, v) => v.left == "Awaiting"   ).size;
     const status_processing = convertStatus.filter((_, v) => v.left == "Processing" ).size;
     const status_failed     = convertStatus.filter((_, v) => v.left == "Failed"     ).size;
     const status_done       = convertStatus.filter((_, v) => v.left == "Done"       ).size;
@@ -257,9 +270,10 @@ export function FileConverter() {
                     <div className="flex justify-between p-1">
                         <div className="font-mono whitespace-pre">{`${Math.ceil(progress*100).toString().padStart(3, " ")}%[${progressbar}]`}</div>
                         <div className="grow flex flex-row">
-                            <span className="grow text-right px-1 text-white ext-black">{status_processing}</span>
-                            <span className="grow text-right px-1 text-fail  ext-white">{status_failed}</span>
-                            <span className="grow text-right px-1 text-done  ext-white">{status_done}</span>
+                            <span className="grow text-right px-1 text-white" title="Awaiting"  >{status_awaiting}</span>
+                            <span className="grow text-right px-1 text-white" title="Processing">{status_processing}</span>
+                            <span className="grow text-right px-1 text-fail " title="Failed"    >{status_failed}</span>
+                            <span className="grow text-right px-1 text-done " title="Done"      >{status_done}</span>
                         </div>
                     </div>
                     <Line className="m-0"/>
@@ -286,10 +300,12 @@ export function FileConverter() {
                         <Setting title="変換先">
                             <Select list={ExtensionMap.get(inputFileType) ?? []} select={outputFileType} onSelectChange={v => setOutputFileType(v)} />
                         </Setting>
-                        <div className="flex flex-row justify-between pl-1">
-                            <span className="grow">元ファイルをゴミ箱に移動</span>
+                        <Setting title="元ファイルをゴミ箱に移動" ratio={1/4} childClassName="flex justify-end">
                             <CheckBox checked={isTrash} onClick={() => setIsTrash(!isTrash)}/>
-                        </div>
+                        </Setting>
+                        <Setting title="並列処理モード" ratio={1/4} childClassName="flex justify-end">
+                            <CheckBox checked={isParallelMode} onClick={() => setParallelMode(!isParallelMode)}/>
+                        </Setting>
                         <Line className="my-0"/>
                         {LOSSLESS_DATA.containsKey(outputFileType) && <>
                             <Setting title="無劣化" childClassName="flex justify-end">
