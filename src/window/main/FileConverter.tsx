@@ -253,22 +253,24 @@ export function FileConverter() {
                 <div className={`h-full w-full flex justify-center items-center`}>ドロップしてファイルを変換</div>
             </Overlay>
             <Overlay show={!convertStatus.isEmpty()} setShow={() => setConvertStatusRaw(new Map())}>
-                <div className="h-full w-full flex flex-col p-1 overflow-scroll">
-                    <div className="flex justify-between">
+                <div className="h-full w-full flex flex-col">
+                    <div className="flex justify-between p-1">
                         <div className="font-mono whitespace-pre">{`${Math.ceil(progress*100).toString().padStart(3, " ")}%[${progressbar}]`}</div>
                         <div className="grow flex flex-row">
-                            <span className="grow text-right px-1 bg-white text-black">{status_processing}</span>
-                            <span className="grow text-right px-1 bg-fail  text-white">{status_failed}</span>
-                            <span className="grow text-right px-1 bg-done  text-white">{status_done}</span>
+                            <span className="grow text-right px-1 text-white ext-black">{status_processing}</span>
+                            <span className="grow text-right px-1 text-fail  ext-white">{status_failed}</span>
+                            <span className="grow text-right px-1 text-done  ext-white">{status_done}</span>
                         </div>
                     </div>
-                    <Line/>
-                    {convertStatus.map((k, v) =>
-                        <div key={k} className={`${"text-done".where(v.left == "Done")} ${"text-fail".where(v.left == "Failed")} w-full flex flex-row text-nowrap`}>
-                            <span className="w-1/6 shrink-0">{v.left}</span>
-                            <span title={v.right}>{k}</span>
-                        </div>
-                    )}
+                    <Line className="m-0"/>
+                    <div className="overflow-scroll h-full p-1">
+                        {convertStatus.map((k, v) =>
+                            <div key={k} className={`${"text-done".where(v.left == "Done")} ${"text-fail".where(v.left == "Failed")} w-full flex flex-row text-nowrap`}>
+                                <span className="w-1/6 shrink-0">{v.left}</span>
+                                <span title={v.right}>{k}</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </Overlay>
             <Overlay show={convertOverlay} setShow={setConvertOverlay}>
