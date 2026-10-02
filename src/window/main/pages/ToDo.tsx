@@ -1,66 +1,35 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Search } from "~/components/Search";
-import { useUpdateRender } from "~/hooks/useUpdateRender";
+import { useEffectAsync } from "~/hooks/useEffectAsync";
 import { getAppdataDirFile, Paths } from "~/util/path";
+import { searchFilter } from "~/util/util";
 
-const file = await getAppdataDirFile("todo.json");
-async function loadToDoList() {
-    if (await Paths.notExists(file)) return [];
-    const read = await readTextFile(file);
-    const list: string[] = JSON.parse(read);
-    return list;
-}
-
+const savefile = await getAppdataDirFile("todo.json");
 async function saveToDoList(data: string[]) {
     const json = JSON.stringify(data.filter(v => v != String.empty));
-    await writeTextFile(file, json);
+    await writeTextFile(savefile, json);
 }
 
-
-
-function TodoColumn({
-    defaultText,
-    onInput,
-    removeTodo,
-    focus,
-    onClick,
-    onAuxClick,
-    className,
-}: {
-    defaultText: string,
-    onInput: (v: string) => void,
-    removeTodo: () => void,
-    focus?: boolean,
-    onClick: () => void,
-    onAuxClick: () => void,
-    className?: string,
-}) {
-    const [text, setText] = useState(defaultText);
-    return (
-        <textarea
-            className={`field-sizing-content border-b resize-none overflow-clip ${className}`} value={text}
-            onBlur={e => e.currentTarget.value == String.empty ? removeTodo() : null}
-            onInput={e => {
-                setText(e.currentTarget.value);
-                onInput(e.currentTarget.value);
-            }}
-            autoFocus={focus}
-            onClick={onClick}
-            onAuxClick={onAuxClick}
-        />
-    );
-}
-
-const data = await loadToDoList();
 export function ToDo() {
     const [search, setSearch] = useState(String.empty);
 
-    const todoParentElem = useRef<HTMLDivElement>(null);
-
     const [move, setMove] = useState<number|null>(null);
-    const updateRendering = useUpdateRender();
-    let todoList = data;
+    const [todoList, setTodoList] = useState<string[]>([]);
+
+    // ファイル読み込み
+    useEffectAsync(async () => {
+        if (await Paths.notExists(savefile)) return setTodoList([]);
+        const read = await readTextFile(savefile);
+        const list: string[] = JSON.parse(read);
+        setTodoList(list);
+    }, []);
+
+    /** 状態を更新して保存します。 */
+    function update(list: string[]) {
+        setTodoList(list);
+        saveToDoList(list);
+    }
 
     /**
      * リスト内で位置を移動させます。
@@ -69,48 +38,47 @@ export function ToDo() {
      */
     function moveProcess(index: number, start: boolean) {
         if (move == null) return start ? setMove(index) : undefined;
-        const data = todoList.remove(move);
-        todoList.insert(index, data);
+        const list = [...todoList];
+        const data = list.remove(move);
+        list.insert(index, data);
         setMove(null);
-        saveToDoList(todoList);
+        update(list);
     }
 
     const elems = todoList.map((v, i) => {
-        if (search.length > 0 && !v.toLowerCase().includes(search.toLowerCase())) return;
-        return <TodoColumn
-            key={i+v}
-            defaultText={v}
-            onInput={v => {
-                todoList[i] = v;
-                saveToDoList(todoList);
-            }} removeTodo={() => {
-                todoList.remove(i);
-                updateRendering();
-            }}
-            onClick   ={() => moveProcess(i, false)}
-            onAuxClick={() => moveProcess(i, true )}
-            className={move == null ? "focus:bg-layerA" : `cursor-pointer ${move == i ? "bg-todo-sort-before" : "bg-todo-sort-after"}`}
-        />
+        if (!searchFilter(search, v)) return;
+        return (
+            <textarea
+                key={i}
+                className={`field-sizing-content border-b resize-none overflow-clip ${
+                    move == null ? "focus:bg-layerA" : `cursor-pointer ${move == i ? "bg-todo-sort-before" : "bg-todo-sort-after"}`
+                }`}
+                value={v}
+                autoFocus={v == String.empty}
+                onBlur={e => {
+                    if (e.currentTarget.value != String.empty) return;
+                    const list = [...todoList];
+                    list.remove(i);
+                    update(list);
+                }}
+                onInput={e => {
+                    const list = [...todoList];
+                    list[i] = e.currentTarget.value;
+                    update(list);
+                }}
+                onClick   ={() => moveProcess(i, false)}
+                onAuxClick={() => moveProcess(i, true )}
+            />
+        );
     });
 
     return (
         <>
             <Search className="border-0 border-b" value={search} onUpdate={v => setSearch(v)} autoFocus/>
-            <div className="grow flex flex-col overflow-y-scroll" ref={todoParentElem}>
+            <div className="grow flex flex-col overflow-y-scroll">
                 {elems}
             </div>
-            <button className="border-0 border-t" onClick={() => {
-                todoList.push(String.empty);
-                updateRendering(() => {
-                    if (todoParentElem.current == null) return;
-                    todoParentElem.current.scrollTo({
-                        top: todoParentElem.current.scrollHeight,
-                    });
-
-                    const newTodoElem = todoParentElem.current.lastElementChild;
-                    if (newTodoElem != null && newTodoElem instanceof HTMLTextAreaElement) newTodoElem.focus();
-                });
-            }}>New ToDo</button>
+            <button className="border-0 border-t" onClick={() => setTodoList([...todoList, String.empty])}>New ToDo</button>
         </>
     );
 }
