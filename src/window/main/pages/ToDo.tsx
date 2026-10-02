@@ -6,14 +6,17 @@ import { getAppdataDirFile, Paths } from "~/util/path";
 import { searchFilter } from "~/util/util";
 
 const savefile = await getAppdataDirFile("todo.json");
-async function saveToDoList(data: string[]) {
+let saving: Promise<void> = Promise.resolve();
+function saveToDoList(data: string[]) {
     const json = JSON.stringify(data.filter(v => v != String.empty));
-    await writeTextFile(savefile, json);
+    saving = saving.then(() => writeTextFile(savefile, json)).catch(console.error);
+    return saving;
 }
 
 export function ToDo() {
     const [search, setSearch] = useState(String.empty);
 
+    const [loaded, setLoaded] = useState(false);
     const [move, setMove] = useState<number|null>(null);
     const [todoList, setTodoList] = useState<string[]>([]);
 
@@ -23,10 +26,12 @@ export function ToDo() {
         const read = await readTextFile(savefile);
         const list: string[] = JSON.parse(read);
         setTodoList(list);
+        setLoaded(true);
     }, []);
 
     /** 状態を更新して保存します。 */
     function update(list: string[]) {
+        if (!loaded) return;
         setTodoList(list);
         saveToDoList(list);
     }
@@ -78,7 +83,7 @@ export function ToDo() {
             <div className="grow flex flex-col overflow-y-scroll">
                 {elems}
             </div>
-            <button className="border-0 border-t" onClick={() => setTodoList([...todoList, String.empty])}>New ToDo</button>
+            <button className="border-0 border-t" onClick={() => loaded && setTodoList([...todoList, String.empty])}>New ToDo</button>
         </>
     );
 }
