@@ -239,9 +239,10 @@ export function FileConverter() {
         if (isParallelMode) {
             files.forEach(convertFile);
         } else {
-            for (const f of files) await convertFile(f);
             // 全てのファイルをAwaiting表記にする。これがないと待っているファイルが一覧に表示されない。
             files.forEach(f => setConvStat(Paths.getBasename(f), new Pair("Awaiting", undefined)));
+
+            for (const f of files) await convertFile(f);
         }
     }
 
@@ -253,9 +254,10 @@ export function FileConverter() {
     const progress = (status_failed + status_done) / convertStatus.size;
     const progressbar = (() => {
         const SIZE = 33;
-        const proc = SIZE * progress;
-        const text = "-".repeat(proc) + " ".repeat(33-proc);
-        return text;
+        // 値が100%を超えていてもいいようにする
+        const p = Math.min(Math.max(progress, 0), 1);
+        const filled = Math.round(p * SIZE);
+        return "-".repeat(filled) + " ".repeat(SIZE - filled);
     })();
 
 
