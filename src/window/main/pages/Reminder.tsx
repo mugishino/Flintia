@@ -1,12 +1,12 @@
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { getAppdataDirFile } from "~/util/path";
 import { useRef, useState } from "react";
-import { useStaticOverlay } from "~/hooks/useOverlay";
 import { isPermissionGranted, requestPermission, sendNotification } from "@tauri-apps/plugin-notification";
 import { SVGButton } from "~/components/SVGButton";
 import { Overlay } from "~/components/Overlay";
 import { OverlayWindow } from "~/components/OverlayWindow";
 import { ifPresent } from "~/util/util";
+import { useMessageBox } from "~/hooks/useMessageBox";
 
 interface ReminderData {
     time: number,
@@ -54,7 +54,7 @@ setInterval(() => {
 
 export function Reminder() {
     const [showOverlay, setShowOverlay] = useState(false);
-    const [deleteOverlay, showDeleteOverlay] = useStaticOverlay();
+    const [messageBox, addMessageBox] = useMessageBox();
 
     const [time, setTime] = useState(Date.now());
     const [title, setTitle] = useState(String.empty);
@@ -96,7 +96,7 @@ export function Reminder() {
                     }}>リマインダーを{refEditIndex.current == undefined ? "作成" : "編集"}</button>
                 </OverlayWindow>
             </Overlay>
-            {deleteOverlay}
+            {messageBox}
             <button className="border-0 border-b" onClick={() => showRegister()}>リマインダーを作成</button>
             <div className="grow overflow-y-scroll">
                 {reminders.map((v, i) =>
@@ -110,16 +110,15 @@ export function Reminder() {
                                 showRegister(v.time, v.title, v.description, i);
                             }}/>
                             <SVGButton src="trash_can.svg" className="h-full border-0 border-l" onClick={() => {
-                                showDeleteOverlay(
-                                    <OverlayWindow error>
-                                        <h1 className="text-2xl">本当に削除しますか？</h1>
-                                        <button className="text-red-400" onClick={() => {
-                                            reminders.remove(i);
-                                            saveReminders();
-                                            showDeleteOverlay(undefined);
-                                        }}>削除</button>
-                                    </OverlayWindow>
-                                );
+                                addMessageBox({
+                                    message: `本当に ${v.title} を削除しますか？`,
+                                    button: "はい",
+                                    onClick() {
+                                        reminders.remove(i);
+                                        saveReminders();
+                                    },
+                                    error: true,
+                                });
                             }}/>
                         </div>
                     </div>

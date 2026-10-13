@@ -9,11 +9,11 @@ import { Overlay } from "~/components/Overlay";
 import { OverlayWindow } from "~/components/OverlayWindow";
 import { Line } from "~/components/Line";
 import { useMapState } from "~/hooks/useMapState";
-import { useStaticOverlay } from "~/hooks/useOverlay";
 import { Pair } from "~/util/class/Pair";
 import { readClipboardQRCode } from "~/module/QRCode";
 import { Search } from "~/components/Search";
 import { useFlintiaNavigate } from "~/Routing";
+import { useMessageBox } from "~/hooks/useMessageBox";
 
 interface AuthData {
     label: string,
@@ -96,7 +96,7 @@ export function Auth() {
     const [editData, setEditData] = useState<Pair<string, AuthData>|undefined>(undefined);
 
     // delete overlay
-    const [staticOverlay, setStaticOverlay] = useStaticOverlay();
+    const [messageBox, addMessageBox] = useMessageBox();
 
     const navi = useFlintiaNavigate();
 
@@ -143,7 +143,7 @@ export function Auth() {
 
     return (
         <>
-            {staticOverlay}
+            {messageBox}
             <div className="flex flex-row">
                 <Search value={search} onUpdate={v => setSearch(v)} className="border-0 border-b"/>
                 <button className="w-1/2" onClick={() => navi("/Password")}>戻る</button>
@@ -192,15 +192,14 @@ export function Auth() {
                         <button className="w-fit text-fail" onClick={() => {
                             if (!editData) return;
                             setEditData(undefined);
-                            setStaticOverlay(
-                                <OverlayWindow error>
-                                    <span>{editData.right.label}を削除しますか？</span>
-                                    <button className="text-fail" onClick={() => setLoadData(prev => {
-                                        setStaticOverlay(undefined);
-                                        return prev.set(editData.left, {...editData.right, disable: true});
-                                    })}>削除する</button>
-                                </OverlayWindow>
-                            );
+                            addMessageBox({
+                                message: `${editData.right.label}を削除しますか？`,
+                                button: "削除する",
+                                onClick() {
+                                    setLoadData(prev => prev.set(editData.left, {...editData.right, disable: true}));
+                                },
+                                error: true,
+                            });
                         }}>削除</button>
                     </div>
                     <input placeholder="Label" value={label} onChange={e => setLabel(e.currentTarget.value)}/>

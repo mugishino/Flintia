@@ -8,6 +8,8 @@ interface MessageBoxData {
     onClick: () => void,
     error?: boolean,
     warning?: boolean,
+    // style
+    msgClassName?: string,
 }
 
 /**
@@ -23,7 +25,7 @@ export function useMessageBox(): [React.ReactNode, (data: MessageBoxData) => voi
     const view = (
         <Overlay show={data != undefined} setShow={closeMessageBox}>
             <OverlayWindow warning={data?.warning} error={data?.error}>
-                <span>{data?.message}</span>
+                <span className={data?.msgClassName}>{data?.message}</span>
                 <button className={data?.error ? "text-fail" : data?.warning ? "text-warn" : String.empty} onClick={() => {
                     data?.onClick();
                     closeMessageBox();
