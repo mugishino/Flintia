@@ -2,7 +2,6 @@ import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { getAppdataDirFile } from "~/util/path";
 import { useRef, useState } from "react";
 import { isPermissionGranted, requestPermission, sendNotification } from "@tauri-apps/plugin-notification";
-import { SVGButton } from "~/components/SVGButton";
 import { Overlay } from "~/components/Overlay";
 import { OverlayWindow } from "~/components/OverlayWindow";
 import { ifPresent } from "~/util/util";
@@ -84,42 +83,48 @@ export function Reminder() {
                     <input type="datetime-local" min={time} value={Date.format(time, "YYYY-MM-DDTHH:mm")} onChange={v => setTime(new Date(v.currentTarget.value).getTime())}></input>
                     <input type="text" value={title} onChange={v => setTitle(v.currentTarget.value)} placeholder="タイトル"></input>
                     <textarea value={description} onChange={v => setDescription(v.currentTarget.value)} placeholder="説明" className="resize-none border bg-layerB p-1 min-h-[1.5lh] overflow-y-scroll field-sizing-content"></textarea>
-                    <button disabled={!title || time<Date.now()} onMouseEnter={v => {
-                        v.currentTarget.disabled = time<Date.now();
-                    }} onClick={() => {
-                        if (refEditIndex.current != undefined) {
-                            reminders.remove(refEditIndex.current);
-                        }
-                        reminders = [...reminders, {time: time, title: title, description: ifPresent(description), notified: false} as ReminderData].sort((a, b) => a.time - b.time);
-                        saveReminders();
-                        setShowOverlay(false);
-                    }}>リマインダーを{refEditIndex.current == undefined ? "作成" : "編集"}</button>
+                    <div className="flex flex-row gap-x-1">
+                        {refEditIndex.current != undefined &&
+                        <button className="text-error" onClick={() => {
+                            addMessageBox({
+                                message: `本当に ${title} を削除しますか？`,
+                                button: "はい",
+                                onClick() {
+                                    if (refEditIndex.current == undefined) return;
+                                    reminders.remove(refEditIndex.current);
+                                    saveReminders();
+                                    setShowOverlay(false);
+                                },
+                                error: true,
+                            })
+                        }}>削除する</button>}
+                        <button disabled={!title || time<Date.now()} onMouseEnter={v => {
+                            v.currentTarget.disabled = time<Date.now();
+                        }} onClick={() => {
+                            if (refEditIndex.current != undefined) {
+                                reminders.remove(refEditIndex.current);
+                            }
+                            reminders = [...reminders, {time: time, title: title, description: ifPresent(description), notified: false} as ReminderData].sort((a, b) => a.time - b.time);
+                            saveReminders();
+                            setShowOverlay(false);
+                        }}>{refEditIndex.current == undefined ? "リマインダーを作成" : "編集を終了"}</button>
+                    </div>
                 </OverlayWindow>
             </Overlay>
             {messageBox}
+
             <button className="border-0 border-b" onClick={() => showRegister()}>リマインダーを作成</button>
             <div className="grow overflow-y-scroll">
                 {reminders.map((v, i) =>
-                    <div key={v.time+v.title} className={`border-b flex flex-row h-1/12 justify-between ${"bg-reminder-notified".where(Date.now() > v.time)}`} title={v.description}>
+                    <div
+                    key={v.time+v.title}
+                    className={`border-b flex flex-row h-1/12 justify-between hover:bg-hover cursor-pointer ${"bg-reminder-notified".where(Date.now() > v.time)}`}
+                    title={v.description}
+                    onClick={() => showRegister(v.time, v.title, v.description, i)}
+                    >
                         <div className="flex flex-col p-1 min-w-0">
                             <h1 className="text-2xl truncate">{v.title}</h1>
                             <div className="text-xs">{Date.format(v.time, "YYYY年MM月DD日 HH時mm分")}</div>
-                        </div>
-                        <div className="flex flex-row">
-                            <SVGButton src="edit.svg" className="h-full border-0 border-l" onClick={() => {
-                                showRegister(v.time, v.title, v.description, i);
-                            }}/>
-                            <SVGButton src="trash_can.svg" className="h-full border-0 border-l" onClick={() => {
-                                addMessageBox({
-                                    message: `本当に ${v.title} を削除しますか？`,
-                                    button: "はい",
-                                    onClick() {
-                                        reminders.remove(i);
-                                        saveReminders();
-                                    },
-                                    error: true,
-                                });
-                            }}/>
                         </div>
                     </div>
                 )}
