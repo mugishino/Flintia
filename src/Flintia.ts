@@ -1,18 +1,23 @@
-import { currentMonitor, getCurrentWindow, LogicalPosition, LogicalSize, Window, WindowOptions } from "@tauri-apps/api/window";
 import { SessionData } from "./util/session";
+import { getCurrentWindow, LogicalPosition, LogicalSize, Monitor, Window, WindowOptions } from "@tauri-apps/api/window";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { WInvoke } from "./InvokeWrapper";
 import { Event, listen } from "@tauri-apps/api/event";
 import { Pair } from "./util/class/Pair";
+import { getCursorMonitor } from "./util/util";
+import { Result } from "./util/class/Result";
 
 // ウィンドウごとに一意、listenからアクセス可能なのがトップレベルぐらいしかない
 /** WindowLabel: Hotkey  */
 let hotkeyCallback: Pair<string, () => Promise<void>|void>|undefined = undefined;
 
 // ホットキーのアクション受け取り
-await listen("hotkey-pressed", async (event: Event<string>) => {
+listen("hotkey-pressed", async (event: Event<string>) => {
     const id = event.payload;
-    if (hotkeyCallback?.left == id) hotkeyCallback.right();
+    if (hotkeyCallback?.left == id) {
+        // コールバックがrejectしても特に問題ない
+        hotkeyCallback.right();
+    }
 });
 
 export type HotkeyMainKeys = (typeof HOTKEY_MAINKEYS)[number];
@@ -87,24 +92,21 @@ export class FlintiaWindow {
         label: string,
         url: string,
         option?: WindowOptions,
-        created?: (win: WebviewWindow) => void,
-        error?: (win: WebviewWindow) => void
-    ): Promise<FlintiaWindow> {
-        return new Promise(async resolve => {
-            let win = await WebviewWindow.getByLabel(label);
-            if (win) return this.init(win);
+    ): Promise<Result<FlintiaWindow, string>> {
+        return await Result.fromPromise<FlintiaWindow, string>((async () => {
+            // 既存ウィンドウを返す
+            const existing = await WebviewWindow.getByLabel(label);
+            if (existing) return this.init(existing);
 
-            win = new WebviewWindow(label, {...option, url: url});
-
-            win.once("tauri://created", () => {
-                this.init(win).then(v => resolve(v));
-                if (created) created(win);
+            // ウィンドウ作成
+            const win = new WebviewWindow(label, { ...option, url });
+            await new Promise<void>((resolve, reject) => {
+                win.once("tauri://created", () => resolve());
+                win.once("tauri://error", e => reject(String(e.payload)));
             });
 
-            win.once("tauri://error", () => {
-                if (error) error(win);
-            });
-        });
+            return this.init(win);
+        })());
     }
 
 
@@ -140,7 +142,7 @@ export class FlintiaWindow {
     }
 
     public async toggleVisible(pos?: LogicalPosition) {
-        await this.rawWindow.isVisible() ? this.hide() : this.show(pos);
+        await this.rawWindow.isVisible() ? await this.hide() : await this.show(pos);
     }
 
     /**
@@ -152,7 +154,7 @@ export class FlintiaWindow {
         else {
             const defaultPos = this.getDefaultPosition();
             if (!defaultPos) await this.rawWindow.center();
-            else this.rawWindow.setPosition(defaultPos);
+            else await this.rawWindow.setPosition(defaultPos);
         }
 
         await this.rawWindow.show();
@@ -169,6 +171,7 @@ export class FlintiaWindow {
     /**
      * このウィンドウのデフォルト位置を設定します。
      * @param pos デフォルトにしたいウィンドウ位置。
+     * @deprecated
      */
     public async setDefaultPosition(pos?: LogicalPosition) {
         const key = this.windowPositionKey;
@@ -179,6 +182,7 @@ export class FlintiaWindow {
     /**
      * このウィンドウのデフォルト位置を取得します。
      * @returns 未指定の場合undefinedが返ります。
+     * @deprecated
      */
     public getDefaultPosition() {
         const data = SessionData.get<{x: number, y: number}>(this.windowPositionKey);
@@ -223,6 +227,7 @@ export class FlintiaWindow {
     /**
      * このウィンドウのデフォルトサイズを設定します。
      * @param size デフォルトにしたいウィンドウサイズ。未指定の場合は現在のウィンドウサイズで保存され、既に指定されている場合は上書きされません。
+     * @deprecated
      */
     private async setDefaultWindowSize(size?: LogicalSize) {
         const key = this.windowSizeKey;
@@ -237,6 +242,7 @@ export class FlintiaWindow {
     /**
      * このウィンドウのデフォルトサイズを取得します。
      * @returns デフォルトウィンドウサイズ。指定されていなかった場合nullが返ります。
+     * @deprecated
      */
     public getDefaultWindowSize() {
         const data = SessionData.get<{width: number, height: number}>(this.windowSizeKey);
@@ -251,9 +257,9 @@ export class FlintiaWindow {
      * タスクバーの方向を取得します。
      * @returns タスクバーの方向
      */
-    public async getTaskbarDirection(): Promise<TaskbarDirection | undefined> {
-        const monitor = await currentMonitor();
-        if (monitor == null) return;
+    public async getTaskbarDirection(monitor?: Monitor): Promise<TaskbarDirection | undefined> {
+        monitor ??= await getCursorMonitor();
+        if (monitor == undefined) return;
 
         const pos = monitor.workArea.position;
         if (pos.x != 0) return "Left";

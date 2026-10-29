@@ -8,8 +8,8 @@ import { getCursorMonitorCenterWidnowPosition } from "~/util/util";
 
 const FULLSCREEN = false;
 
-export function CreateLauncherWindow() {
-    FlintiaWindow.getOrCreateWindow("launcher", "/Launcher", {
+export async function CreateLauncherWindow() {
+    const win = await FlintiaWindow.getOrCreateWindow("launcher", "/Launcher", {
         decorations: false,
         skipTaskbar: true,
         resizable: false,
@@ -17,7 +17,8 @@ export function CreateLauncherWindow() {
         visible: false,
         focus: false,
         transparent: true,
-    }).catch(v => Logger.errorTrace("Window create failed:" + v));
+    });
+    win.onFailure(v => Logger.errorTrace("Window create failed:" + v));
 }
 
 export function Launcher() {

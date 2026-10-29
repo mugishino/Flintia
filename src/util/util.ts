@@ -118,13 +118,22 @@ export function methodRedirect<Args extends any[], Return>(targetFn: (...args: A
 }
 
 /**
+ * マウスカーソルのあるモニターを取得します。
+ * @returns 失敗時undefined
+ */
+export async function getCursorMonitor() {
+    const cursor = await cursorPosition();
+    const monitor = await monitorFromPoint(cursor.x, cursor.y);
+    return monitor ?? undefined;
+}
+
+/**
  * マルチモニター環境で、カーソル位置のモニターの中央にウィンドウを配置する際のLogicalPositionを取得する
  * @param fwin 中央に配置したいウィンドウ
  * @returns 中央に配置するためのLogicalPositon。失敗時undefined
  */
 export async function getCursorMonitorCenterWidnowPosition(fwin: FlintiaWindow) {
-    const cursor = await cursorPosition();
-    const monitor = await monitorFromPoint(cursor.x, cursor.y);
+    const monitor = await getCursorMonitor();
     let pos = undefined;
     if (monitor) {
         const winSize = await fwin.rawWindow.outerSize();
