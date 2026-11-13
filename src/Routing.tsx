@@ -8,7 +8,6 @@ import { Password } from "./window/main/pages/Password/Password";
 import { CmdGen } from "./window/main/pages/CmdGen";
 import { Note } from "./window/main/pages/Note";
 import { ToDo } from "./window/main/pages/ToDo";
-import { QRCode } from "./window/main/pages/QRCode";
 import { Auth } from "./window/main/pages/Password/Auth";
 import { System } from "./window/main/pages/System/System";
 import { MemeStock } from "./window/main/pages/MemeStock";
@@ -49,7 +48,6 @@ export class Routing {
         .set("/CmdGen"       , {element: <CmdGen      />, sidebar: {pos: "Top", label: "CmdGen"}})
         .set("/Note"         , {element: <Note        />, sidebar: {pos: "Top", label: "Note"}})
         .set("/ToDo"         , {element: <ToDo        />, sidebar: {pos: "Top", label: "ToDo"}})
-        .set("/QRCode"       , {element: <QRCode      />, sidebar: {pos: "Top", label: "QRCode"}})
         .set("/MemeStock"    , {element: <MemeStock   />, sidebar: {pos: "Top", label: "MemeStock"}, size: new LogicalSize(1280, 720)})
         .set("/VideoCut"     , {element: <VideoCut    />, sidebar: {pos: "Top", label: "VideoCut"}, size: new LogicalSize(1280, 720)})
         .set("/Reminder"     , {element: <Reminder    />, sidebar: {pos: "Top", label: "Reminder"}})
