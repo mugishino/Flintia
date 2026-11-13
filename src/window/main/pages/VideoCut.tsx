@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Overlay } from "~/components/Overlay";
 import { Setting } from "~/components/Setting";
 import { SVGButton } from "~/components/SVGButton";
-import { CommandExists, DefaultFileName, DESKTOP_DIR } from "~/Data";
+import { BUTTON_MSG_TIMEOUT, CommandExists, DefaultFileName, DESKTOP_DIR } from "~/Data";
 import { FlintiaWindow } from "~/Flintia";
 import { useStaticOverlay } from "~/hooks/useOverlay";
 import { Clipboards } from "~/util/clipboard";
@@ -203,7 +203,7 @@ export function VideoCut() {
                             const cmd = commandBuild(inputFile, outputFile, startTime, endTime, videoCodec, bitrate, true);
                             Clipboards.copyText(cmd.full);
                             setCopied(true);
-                            setTimeout(() => setCopied(false), 1000);
+                            setTimeout(() => setCopied(false), BUTTON_MSG_TIMEOUT);
                         }}>{copied ? "Copied!" : "Copy FFmpeg Command"}</button>
                         <button disabled={!outputFile} className={"hidden".where(!CommandExists.FFmpeg)} title={"Please select output file".where(!outputFile)} onClick={async () => {
                             const cmd = commandBuild(inputFile, outputFile, startTime, endTime, videoCodec, bitrate, false);

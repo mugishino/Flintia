@@ -14,6 +14,7 @@ import { readClipboardQRCode } from "~/module/QRCode";
 import { Search } from "~/components/Search";
 import { useFlintiaNavigate } from "~/Routing";
 import { useMessageBox } from "~/hooks/useMessageBox";
+import { BUTTON_MSG_TIMEOUT } from "~/Data";
 
 interface AuthData {
     label: string,
@@ -173,7 +174,7 @@ export function Auth() {
                                 setLoadData(prev => prev.set(crypto.randomUUID(), {label: label, code: secret}))
                                 showAddOverlay(false);
                             });
-                        setTimeout(() => setReadQRMsg(undefined), 1500);
+                        setTimeout(() => setReadQRMsg(undefined), BUTTON_MSG_TIMEOUT);
                     }}>{readQRMsg ?? "QRで追加"}</button>
                     <Line/>
                     <input placeholder="Label" value={label} onChange={e => setLabel(e.currentTarget.value)}/>

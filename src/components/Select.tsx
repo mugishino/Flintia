@@ -19,6 +19,8 @@ interface Props<T> {
     dropdownClassName?: string,
     /** アイテム自体のclassNameを制御します。 */
     itemClassName?: string,
+    /** ラベルのclassNameを制御します。 */
+    labelClassName?: string,
 }
 
 /**
@@ -28,7 +30,7 @@ interface Props<T> {
 export function Select<T>(props: React.PropsWithChildren<Props<T>> & React.ComponentPropsWithoutRef<"div">) {
     const {
         list: rawList, select, onSelectChange,
-        className, dropdownClassName, itemClassName,
+        className, dropdownClassName, itemClassName, labelClassName,
         ...rest
     } = props;
 
@@ -66,7 +68,7 @@ export function Select<T>(props: React.PropsWithChildren<Props<T>> & React.Compo
             {...rest}
             ref={outside}
             >
-                {select && data.get(select)}
+                <div className={labelClassName}>{data.get(select)}</div>
                 <div className={`${open ? "rotate-270" :"rotate-90"} scale-x-50 absolute right-2`}>{">"}</div>
 
                 <ViewGroup show={open}>
@@ -75,6 +77,7 @@ export function Select<T>(props: React.PropsWithChildren<Props<T>> & React.Compo
                         min-w-[calc(100%+2px)] w-max max-h-[50vh]
                         overflow-y-scroll overflow-x-hidden
                         border bg-layerB z-50 text-left
+                        drop-shadow-black drop-shadow-md
                         ${isOverflowY ? "bottom-full" : "top-full"} ${isOverflowX ? "-right-px" : "-left-px"}`,
                         dropdownClassName,
                     )}>

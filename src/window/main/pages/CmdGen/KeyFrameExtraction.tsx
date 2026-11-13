@@ -3,7 +3,7 @@ import { Paths } from "~/util/path";
 import { Clipboards } from "~/util/clipboard";
 import { Setting } from "~/components/Setting";
 import { Dialogs, VIDEO_EXTENSIONS } from "~/module/Dialogs";
-import { DESKTOP_DIR } from "~/Data";
+import { BUTTON_MSG_TIMEOUT, DESKTOP_DIR } from "~/Data";
 import { ifPresent } from "~/util/util";
 
 export function KeyFrameExtraction() {
@@ -31,7 +31,7 @@ export function KeyFrameExtraction() {
             <button disabled={!video || !outdir} onClick={() => {
                 Clipboards.copyText(`ffmpeg -i "${video}" -vf "select='eq(pict_type\,I)'" -vsync vfr -frame_pts true "${outdir}\\%03d.png"`);
                 setCopied(true);
-                setTimeout(() => setCopied(false), 1000);
+                setTimeout(() => setCopied(false), BUTTON_MSG_TIMEOUT);
             }}>{copied ? "コピーしました" : "クリックでコマンドをコピー"}</button>
         </>
     );

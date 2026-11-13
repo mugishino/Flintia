@@ -3,7 +3,7 @@ import { Clipboards } from "~/util/clipboard";
 import { Paths } from "~/util/path";
 import { Setting } from "~/components/Setting";
 import { Dialogs, IMAGE_EXTENSIONS } from "~/module/Dialogs";
-import { DESKTOP_DIR } from "~/Data";
+import { BUTTON_MSG_TIMEOUT, DESKTOP_DIR } from "~/Data";
 import { ifPresent } from "~/util/util";
 import { Select } from "~/components/Select";
 
@@ -65,7 +65,7 @@ export function RealEsrgan() {
                 // コピー通知、コマンド長が8192を超えてれば長めに出す
                 const over8192 = cmd.length > 8191;
                 setCopied("Copied!" + (over8192 ? " Command length exceeds 8192" : String.empty));
-                setTimeout(() => setCopied(null), over8192 ? 3000 : 1000);
+                setTimeout(() => setCopied(null), over8192 ? BUTTON_MSG_TIMEOUT*2 : BUTTON_MSG_TIMEOUT);
             }} disabled={!files || !outdir}>{copied ?? "Copy Command"}</button>
         </>
     );

@@ -7,6 +7,7 @@ import { Paths } from "~/util/path";
 import { Dialogs, VIDEO_EXTENSIONS } from "~/module/Dialogs";
 import { ifPresent } from "~/util/util";
 import { Select } from "~/components/Select";
+import { BUTTON_MSG_TIMEOUT } from "~/Data";
 
 const SUPPORTED_VIDEO_EXTENSION = ["mp4", "mkv", "mov", "webm"] as const;
 type SupportedVideoExtension = typeof SUPPORTED_VIDEO_EXTENSION[number];
@@ -130,7 +131,7 @@ export function Video() {
                     );
                     Clipboards.copyText(cmd);
                     setCopied(true);
-                    setTimeout(() => setCopied(false), 1000);
+                    setTimeout(() => setCopied(false), BUTTON_MSG_TIMEOUT);
                 }}>{copied ? "Copied!" : "Copy FFmpeg command"}</button>
             })()}
         </>

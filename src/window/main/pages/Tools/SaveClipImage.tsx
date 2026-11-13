@@ -3,6 +3,7 @@ import { writeFile } from "@tauri-apps/plugin-fs";
 import { useState } from "react";
 import { Clipboards } from "~/util/clipboard";
 import { Dialogs } from "~/module/Dialogs";
+import { BUTTON_MSG_TIMEOUT } from "~/Data";
 
 export function SaveClipImage() {
     const [errMsg, setErrMsgRaw] = useState<string|null>(null);
@@ -10,12 +11,12 @@ export function SaveClipImage() {
         setErrMsgRaw(text);
         setTimeout(() => {
             setErrMsgRaw(null);
-        }, 1000);
+        }, BUTTON_MSG_TIMEOUT);
     }
 
     async function onSaveButtonClick() {
         const blob = await Clipboards.getImageBlob();
-        if (blob == null) return setErrorMessage("画像ではありません。");
+        if (blob == null) return setErrorMessage("画像ではありません");
 
         const desktopPath = await desktopDir();
         const savePath = await Dialogs.save("名前を付けて保存", [{name: "Image", extensions: ["png"]}], `${desktopPath}/${Date.now()}.png`);
