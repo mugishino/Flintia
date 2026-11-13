@@ -13,6 +13,7 @@
     /* core colors */
     --color-text: var(--color-neutral-50);
     --color-text-gray: var(--color-neutral-400);
+    --color-grayout: var(--color-neutral-700);
 
     --color-bg: var(--color-neutral-950);
     --color-layerA: var(--color-neutral-950);

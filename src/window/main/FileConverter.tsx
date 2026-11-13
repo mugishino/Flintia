@@ -105,7 +105,7 @@ async function makeCommandArgs(
             args.push(
                 // 変換元が映像の場合、変換先が音声なので映像を削除してエンコードすることを明示。
                 "-vn".where(inputType == SupportedType.Video),
-                ...lossless ? [] : LOSSLESS_DATA.get(outputType) ?? [],
+                ...lossless ? LOSSLESS_DATA.get(outputType) ?? [] : [],
                 ...qualityData ? [qualityData.arg, quality.toString()] : [],
             );
             break;
@@ -310,7 +310,7 @@ export function FileConverter() {
                         </Setting>
                         <Line className="my-0"/>
                         {LOSSLESS_DATA.containsKey(outputFileType) && <>
-                            <Setting title="無劣化" childClassName="flex justify-end">
+                            <Setting title="無劣化" childClassName="flex justify-end" disable={drawingMode}>
                                 <CheckBox checked={lossless} onClick={() => setLossless(!lossless)}/>
                             </Setting>
                         </>}
@@ -318,21 +318,18 @@ export function FileConverter() {
                             const data = QUALITY_DATA.getAny(outputFileType);
                             if (data == undefined) return;
 
-                            // 表示条件
-                            if (lossless) return;
-
                             // ラベルを設定
                             let label = quality.toString();
                             if (outputFileType == "jxl" && quality == 0) label = "無劣化";
 
                             return (
-                                <Setting title={`クオリティ= ${label}`}>
+                                <Setting title={`クオリティ= ${label}`} disable={lossless}>
                                     <input type="range" min={data.min} max={data.max} value={quality} onChange={e => setQuality(e.currentTarget.valueAsNumber)} className="align-top"/>
                                 </Setting>
                             );
                         })()}
                         {outputFileType == "webp" && <>
-                            <Setting title="DrawingMode" tooltip="イラストなどアニメ塗りに向いた変換をします" childClassName="flex justify-end">
+                            <Setting title="DrawingMode" tooltip="イラストなどアニメ塗りに向いた変換をします" childClassName="flex justify-end" disable={lossless}>
                                 <CheckBox checked={drawingMode} onClick={() => setDrawingMode(!drawingMode)}/>
                             </Setting>
                         </>}
